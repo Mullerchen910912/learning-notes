@@ -7,7 +7,6 @@ listing:
   - id: recent-posts
     contents:
       - posts/ai-tools/*.qmd
-      - posts/thesis/*.qmd
       - posts/causalml/*.qmd
     exclude:
       filename: "index.qmd"
@@ -42,17 +41,6 @@ Department of Economics, National Taiwan University
 包含：Claude Code 設定、prompt 技巧、自動化工作流程。
 
 [→ 閱讀更多](posts/ai-tools/index.qmd)
-:::
-::::
-
-:::: {.g-col-12 .g-col-md-4}
-::: {.card .h-100 .p-3}
-### 📄 我的論文
-記錄論文寫作過程、文獻整理、研究方法選擇。
-
-研究方向：因果推論、勞動經濟學、政策評估。
-
-[→ 閱讀更多](posts/thesis/index.qmd)
 :::
 ::::
 

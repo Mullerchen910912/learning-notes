@@ -35,7 +35,6 @@ about:
 | 分類 | 內容 |
 |------|------|
 | [🤖 AI 工具](posts/ai-tools/index.qmd) | Claude Code、LLM 輔助研究工作流程 |
-| [📄 我的論文](posts/thesis/index.qmd) | 論文進展、文獻閱讀、研究方法選擇 |
 | [📚 Causal ML 筆記](posts/causalml/index.qmd) | Chernozhukov et al. *Causal ML* 章節筆記 |
 
 ---

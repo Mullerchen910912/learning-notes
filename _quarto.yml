@@ -4,15 +4,13 @@ project:
 
 website:
   title: "Muller Chen Blog"
-  description: "AI 工具・論文研究・Causal ML 閱讀筆記"
+  description: "AI 工具・Causal ML 閱讀筆記"
   navbar:
     left:
       - text: "首頁"
         href: index.qmd
       - text: "AI 工具"
         href: posts/ai-tools/index.qmd
-      - text: "我的論文"
-        href: posts/thesis/index.qmd
       - text: "Causal ML 筆記"
         href: posts/causalml/index.qmd
       - text: "關於我"

@@ -35,13 +35,6 @@
     "text": "記錄 AI 工具探索與 Causal ML 的閱讀筆記。"
   },
   {
-    "objectID": "index.html#三個主題",
-    "href": "index.html#三個主題",
-    "title": "Muller Chen Blog",
-    "section": "三個主題",
-    "text": "三個主題\n\n\n\n🤖 AI 工具\n記錄使用 Claude Code、LLM 工具輔助研究的心得與技巧。\n包含：Claude Code 設定、prompt 技巧、自動化工作流程。\n→ 閱讀更多\n\n\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal Machine Learning 閱讀筆記。\n涵蓋：Trees、Random Forests、Neural Networks、Learning Guarantees。\n→ 閱讀更多"
-  },
-  {
     "objectID": "index.html#最新文章",
     "href": "index.html#最新文章",
     "title": "Muller Chen Blog",

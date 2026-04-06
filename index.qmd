@@ -25,35 +25,6 @@ listing:
 
 ---
 
-## 三個主題
-
-::::: {.grid}
-
-:::: {.g-col-12 .g-col-md-4}
-::: {.card .h-100 .p-3}
-### 🤖 AI 工具
-記錄使用 Claude Code、LLM 工具輔助研究的心得與技巧。
-
-包含：Claude Code 設定、prompt 技巧、自動化工作流程。
-
-[→ 閱讀更多](posts/ai-tools/index.qmd)
-:::
-::::
-
-:::: {.g-col-12 .g-col-md-4}
-::: {.card .h-100 .p-3}
-### 📚 Causal ML 筆記
-Chernozhukov et al. *Causal Machine Learning* 閱讀筆記。
-
-涵蓋：Trees、Random Forests、Neural Networks、Learning Guarantees。
-
-[→ 閱讀更多](posts/causalml/index.qmd)
-:::
-::::
-
-:::::
-
----
 
 ## 最新文章
 

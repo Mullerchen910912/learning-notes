@@ -32,7 +32,7 @@
     "href": "index.html",
     "title": "Muller Chen Blog",
     "section": "",
-    "text": "NTU 經濟所碩士生的學習與研究記錄。 紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。\nSheng-Yuan Chen（陳聖元） Department of Economics, National Taiwan University"
+    "text": "記錄 AI 工具探索與 Causal ML 的閱讀筆記。"
   },
   {
     "objectID": "index.html#三個主題",
@@ -151,27 +151,27 @@
     "href": "about.html",
     "title": "關於我",
     "section": "",
-    "text": "國立臺灣大學經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
+    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
   },
   {
-    "objectID": "about.html#sheng-yuan-chen陳聖元",
-    "href": "about.html#sheng-yuan-chen陳聖元",
+    "objectID": "about.html#muller",
+    "href": "about.html#muller",
     "title": "關於我",
     "section": "",
-    "text": "國立臺灣大學經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
+    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
   },
   {
     "objectID": "about.html#這個部落格",
     "href": "about.html#這個部落格",
     "title": "關於我",
     "section": "這個部落格",
-    "text": "這個部落格\n這裡紀錄我在研究所學習過程中的三個面向：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal ML 章節筆記"
+    "text": "這個部落格\n這裡記錄兩個主題：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal ML 章節筆記"
   },
   {
-    "objectID": "about.html#學術背景",
-    "href": "about.html#學術背景",
+    "objectID": "about.html#主要工具",
+    "href": "about.html#主要工具",
     "title": "關於我",
-    "section": "學術背景",
-    "text": "學術背景\n\n碩士：國立臺灣大學 經濟學研究所（在學中）\n研究助理：Jauer 教授研究團隊\n主要工具：R、Python、LaTeX/Beamer、Git"
+    "section": "主要工具",
+    "text": "主要工具\nR、Python、LaTeX/Beamer、Git"
   }
 ]

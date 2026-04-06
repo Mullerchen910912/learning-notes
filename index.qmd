@@ -20,11 +20,7 @@ listing:
 ::: {.hero}
 # Muller Chen Blog
 
-NTU 經濟所碩士生的學習與研究記錄。
-紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。
-
-**Sheng-Yuan Chen（陳聖元）**
-Department of Economics, National Taiwan University
+記錄 AI 工具探索與 Causal ML 的閱讀筆記。
 :::
 
 ---

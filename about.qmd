@@ -11,14 +11,11 @@ about:
     - icon: github
       text: GitHub
       href: https://github.com/Mullerchen910912
-    - icon: envelope
-      text: Email
-      href: mailto:your-email@ntu.edu.tw
 ---
 
-## Sheng-Yuan Chen（陳聖元）
+## Muller
 
-國立臺灣大學經濟學研究所碩士生。
+經濟學研究所碩士生。
 
 研究興趣圍繞**因果推論**（Causal Inference）與**計量方法**，特別關注：
 
@@ -30,7 +27,7 @@ about:
 
 ## 這個部落格
 
-這裡紀錄我在研究所學習過程中的三個面向：
+這裡記錄兩個主題：
 
 | 分類 | 內容 |
 |------|------|
@@ -39,8 +36,6 @@ about:
 
 ---
 
-## 學術背景
+## 主要工具
 
-- **碩士**：國立臺灣大學 經濟學研究所（在學中）
-- **研究助理**：Jauer 教授研究團隊
-- **主要工具**：R、Python、LaTeX/Beamer、Git
+R、Python、LaTeX/Beamer、Git

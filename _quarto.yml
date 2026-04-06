@@ -11,7 +11,7 @@ website:
         href: index.qmd
       - text: "AI 工具"
         href: posts/ai-tools/index.qmd
-      - text: "Causal ML 筆記"
+      - text: "Causal Inference and Econometrics"
         href: posts/causalml/index.qmd
       - text: "關於我"
         href: about.qmd

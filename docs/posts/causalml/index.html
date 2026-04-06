@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Causal ML 閱讀筆記 – Muller Chen Blog</title>
+<title>Causal Inference and Econometrics – Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -86,9 +86,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-date','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-title','listing-date','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -328,7 +328,7 @@ window.Quarto = {
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="../../posts/causalml/index.html" aria-current="page"> 
-<span class="menu-text">Causal ML 筆記</span></a>
+<span class="menu-text">Causal Inference and Econometrics</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
@@ -353,21 +353,19 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Q2F1c2FsJTIwTUw=">Causal ML <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TmV1cmFsJTIwTmV0d29ya3M=">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="JUU3JUFDJUFDOCVFNyVBQiVBMA==">第8章 <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Causal ML 閱讀筆記</h1>
-<p class="subtitle lead">Chernozhukov et al.&nbsp;Causal Machine Learning 逐章筆記</p>
+<h1 class="title">Causal Inference and Econometrics</h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta column-page">
 
     
   
@@ -379,30 +377,20 @@ window.Quarto = {
 </header>
 
 
-<p>Chernozhukov, Hansen, Kallus, Spindler, Syrgkanis (2024) <em>Causal Machine Learning</em> 的閱讀筆記。</p>
-<p>涵蓋 Trees、Random Forests、Boosting、Neural Networks、Learning Guarantees 等章節。</p>
+<p>因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。</p>
 
 
 
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="TmV1cmFsJTIwTmV0d29ya3MlMkNDYXVzYWwlMjBNTCUyQyVFNyVBQyVBQzglRTclQUIlQTA=" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775445191691" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="160">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775447256646" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="160">
 <a href="../../posts/causalml/ch8-neural-networks.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 Ch.8 Deep Neural Networks and Multitask Learning
 </h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('TmV1cmFsJTIwTmV0d29ya3M='); return false;">Neural Networks</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Q2F1c2FsJTIwTUw='); return false;">Causal ML</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUU3JUFDJUFDOCVFNyVBQiVBMA=='); return false;">第8章</div>
-
-</div>
 <div class="card-text listing-description delink">
 <p>Causal ML 第 8 章：深度神經網路架構、多任務學習、學習保證</p>
 </div>

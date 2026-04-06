@@ -32,7 +32,7 @@ about:
 | 分類 | 內容 |
 |------|------|
 | [🤖 AI 工具](posts/ai-tools/index.qmd) | Claude Code、LLM 輔助研究工作流程 |
-| [📚 Causal ML 筆記](posts/causalml/index.qmd) | Chernozhukov et al. *Causal ML* 章節筆記 |
+| [📚 Causal Inference and Econometrics](posts/causalml/index.qmd) | 因果推論與計量方法筆記 |
 
 ---
 

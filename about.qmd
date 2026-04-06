@@ -1,0 +1,47 @@
+---
+title: "關於我"
+page-layout: full
+toc: false
+about:
+  template: trestles
+  image: profile.jpg
+  image-shape: round
+  image-width: 10em
+  links:
+    - icon: github
+      text: GitHub
+      href: https://github.com/Mullerchen910912
+    - icon: envelope
+      text: Email
+      href: mailto:your-email@ntu.edu.tw
+---
+
+## Sheng-Yuan Chen（陳聖元）
+
+國立臺灣大學經濟學研究所碩士生。
+
+研究興趣圍繞**因果推論**（Causal Inference）與**計量方法**，特別關注：
+
+- **Difference-in-Differences**：staggered adoption、Callaway & Sant'Anna 方法
+- **Causal Machine Learning**：Double/Debiased ML、Neyman orthogonality
+- **政策評估**：勞動市場、教育政策
+
+---
+
+## 這個部落格
+
+這裡紀錄我在研究所學習過程中的三個面向：
+
+| 分類 | 內容 |
+|------|------|
+| [🤖 AI 工具](posts/ai-tools/index.qmd) | Claude Code、LLM 輔助研究工作流程 |
+| [📄 我的論文](posts/thesis/index.qmd) | 論文進展、文獻閱讀、研究方法選擇 |
+| [📚 Causal ML 筆記](posts/causalml/index.qmd) | Chernozhukov et al. *Causal ML* 章節筆記 |
+
+---
+
+## 學術背景
+
+- **碩士**：國立臺灣大學 經濟學研究所（在學中）
+- **研究助理**：Jauer 教授研究團隊
+- **主要工具**：R、Python、LaTeX/Beamer、Git

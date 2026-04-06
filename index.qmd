@@ -1,12 +1,25 @@
 ---
-title: "Sheng-Yuan's Learning Notes"
+title: "Muller Chen Blog"
 subtitle: "台大經濟所 · 因果推論 · AI 工具 · Causal ML"
 page-layout: full
 toc: false
+listing:
+  - id: recent-posts
+    contents:
+      - posts/ai-tools/*.qmd
+      - posts/thesis/*.qmd
+      - posts/causalml/*.qmd
+    exclude:
+      filename: "index.qmd"
+    sort: "date desc"
+    max-items: 6
+    type: default
+    fields: [date, title, description, categories]
+    date-format: "YYYY-MM-DD"
 ---
 
 ::: {.hero}
-# 學習筆記 📖
+# Muller Chen Blog
 
 NTU 經濟所碩士生的學習與研究記錄。
 紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。
@@ -60,6 +73,5 @@ Chernozhukov et al. *Causal Machine Learning* 閱讀筆記。
 
 ## 最新文章
 
-```{=html}
-<p class="post-meta">持續更新中...</p>
-```
+:::{#recent-posts}
+:::

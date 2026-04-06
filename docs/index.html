@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Sheng-Yuan’s Learning Notes</title>
+<title>Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,6 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -74,7 +76,65 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-recent-posts .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-recent-posts'] = new List('listing-recent-posts', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -249,7 +309,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Sheng-Yuan’s Learning Notes</span>
+    <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -273,6 +333,10 @@ ul.task-list li input[type="checkbox"] {
   <li class="nav-item">
     <a class="nav-link" href="./posts/causalml/index.html"> 
 <span class="menu-text">Causal ML 筆記</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">關於我</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -300,7 +364,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Sheng-Yuan’s Learning Notes</h1>
+<h1 class="title">Muller Chen Blog</h1>
 <p class="subtitle lead">台大經濟所 · 因果推論 · AI 工具 · Causal ML</p>
 </div>
 
@@ -318,8 +382,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="學習筆記" class="level1 hero">
-<h1>學習筆記 📖</h1>
+<section id="muller-chen-blog" class="level1 hero">
+<h1>Muller Chen Blog</h1>
 <p>NTU 經濟所碩士生的學習與研究記錄。 紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。</p>
 <p><strong>Sheng-Yuan Chen（陳聖元）</strong> Department of Economics, National Taiwan University</p>
 </section>
@@ -356,7 +420,90 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="最新文章" class="level2">
 <h2 class="anchored" data-anchor-id="最新文章">最新文章</h2>
-<p class="post-meta">持續更新中...</p>
+<div id="listing-recent-posts" class="quarto-listing quarto-listing-container-default">
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-categories="Q2xhdWRlJTIwQ29kZSUyQyVFNSVCNyVBNSVFNCVCRCU5QyVFNiVCNSU4MSVFNyVBOCU4QiUyQyVFNSVCNyVBNSVFNSU4NSVCNyVFOCVBOCVBRCVFNSVBRSU5QQ==" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775445161430" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="131">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/ai-tools/claude-code-setup.html" class="no-external">用 Claude Code 打造學術研究工作流程</a>
+</h3>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('Q2xhdWRlJTIwQ29kZQ=='); return false;">Claude Code</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU1JUI3JUE1JUU0JUJEJTlDJUU2JUI1JTgxJUU3JUE4JThC'); return false;">工作流程</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU1JUI3JUE1JUU1JTg1JUI3JUU4JUE4JUFEJUU1JUFFJTlB'); return false;">工具設定</div>
+
+</div>
+<div class="delink listing-description"><a href="./posts/ai-tools/claude-code-setup.html" class="no-external">
+<p>如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="./posts/ai-tools/claude-code-setup.html" class="no-external">
+<div class="listing-date">
+2026-04-06
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="JUU4JUFCJTk2JUU2JTk2JTg3JTJDJUU1JTlCJUEwJUU2JTlFJTlDJUU2JThFJUE4JUU4JUFCJTk2JTJDJUU3JUEwJTk0JUU3JUE5JUI2JUU4JUE4JTg4JUU3JTk1JUFC" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775445207331" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="74">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/thesis/research-direction.html" class="no-external">論文研究方向初探</a>
+</h3>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU4JUFCJTk2JUU2JTk2JTg3'); return false;">論文</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU1JTlCJUEwJUU2JTlFJTlDJUU2JThFJUE4JUU4JUFCJTk2'); return false;">因果推論</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU3JUEwJTk0JUU3JUE5JUI2JUU4JUE4JTg4JUU3JTk1JUFC'); return false;">研究計畫</div>
+
+</div>
+<div class="delink listing-description"><a href="./posts/thesis/research-direction.html" class="no-external">
+<p>整理目前的研究方向、感興趣的識別策略、以及下一步計畫</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="./posts/thesis/research-direction.html" class="no-external">
+<div class="listing-date">
+2026-04-06
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="TmV1cmFsJTIwTmV0d29ya3MlMkNDYXVzYWwlMjBNTCUyQyVFNyVBQyVBQzglRTclQUIlQTA=" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775445191691" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="160">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/causalml/ch8-neural-networks.html" class="no-external">Ch.8 Deep Neural Networks and Multitask Learning</a>
+</h3>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('TmV1cmFsJTIwTmV0d29ya3M='); return false;">Neural Networks</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('Q2F1c2FsJTIwTUw='); return false;">Causal ML</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('JUU3JUFDJUFDOCVFNyVBQiVBMA=='); return false;">第8章</div>
+
+</div>
+<div class="delink listing-description"><a href="./posts/causalml/ch8-neural-networks.html" class="no-external">
+<p>Causal ML 第 8 章：深度神經網路架構、多任務學習、學習保證</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="./posts/causalml/ch8-neural-networks.html" class="no-external">
+<div class="listing-date">
+2026-04-06
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+
 
 
 </section>

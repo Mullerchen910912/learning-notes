@@ -28,95 +28,25 @@
     "text": "User to create GitHub repo learning-notes (Public)\nUser to generate new PAT token\nPush and enable GitHub Pages (source: docs/ folder)"
   },
   {
-    "objectID": "posts/causalml/index.html",
-    "href": "posts/causalml/index.html",
-    "title": "Causal ML 閱讀筆記",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Muller Chen Blog",
     "section": "",
-    "text": "Chernozhukov, Hansen, Kallus, Spindler, Syrgkanis (2024) Causal Machine Learning 的閱讀筆記。\n涵蓋 Trees、Random Forests、Boosting、Neural Networks、Learning Guarantees 等章節。\n\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\n\nNeural Networks\n\nCausal ML\n\n第8章\n\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "NTU 經濟所碩士生的學習與研究記錄。 紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。\nSheng-Yuan Chen（陳聖元） Department of Economics, National Taiwan University"
   },
   {
-    "objectID": "posts/thesis/index.html",
-    "href": "posts/thesis/index.html",
-    "title": "我的論文",
-    "section": "",
-    "text": "記錄論文研究過程的思考與心得。\n研究方向包含因果推論、政策評估、勞動經濟學。\n\n\n\n\n\n\n\n\n\n\n\n論文研究方向初探\n\n\n\n論文\n\n因果推論\n\n研究計畫\n\n\n\n整理目前的研究方向、感興趣的識別策略、以及下一步計畫\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "objectID": "index.html#三個主題",
+    "href": "index.html#三個主題",
+    "title": "Muller Chen Blog",
+    "section": "三個主題",
+    "text": "三個主題\n\n\n\n🤖 AI 工具\n記錄使用 Claude Code、LLM 工具輔助研究的心得與技巧。\n包含：Claude Code 設定、prompt 技巧、自動化工作流程。\n→ 閱讀更多\n\n\n\n\n📄 我的論文\n記錄論文寫作過程、文獻整理、研究方法選擇。\n研究方向：因果推論、勞動經濟學、政策評估。\n→ 閱讀更多\n\n\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal Machine Learning 閱讀筆記。\n涵蓋：Trees、Random Forests、Neural Networks、Learning Guarantees。\n→ 閱讀更多"
   },
   {
-    "objectID": "posts/ai-tools/index.html",
-    "href": "posts/ai-tools/index.html",
-    "title": "AI 工具",
-    "section": "",
-    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n\nClaude Code\n\n工作流程\n\n工具設定\n\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/ai-tools/claude-code-setup.html",
-    "href": "posts/ai-tools/claude-code-setup.html",
-    "title": "用 Claude Code 打造學術研究工作流程",
-    "section": "",
-    "text": "最近參考 Emory 大學計量經濟學教授 Pedro Sant’Anna 的 Claude Code 工作流程指南， 把自己的 Claude Code 環境重新整理了一番。\nSant’Anna 的研究方向（因果推論、DiD）和我非常接近，他分享的工作流程對計量研究者非常實用。"
-  },
-  {
-    "objectID": "posts/ai-tools/claude-code-setup.html#前言",
-    "href": "posts/ai-tools/claude-code-setup.html#前言",
-    "title": "用 Claude Code 打造學術研究工作流程",
-    "section": "",
-    "text": "最近參考 Emory 大學計量經濟學教授 Pedro Sant’Anna 的 Claude Code 工作流程指南， 把自己的 Claude Code 環境重新整理了一番。\nSant’Anna 的研究方向（因果推論、DiD）和我非常接近，他分享的工作流程對計量研究者非常實用。"
-  },
-  {
-    "objectID": "posts/ai-tools/claude-code-setup.html#安裝了什麼",
-    "href": "posts/ai-tools/claude-code-setup.html#安裝了什麼",
-    "title": "用 Claude Code 打造學術研究工作流程",
-    "section": "安裝了什麼",
-    "text": "安裝了什麼\n\nHooks（自動化腳本）\n安裝了 7 個背景自動執行的腳本：\n\n\n\nHook\n功能\n\n\n\n\ncontext-monitor.py\nContext 用量達 40/80/90% 時自動警告\n\n\npre-compact.py\n對話壓縮前自動保存工作狀態\n\n\nprotect-files.sh\n防止誤改重要設定檔\n\n\nverify-reminder.py\n寫完檔案後提醒確認輸出\n\n\n\n\n\n斜線指令（Slash Commands）\n安裝了 22 個 / 快捷指令，常用的有：\n\n/compile-latex — 三次完整 XeLaTeX 編譯\n/proofread — 學術寫作審查\n/lit-review — 系統性文獻搜尋\n/research-ideation — 研究問題發想\n/commit — 結構化 git 提交\n\n\n\nCLAUDE.md 個人設定\n最重要的設定是 ~/CLAUDE.md，讓 Claude 每次啟動都知道：\n\n我的研究方向（因果推論、Causal ML）\n數學符號慣例（\\(\\mathbb{E}[\\cdot]\\), \\(\\hat{\\theta}\\), DiD notation）\nLaTeX 設定（xeCJK、CambridgeUS 主題）"
-  },
-  {
-    "objectID": "posts/ai-tools/claude-code-setup.html#實際使用心得",
-    "href": "posts/ai-tools/claude-code-setup.html#實際使用心得",
-    "title": "用 Claude Code 打造學術研究工作流程",
-    "section": "實際使用心得",
-    "text": "實際使用心得\n\n做 Beamer 投影片\n以前手動寫 Beamer 很花時間，現在的工作流程是：\n\n把 PDF 教科書丟給 Claude 讀\n說明想做哪個章節的投影片\nClaude 自動根據內容寫出結構完整的 .tex\n/compile-latex 編譯\n/proofread 檢查\n\n整個流程大概 15-20 分鐘，比以前快了很多。\n\n\nContext Window 管理\n這是使用 LLM 最大的限制。當對話太長，Claude 會「忘記」前面說的事。\n解決方法：\n\n定期用 /context-status 查看用量\n接近 80% 時用 /learn 把重要規則存成持久記憶\n善用 CLAUDE.md 讓每次對話都有基本背景"
-  },
-  {
-    "objectID": "posts/ai-tools/claude-code-setup.html#結論",
-    "href": "posts/ai-tools/claude-code-setup.html#結論",
-    "title": "用 Claude Code 打造學術研究工作流程",
-    "section": "結論",
-    "text": "結論\n對計量研究者來說，Claude Code 最有用的地方是：\n\nLaTeX 自動化：Beamer 投影片、數學推導\n文獻整理：系統性搜尋、BibTeX 輸出\nR 程式碼審查：確保可重現性、程式碼品質\n\n完整的設定方式可以參考 Sant’Anna 的 原始 repo。"
-  },
-  {
-    "objectID": "posts/thesis/research-direction.html",
-    "href": "posts/thesis/research-direction.html",
-    "title": "論文研究方向初探",
-    "section": "",
-    "text": "目前在 NTU 經濟所，研究方向圍繞在因果推論與政策評估。\n對以下方法特別感興趣：\n\nDifference-in-Differences（DiD）：特別是 staggered adoption 的設計\nCausal Machine Learning：Double Machine Learning（DML）、Debiased ML\nTreatment Effect Heterogeneity：CATE 估計、政策靶向"
-  },
-  {
-    "objectID": "posts/thesis/research-direction.html#研究方向",
-    "href": "posts/thesis/research-direction.html#研究方向",
-    "title": "論文研究方向初探",
-    "section": "",
-    "text": "目前在 NTU 經濟所，研究方向圍繞在因果推論與政策評估。\n對以下方法特別感興趣：\n\nDifference-in-Differences（DiD）：特別是 staggered adoption 的設計\nCausal Machine Learning：Double Machine Learning（DML）、Debiased ML\nTreatment Effect Heterogeneity：CATE 估計、政策靶向"
-  },
-  {
-    "objectID": "posts/thesis/research-direction.html#方法論興趣",
-    "href": "posts/thesis/research-direction.html#方法論興趣",
-    "title": "論文研究方向初探",
-    "section": "方法論興趣",
-    "text": "方法論興趣\n\nStaggered DiD\n近年 DiD 文獻的重大進展之一是處理交錯時序處理（staggered treatment adoption）的問題。\n傳統的 TWFE 在這種情況下可能給出有偏的估計，主要文獻包括：\n\nCallaway & Sant’Anna (2021, Journal of Econometrics)\nSun & Abraham (2021)\nRoth et al. (2023, Journal of Economic Literature)\n\n\n\nDouble Machine Learning\nDML 的核心思想是利用 Neyman 正交性（orthogonality）：\n\\[\\mathbb{E}[\\psi(W; \\theta_0, \\eta_0)] = 0\\]\n其中 \\(\\eta\\) 是 nuisance function（用 ML 方法估計），\\(\\theta\\) 是目標參數。\n好處：即使 \\(\\eta\\) 的估計有一階誤差，\\(\\theta\\) 的估計仍能達到參數速率。"
-  },
-  {
-    "objectID": "posts/thesis/research-direction.html#ra-工作",
-    "href": "posts/thesis/research-direction.html#ra-工作",
-    "title": "論文研究方向初探",
-    "section": "RA 工作",
-    "text": "RA 工作\n目前也在做 RA 工作，協助整理資料和文獻。這部分的工作讓我接觸到更多實際的資料清理問題。"
-  },
-  {
-    "objectID": "posts/thesis/research-direction.html#下一步",
-    "href": "posts/thesis/research-direction.html#下一步",
-    "title": "論文研究方向初探",
-    "section": "下一步",
-    "text": "下一步\n\n確定論文題目（方向：台灣的某個政策評估？）\n找到合適的資料來源\n決定識別策略\n開始文獻整理\n\n會陸續在這裡記錄進展。"
+    "objectID": "index.html#最新文章",
+    "href": "index.html#最新文章",
+    "title": "Muller Chen Blog",
+    "section": "最新文章",
+    "text": "最新文章\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n\nClaude Code\n\n工作流程\n\n工具設定\n\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\n論文研究方向初探\n\n\n\n論文\n\n因果推論\n\n研究計畫\n\n\n\n整理目前的研究方向、感興趣的識別策略、以及下一步計畫\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\n\nNeural Networks\n\nCausal ML\n\n第8章\n\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -168,24 +98,122 @@
     "text": "投影片\n這一章的 Beamer 投影片（19 頁）已放在 NTU-ECON repo。"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Sheng-Yuan’s Learning Notes",
+    "objectID": "posts/thesis/research-direction.html",
+    "href": "posts/thesis/research-direction.html",
+    "title": "論文研究方向初探",
     "section": "",
-    "text": "NTU 經濟所碩士生的學習與研究記錄。 紀錄 AI 工具探索、論文寫作心得、以及 Causal ML 的閱讀筆記。\nSheng-Yuan Chen（陳聖元） Department of Economics, National Taiwan University"
+    "text": "目前在 NTU 經濟所，研究方向圍繞在因果推論與政策評估。\n對以下方法特別感興趣：\n\nDifference-in-Differences（DiD）：特別是 staggered adoption 的設計\nCausal Machine Learning：Double Machine Learning（DML）、Debiased ML\nTreatment Effect Heterogeneity：CATE 估計、政策靶向"
   },
   {
-    "objectID": "index.html#三個主題",
-    "href": "index.html#三個主題",
-    "title": "Sheng-Yuan’s Learning Notes",
-    "section": "三個主題",
-    "text": "三個主題\n\n\n\n🤖 AI 工具\n記錄使用 Claude Code、LLM 工具輔助研究的心得與技巧。\n包含：Claude Code 設定、prompt 技巧、自動化工作流程。\n→ 閱讀更多\n\n\n\n\n📄 我的論文\n記錄論文寫作過程、文獻整理、研究方法選擇。\n研究方向：因果推論、勞動經濟學、政策評估。\n→ 閱讀更多\n\n\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal Machine Learning 閱讀筆記。\n涵蓋：Trees、Random Forests、Neural Networks、Learning Guarantees。\n→ 閱讀更多"
+    "objectID": "posts/thesis/research-direction.html#研究方向",
+    "href": "posts/thesis/research-direction.html#研究方向",
+    "title": "論文研究方向初探",
+    "section": "",
+    "text": "目前在 NTU 經濟所，研究方向圍繞在因果推論與政策評估。\n對以下方法特別感興趣：\n\nDifference-in-Differences（DiD）：特別是 staggered adoption 的設計\nCausal Machine Learning：Double Machine Learning（DML）、Debiased ML\nTreatment Effect Heterogeneity：CATE 估計、政策靶向"
   },
   {
-    "objectID": "index.html#最新文章",
-    "href": "index.html#最新文章",
-    "title": "Sheng-Yuan’s Learning Notes",
-    "section": "最新文章",
-    "text": "最新文章\n持續更新中..."
+    "objectID": "posts/thesis/research-direction.html#方法論興趣",
+    "href": "posts/thesis/research-direction.html#方法論興趣",
+    "title": "論文研究方向初探",
+    "section": "方法論興趣",
+    "text": "方法論興趣\n\nStaggered DiD\n近年 DiD 文獻的重大進展之一是處理交錯時序處理（staggered treatment adoption）的問題。\n傳統的 TWFE 在這種情況下可能給出有偏的估計，主要文獻包括：\n\nCallaway & Sant’Anna (2021, Journal of Econometrics)\nSun & Abraham (2021)\nRoth et al. (2023, Journal of Economic Literature)\n\n\n\nDouble Machine Learning\nDML 的核心思想是利用 Neyman 正交性（orthogonality）：\n\\[\\mathbb{E}[\\psi(W; \\theta_0, \\eta_0)] = 0\\]\n其中 \\(\\eta\\) 是 nuisance function（用 ML 方法估計），\\(\\theta\\) 是目標參數。\n好處：即使 \\(\\eta\\) 的估計有一階誤差，\\(\\theta\\) 的估計仍能達到參數速率。"
+  },
+  {
+    "objectID": "posts/thesis/research-direction.html#ra-工作",
+    "href": "posts/thesis/research-direction.html#ra-工作",
+    "title": "論文研究方向初探",
+    "section": "RA 工作",
+    "text": "RA 工作\n目前也在做 RA 工作，協助整理資料和文獻。這部分的工作讓我接觸到更多實際的資料清理問題。"
+  },
+  {
+    "objectID": "posts/thesis/research-direction.html#下一步",
+    "href": "posts/thesis/research-direction.html#下一步",
+    "title": "論文研究方向初探",
+    "section": "下一步",
+    "text": "下一步\n\n確定論文題目（方向：台灣的某個政策評估？）\n找到合適的資料來源\n決定識別策略\n開始文獻整理\n\n會陸續在這裡記錄進展。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-setup.html",
+    "href": "posts/ai-tools/claude-code-setup.html",
+    "title": "用 Claude Code 打造學術研究工作流程",
+    "section": "",
+    "text": "最近參考 Emory 大學計量經濟學教授 Pedro Sant’Anna 的 Claude Code 工作流程指南， 把自己的 Claude Code 環境重新整理了一番。\nSant’Anna 的研究方向（因果推論、DiD）和我非常接近，他分享的工作流程對計量研究者非常實用。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-setup.html#前言",
+    "href": "posts/ai-tools/claude-code-setup.html#前言",
+    "title": "用 Claude Code 打造學術研究工作流程",
+    "section": "",
+    "text": "最近參考 Emory 大學計量經濟學教授 Pedro Sant’Anna 的 Claude Code 工作流程指南， 把自己的 Claude Code 環境重新整理了一番。\nSant’Anna 的研究方向（因果推論、DiD）和我非常接近，他分享的工作流程對計量研究者非常實用。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-setup.html#安裝了什麼",
+    "href": "posts/ai-tools/claude-code-setup.html#安裝了什麼",
+    "title": "用 Claude Code 打造學術研究工作流程",
+    "section": "安裝了什麼",
+    "text": "安裝了什麼\n\nHooks（自動化腳本）\n安裝了 7 個背景自動執行的腳本：\n\n\n\nHook\n功能\n\n\n\n\ncontext-monitor.py\nContext 用量達 40/80/90% 時自動警告\n\n\npre-compact.py\n對話壓縮前自動保存工作狀態\n\n\nprotect-files.sh\n防止誤改重要設定檔\n\n\nverify-reminder.py\n寫完檔案後提醒確認輸出\n\n\n\n\n\n斜線指令（Slash Commands）\n安裝了 22 個 / 快捷指令，常用的有：\n\n/compile-latex — 三次完整 XeLaTeX 編譯\n/proofread — 學術寫作審查\n/lit-review — 系統性文獻搜尋\n/research-ideation — 研究問題發想\n/commit — 結構化 git 提交\n\n\n\nCLAUDE.md 個人設定\n最重要的設定是 ~/CLAUDE.md，讓 Claude 每次啟動都知道：\n\n我的研究方向（因果推論、Causal ML）\n數學符號慣例（\\(\\mathbb{E}[\\cdot]\\), \\(\\hat{\\theta}\\), DiD notation）\nLaTeX 設定（xeCJK、CambridgeUS 主題）"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-setup.html#實際使用心得",
+    "href": "posts/ai-tools/claude-code-setup.html#實際使用心得",
+    "title": "用 Claude Code 打造學術研究工作流程",
+    "section": "實際使用心得",
+    "text": "實際使用心得\n\n做 Beamer 投影片\n以前手動寫 Beamer 很花時間，現在的工作流程是：\n\n把 PDF 教科書丟給 Claude 讀\n說明想做哪個章節的投影片\nClaude 自動根據內容寫出結構完整的 .tex\n/compile-latex 編譯\n/proofread 檢查\n\n整個流程大概 15-20 分鐘，比以前快了很多。\n\n\nContext Window 管理\n這是使用 LLM 最大的限制。當對話太長，Claude 會「忘記」前面說的事。\n解決方法：\n\n定期用 /context-status 查看用量\n接近 80% 時用 /learn 把重要規則存成持久記憶\n善用 CLAUDE.md 讓每次對話都有基本背景"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-setup.html#結論",
+    "href": "posts/ai-tools/claude-code-setup.html#結論",
+    "title": "用 Claude Code 打造學術研究工作流程",
+    "section": "結論",
+    "text": "結論\n對計量研究者來說，Claude Code 最有用的地方是：\n\nLaTeX 自動化：Beamer 投影片、數學推導\n文獻整理：系統性搜尋、BibTeX 輸出\nR 程式碼審查：確保可重現性、程式碼品質\n\n完整的設定方式可以參考 Sant’Anna 的 原始 repo。"
+  },
+  {
+    "objectID": "posts/ai-tools/index.html",
+    "href": "posts/ai-tools/index.html",
+    "title": "AI 工具",
+    "section": "",
+    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n\nClaude Code\n\n工作流程\n\n工具設定\n\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/thesis/index.html",
+    "href": "posts/thesis/index.html",
+    "title": "我的論文",
+    "section": "",
+    "text": "記錄論文研究過程的思考與心得。\n研究方向包含因果推論、政策評估、勞動經濟學。\n\n\n\n\n\n\n\n\n\n\n\n論文研究方向初探\n\n\n\n論文\n\n因果推論\n\n研究計畫\n\n\n\n整理目前的研究方向、感興趣的識別策略、以及下一步計畫\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/causalml/index.html",
+    "href": "posts/causalml/index.html",
+    "title": "Causal ML 閱讀筆記",
+    "section": "",
+    "text": "Chernozhukov, Hansen, Kallus, Spindler, Syrgkanis (2024) Causal Machine Learning 的閱讀筆記。\n涵蓋 Trees、Random Forests、Boosting、Neural Networks、Learning Guarantees 等章節。\n\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\n\nNeural Networks\n\nCausal ML\n\n第8章\n\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "關於我",
+    "section": "",
+    "text": "國立臺灣大學經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
+  },
+  {
+    "objectID": "about.html#sheng-yuan-chen陳聖元",
+    "href": "about.html#sheng-yuan-chen陳聖元",
+    "title": "關於我",
+    "section": "",
+    "text": "國立臺灣大學經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nDifference-in-Differences：staggered adoption、Callaway & Sant’Anna 方法\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
+  },
+  {
+    "objectID": "about.html#這個部落格",
+    "href": "about.html#這個部落格",
+    "title": "關於我",
+    "section": "這個部落格",
+    "text": "這個部落格\n這裡紀錄我在研究所學習過程中的三個面向：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📄 我的論文\n論文進展、文獻閱讀、研究方法選擇\n\n\n📚 Causal ML 筆記\nChernozhukov et al. Causal ML 章節筆記"
+  },
+  {
+    "objectID": "about.html#學術背景",
+    "href": "about.html#學術背景",
+    "title": "關於我",
+    "section": "學術背景",
+    "text": "學術背景\n\n碩士：國立臺灣大學 經濟學研究所（在學中）\n研究助理：Jauer 教授研究團隊\n主要工具：R、Python、LaTeX/Beamer、Git"
   }
 ]

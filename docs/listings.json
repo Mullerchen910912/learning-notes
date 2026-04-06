@@ -1,8 +1,16 @@
 [
   {
-    "listing": "/posts/causalml/index.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/ai-tools/claude-code-setup.html",
+      "/posts/thesis/research-direction.html",
       "/posts/causalml/ch8-neural-networks.html"
+    ]
+  },
+  {
+    "listing": "/posts/ai-tools/index.html",
+    "items": [
+      "/posts/ai-tools/claude-code-setup.html"
     ]
   },
   {
@@ -12,9 +20,9 @@
     ]
   },
   {
-    "listing": "/posts/ai-tools/index.html",
+    "listing": "/posts/causalml/index.html",
     "items": [
-      "/posts/ai-tools/claude-code-setup.html"
+      "/posts/causalml/ch8-neural-networks.html"
     ]
   }
 ]

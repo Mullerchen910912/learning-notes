@@ -13,7 +13,7 @@ listing:
     sort: "date desc"
     max-items: 6
     type: default
-    fields: [date, title, description, categories]
+    fields: [date, title, description]
     date-format: "YYYY-MM-DD"
 ---
 

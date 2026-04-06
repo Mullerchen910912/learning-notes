@@ -19,7 +19,7 @@ about:
 
 研究興趣圍繞**因果推論**（Causal Inference）與**計量方法**，特別關注：
 
-- **Difference-in-Differences**：staggered adoption、Callaway & Sant'Anna 方法
+
 - **Causal Machine Learning**：Double/Debiased ML、Neyman orthogonality
 - **政策評估**：勞動市場、教育政策
 

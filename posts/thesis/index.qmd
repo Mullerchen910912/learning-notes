@@ -1,0 +1,16 @@
+---
+title: "我的論文"
+subtitle: "論文寫作過程、文獻整理、研究方法"
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: grid
+  categories: true
+  fields: [title, date, description, categories]
+page-layout: full
+toc: false
+---
+
+記錄論文研究過程的思考與心得。
+
+研究方向包含因果推論、政策評估、勞動經濟學。

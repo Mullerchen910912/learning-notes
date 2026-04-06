@@ -1,0 +1,16 @@
+---
+title: "AI 工具"
+subtitle: "Claude Code、LLM 工具使用心得與技巧"
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: grid
+  categories: true
+  fields: [title, date, description, categories]
+page-layout: full
+toc: false
+---
+
+記錄使用 AI 工具輔助研究、寫作、程式設計的心得。
+
+包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。

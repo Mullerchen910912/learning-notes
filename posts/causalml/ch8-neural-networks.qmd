@@ -1,0 +1,112 @@
+---
+title: "Ch.8 Deep Neural Networks and Multitask Learning"
+date: "2026-04-06"
+description: "Causal ML 第 8 章：深度神經網路架構、多任務學習、學習保證"
+categories: [Neural Networks, Causal ML, 第8章]
+---
+
+## 本章架構
+
+第 8 章討論三個主題：
+
+1. **Trees / Random Forests / Boosting**（8.1–8.2）
+2. **Deep Neural Networks**（8.3）
+3. **Learning Guarantees**（8.4）
+
+本篇筆記主要整理 8.3 節的神經網路部分。
+
+---
+
+## 8.3 Deep Neural Networks
+
+### 單層網路：自動特徵工程
+
+最基本的神經網路是單層結構，預測函數為：
+
+$$\hat{g}(Z) := \sum_{m=1}^{M} \hat{\beta}_m \, \sigma(\hat{\alpha}_m' Z)$$
+
+其中：
+
+- $Z \in \mathbb{R}^d$：輸入向量
+- $\alpha_m$：決定第 $m$ 個神經元「形狀」的權重
+- $\sigma(\cdot)$：激活函數（ReLU、Sigmoid、Softplus 等）
+- $\beta_m$：輸出層係數
+
+**直覺：** 模型「學習」最佳的非線性轉換，不需要研究者手動指定函數形式。
+
+### 深度神經網路（DNN）
+
+多層結構的前向傳播：
+
+$$H^{(l)} := \sigma_l \left( W^{(l)} H^{(l-1)} + b^{(l)} \right), \quad l = 1, \dots, m$$
+
+- $H^{(0)} = Z$：原始輸入
+- $W^{(l)} \in \mathbb{R}^{K_l \times K_{l-1}}$：第 $l$ 層權重矩陣
+- $b^{(l)} \in \mathbb{R}^{K_l}$：偏差向量
+- **深度（depth）$m$**：隱藏層數
+- **寬度（width）$K_l$**：第 $l$ 層的神經元數
+
+### 表徵學習（Representation Learning）
+
+DNN 的核心洞見：最後一個隱藏層 $H^{(m)}(Z)$ 是從原始輸入**學習到的嵌入（embedding）**。
+
+輸出層在這個表徵上做線性組合：
+
+$$\hat{g}(Z) := (w^{out})' H^{(m)} + b^{out}$$
+
+模型的彈性來自隱藏層的**反覆非線性組合**，不是最後的線性組合。
+
+---
+
+## 多任務學習（Multitask Learning）
+
+在 Causal ML 中特別有用，因為我們需要同時估計多個 nuisance function。
+
+共享同一個 backbone，各任務有自己的輸出頭：
+
+$$\hat{g}_t(Z) := \sigma_{out,t} \left( (w^{(t)})' H^{(m)} + b^{(t)} \right)$$
+
+**計量應用：**
+
+- Task 1（$Y^1 = Y$）：結果模型 $\mathbb{E}[Y | Z]$
+- Task 2（$Y^2 = D$）：處理模型 $\mathbb{E}[D | Z]$（傾向分數）
+
+**優點：** 共享特徵學習能改善正則化，特別是兩個任務相關時。
+
+---
+
+## 8.4 Learning Guarantees
+
+### Assumption 8.4.1（非參數稀疏性）
+
+$$g(Z) = f(Z_S), \quad |S| = r \ll d$$
+
+真實函數只依賴 $r$ 個相關特徵，而非全部 $d$ 個。
+
+### Theorem 8.4.3（DNN 收斂速率）
+
+深度神經網路的收斂速率由**有效維度**決定：
+
+$$s = \max_j \, n^{t_j / (2\beta_j + t_j)}$$
+
+此速率克服了傳統非參數方法的維度詛咒，因為 DNN 能利用**組合稀疏性（Compositional Sparsity）**。
+
+---
+
+## 個人心得
+
+**為什麼計量學家用 Shallow 而非 Deep？**
+
+書中提到一個實際上的觀察：對於 **tabular data**（一般經濟資料），
+較**淺但較寬**的網路往往優於深層網路。
+
+這可能是因為：
+1. 經濟資料的樣本量通常遠小於影像/文字資料
+2. 過多層數在小樣本下容易過擬合
+3. DML 框架對 nuisance function 的要求是「夠好」，不需要最先進的模型
+
+---
+
+## 投影片
+
+這一章的 Beamer 投影片（19 頁）已放在 [NTU-ECON repo](https://github.com/Mullerchen910912/NTU-ECON)。

@@ -1,0 +1,17 @@
+---
+title: "Causal ML 閱讀筆記"
+subtitle: "Chernozhukov et al. Causal Machine Learning 逐章筆記"
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: grid
+  categories: true
+  fields: [title, date, description, categories]
+page-layout: full
+toc: false
+---
+
+Chernozhukov, Hansen, Kallus, Spindler, Syrgkanis (2024)
+*Causal Machine Learning* 的閱讀筆記。
+
+涵蓋 Trees、Random Forests、Boosting、Neural Networks、Learning Guarantees 等章節。

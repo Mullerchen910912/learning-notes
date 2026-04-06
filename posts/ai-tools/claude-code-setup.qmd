@@ -1,0 +1,78 @@
+---
+title: "用 Claude Code 打造學術研究工作流程"
+date: "2026-04-06"
+description: "如何根據 Pedro Sant'Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境"
+categories: [Claude Code, 工作流程, 工具設定]
+---
+
+## 前言
+
+最近參考 Emory 大學計量經濟學教授 Pedro Sant'Anna 的 [Claude Code 工作流程指南](https://psantanna.com/claude-code-my-workflow/workflow-guide.html)，
+把自己的 Claude Code 環境重新整理了一番。
+
+Sant'Anna 的研究方向（因果推論、DiD）和我非常接近，他分享的工作流程對計量研究者非常實用。
+
+## 安裝了什麼
+
+### Hooks（自動化腳本）
+
+安裝了 7 個背景自動執行的腳本：
+
+| Hook | 功能 |
+|------|------|
+| `context-monitor.py` | Context 用量達 40/80/90% 時自動警告 |
+| `pre-compact.py` | 對話壓縮前自動保存工作狀態 |
+| `protect-files.sh` | 防止誤改重要設定檔 |
+| `verify-reminder.py` | 寫完檔案後提醒確認輸出 |
+
+### 斜線指令（Slash Commands）
+
+安裝了 22 個 `/` 快捷指令，常用的有：
+
+- `/compile-latex` — 三次完整 XeLaTeX 編譯
+- `/proofread` — 學術寫作審查
+- `/lit-review` — 系統性文獻搜尋
+- `/research-ideation` — 研究問題發想
+- `/commit` — 結構化 git 提交
+
+### CLAUDE.md 個人設定
+
+最重要的設定是 `~/CLAUDE.md`，讓 Claude 每次啟動都知道：
+
+- 我的研究方向（因果推論、Causal ML）
+- 數學符號慣例（$\mathbb{E}[\cdot]$, $\hat{\theta}$, DiD notation）
+- LaTeX 設定（xeCJK、CambridgeUS 主題）
+
+## 實際使用心得
+
+### 做 Beamer 投影片
+
+以前手動寫 Beamer 很花時間，現在的工作流程是：
+
+1. 把 PDF 教科書丟給 Claude 讀
+2. 說明想做哪個章節的投影片
+3. Claude 自動根據內容寫出結構完整的 `.tex`
+4. `/compile-latex` 編譯
+5. `/proofread` 檢查
+
+整個流程大概 15-20 分鐘，比以前快了很多。
+
+### Context Window 管理
+
+這是使用 LLM 最大的限制。當對話太長，Claude 會「忘記」前面說的事。
+
+解決方法：
+
+- 定期用 `/context-status` 查看用量
+- 接近 80% 時用 `/learn` 把重要規則存成持久記憶
+- 善用 `CLAUDE.md` 讓每次對話都有基本背景
+
+## 結論
+
+對計量研究者來說，Claude Code 最有用的地方是：
+
+1. **LaTeX 自動化**：Beamer 投影片、數學推導
+2. **文獻整理**：系統性搜尋、BibTeX 輸出
+3. **R 程式碼審查**：確保可重現性、程式碼品質
+
+完整的設定方式可以參考 Sant'Anna 的 [原始 repo](https://github.com/pedrohcgs/claude-code-my-workflow)。

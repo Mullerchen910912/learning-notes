@@ -1,0 +1,38 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Sheng-Yuan's Learning Notes"
+  description: "AI 工具・論文研究・Causal ML 閱讀筆記"
+  navbar:
+    left:
+      - text: "首頁"
+        href: index.qmd
+      - text: "AI 工具"
+        href: posts/ai-tools/index.qmd
+      - text: "我的論文"
+        href: posts/thesis/index.qmd
+      - text: "Causal ML 筆記"
+        href: posts/causalml/index.qmd
+    right:
+      - icon: github
+        href: https://github.com/Mullerchen910912
+  page-footer:
+    center: "© 2026 Sheng-Yuan Chen · NTU Economics"
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    highlight-style: github
+    code-fold: true
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    mainfont: "Noto Sans TC, sans-serif"
+    css: styles.css
+
+execute:
+  freeze: auto

@@ -1,0 +1,20 @@
+[
+  {
+    "listing": "/posts/ai-tools/index.html",
+    "items": [
+      "/posts/ai-tools/claude-code-setup.html"
+    ]
+  },
+  {
+    "listing": "/posts/thesis/index.html",
+    "items": [
+      "/posts/thesis/research-direction.html"
+    ]
+  },
+  {
+    "listing": "/posts/causalml/index.html",
+    "items": [
+      "/posts/causalml/ch8-neural-networks.html"
+    ]
+  }
+]

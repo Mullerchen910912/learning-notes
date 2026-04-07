@@ -6,8 +6,7 @@ toc: false
 listing:
   - id: recent-posts
     contents:
-      - posts/ai-tools/*.qmd
-      - posts/causalml/*.qmd
+      - posts/**/*.qmd
     exclude:
       filename: "index.qmd"
     sort: "date desc"

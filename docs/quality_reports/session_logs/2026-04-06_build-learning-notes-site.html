@@ -304,6 +304,16 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#completed-this-session" id="toc-completed-this-session" class="nav-link" data-scroll-target="#completed-this-session">Completed This Session</a></li>
   <li><a href="#next-step" id="toc-next-step" class="nav-link" data-scroll-target="#next-step">Next Step</a></li>
   </ul></li>
+  <li><a href="#session-log-2026-04-06-continued-2026-04-07" id="toc-session-log-2026-04-06-continued-2026-04-07" class="nav-link" data-scroll-target="#session-log-2026-04-06-continued-2026-04-07">Session Log — 2026-04-06 (continued) + 2026-04-07</a>
+  <ul class="collapse">
+  <li><a href="#goal-1" id="toc-goal-1" class="nav-link" data-scroll-target="#goal-1">Goal</a></li>
+  <li><a href="#completed" id="toc-completed" class="nav-link" data-scroll-target="#completed">Completed</a>
+  <ul class="collapse">
+  <li><a href="#website-updates-2026-04-06" id="toc-website-updates-2026-04-06" class="nav-link" data-scroll-target="#website-updates-2026-04-06">Website updates (2026-04-06)</a></li>
+  <li><a href="#research-project-setup-taiwan-ssm-innovation" id="toc-research-project-setup-taiwan-ssm-innovation" class="nav-link" data-scroll-target="#research-project-setup-taiwan-ssm-innovation">Research project setup: Taiwan SSM × Innovation</a></li>
+  </ul></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next Steps</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -339,6 +349,108 @@ ul.task-list li input[type="checkbox"] {
 <li>User to generate new PAT token</li>
 <li>Push and enable GitHub Pages (source: <code>docs/</code> folder)</li>
 </ul>
+<hr>
+</section>
+</section>
+<section id="session-log-2026-04-06-continued-2026-04-07" class="level1">
+<h1>Session Log — 2026-04-06 (continued) + 2026-04-07</h1>
+<section id="goal-1" class="level2">
+<h2 class="anchored" data-anchor-id="goal-1">Goal</h2>
+<p>Taiwan Same-Sex Marriage &amp; Innovation — Synthetic Control research project setup</p>
+</section>
+<section id="completed" class="level2">
+<h2 class="anchored" data-anchor-id="completed">Completed</h2>
+<section id="website-updates-2026-04-06" class="level3">
+<h3 class="anchored" data-anchor-id="website-updates-2026-04-06">Website updates (2026-04-06)</h3>
+<ul>
+<li>Renamed site to “Muller Chen Blog”</li>
+<li>Added homepage auto-listing for recent posts</li>
+<li>Created About page (anonymous — “Muller”)</li>
+<li>Removed 論文 section, removed categories display</li>
+<li>Renamed “Causal ML 筆記” → “Causal Inference and Econometrics”</li>
+<li>Removed three-topic card grid from homepage</li>
+<li>Anonymized all real name mentions across .qmd and .yml files</li>
+</ul>
+</section>
+<section id="research-project-setup-taiwan-ssm-innovation" class="level3">
+<h3 class="anchored" data-anchor-id="research-project-setup-taiwan-ssm-innovation">Research project setup: Taiwan SSM × Innovation</h3>
+<p><strong>Location:</strong> <code>~/Desktop/NTU_ECON/Course/LaborEcon/SSM_Taiwan_SC/</code></p>
+<p><strong>Folder structure created:</strong></p>
+<pre><code>SSM_Taiwan_SC/
+├── papers/    ← Awad &amp; McCluskey 2024, Trandafir 2014
+├── data/raw/  ← all raw data files
+├── data/processed/
+├── code/      ← 01_prepare_data.R, 02_synthetic_control.R
+├── output/figures/ output/tables/
+└── notes/     ← data_sources.md</code></pre>
+<p><strong>Data downloaded (2026-04-06 ~ 2026-04-07):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Source</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>patent_total_donors.csv</code></td>
+<td>World Bank API (RESD+NRES)</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><code>gdp_per_capita.csv</code></td>
+<td>World Bank API</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td><code>rd_expenditure_pct_gdp.csv</code></td>
+<td>World Bank API</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><code>gdp_total.csv</code></td>
+<td>World Bank API</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td><code>fdi_inflows.csv</code></td>
+<td>World Bank API</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><code>taiwan_patents_MANUAL.csv</code></td>
+<td>TIPO 統計年報 (PDF)</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td><code>taiwan_gdp_pc_IMF.csv</code></td>
+<td>IMF WEO API</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><code>taiwan_rd_pct_gdp_MANUAL.csv</code></td>
+<td>NSTC 科學技術統計要覽</td>
+<td>⚠️ 需對照官方確認</td>
+</tr>
+</tbody>
+</table>
+<p><strong>R scripts written:</strong> - <code>01_prepare_data.R</code> — merges all data into panel, saves <code>data/processed/panel_2000_2023.csv</code> - <code>02_synthetic_control.R</code> — runs SC using <code>tidysynth</code>, outputs 4 figures + MSPE table</p>
+<p><strong>Data sources documented:</strong> <code>notes/data_sources.md</code></p>
+</section>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
+<ol type="1">
+<li>Run <code>01_prepare_data.R</code> to merge panel</li>
+<li>Run <code>02_synthetic_control.R</code> to get SC results</li>
+<li>Verify <code>taiwan_rd_pct_gdp_MANUAL.csv</code> against official NSTC yearbook</li>
+</ol>
 
 
 </section>

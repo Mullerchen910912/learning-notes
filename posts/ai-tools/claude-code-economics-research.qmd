@@ -1,0 +1,220 @@
+---
+title: "如何使用 Claude Code 進行經濟學研究"
+date: "2026-04-07"
+description: "介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。"
+categories: [ai-tools, Claude Code, R, 研究方法]
+draft: false
+---
+
+## 前言
+
+經濟學研究的日常充滿繁瑣的資料處理工作：從各種 API 抓資料、清理格式、合併 panel、寫回歸、除錯——這些步驟耗時，卻不一定是真正產生學術價值的地方。
+
+**Claude Code** 是 Anthropic 推出的 AI 程式助理，可以直接在終端機或 VS Code 裡運作，讀取、撰寫和執行程式碼。本文以一個真實的研究專案（台灣同婚合法化 × 創新產出：合成控制法分析）為例，示範如何用 Claude Code 加速資料整理流程。
+
+---
+
+## 一、安裝與基本設定
+
+### 安裝 Claude Code
+
+Claude Code 透過 npm 安裝，需要 Node.js 18+：
+
+```bash
+# 確認 Node.js 版本
+node --version
+
+# 安裝 Claude Code CLI
+npm install -g @anthropic-ai/claude-code
+
+# 啟動（在專案資料夾內執行）
+claude
+```
+
+### 設定專案記憶（CLAUDE.md）
+
+在專案根目錄建立 `CLAUDE.md`，告訴 Claude Code 這個專案的基本規則：
+
+```markdown
+# 專案規則
+
+- 語言：R，使用 tidyverse 風格
+- 路徑：用 here::here()，不用 setwd()
+- 種子：每個 script 開頭 set.seed(42)
+- 輸出：圖片存 output/figures/，處理後資料存 data/processed/
+```
+
+這樣每次開啟專案，Claude Code 都會自動遵守這些規則，不需要重複說明。
+
+### 建立專案資料夾結構
+
+直接用對話指示 Claude Code 建立完整資料夾：
+
+```
+幫我建立一個合成控制研究的資料夾，
+包含：data/raw/、data/processed/、code/、output/figures/、output/tables/、notes/
+```
+
+Claude Code 會自動執行 `mkdir -p` 建好所有資料夾。
+
+---
+
+## 二、資料下載與整理
+
+### 從 World Bank API 下載資料
+
+World Bank 提供免費 REST API，可以直接在 R 裡呼叫。
+以下範例下載日本、韓國等國家的專利申請數：
+
+```r
+# 載入套件
+library(tidyverse)
+library(jsonlite)  # 解析 JSON 回傳值
+
+# 定義下載函數
+# 輸入：國家 ISO3 代碼、World Bank 指標代號
+# 輸出：整理好的 tibble（country, year, value）
+fetch_wb <- function(iso3, indicator) {
+  url <- paste0(
+    "https://api.worldbank.org/v2/country/", iso3,
+    "/indicator/", indicator,
+    "?date=2000:2023&format=json&per_page=1000"
+  )
+  raw <- fromJSON(url)
+  raw[[2]] |>
+    select(date, value) |>
+    mutate(iso3 = iso3, year = as.integer(date)) |>
+    select(iso3, year, value)
+}
+
+# 下載 7 個捐贈國的本國人專利申請數（IP.PAT.RESD）
+countries <- c("JPN", "KOR", "HKG", "SGP", "THA", "PHL", "IDN")
+
+patent_resd <- map_dfr(countries, ~fetch_wb(.x, "IP.PAT.RESD"))
+patent_nres <- map_dfr(countries, ~fetch_wb(.x, "IP.PAT.NRES"))
+
+# 計算總申請數（本國人 + 外國人），與台灣 TIPO 定義一致
+patent_total <- left_join(patent_resd, patent_nres,
+                          by = c("iso3", "year"),
+                          suffix = c("_resd", "_nres")) |>
+  mutate(total = value_resd + value_nres) |>
+  select(iso3, year, total)
+```
+
+> **注意**：台灣不是 World Bank 成員，需要改用 IMF API 或手動填入。
+> 遇到這類問題時，直接告訴 Claude Code「台灣不在 World Bank，幫我改用 IMF WEO API」，它會自動找替代方案。
+
+### 從 IMF API 下載台灣資料
+
+```r
+# IMF WEO API 格式與 World Bank 不同
+# 指標 NGDPDPC = GDP per capita (現價美元)
+library(jsonlite)
+
+fetch_imf <- function(indicator, iso3) {
+  url <- paste0(
+    "https://www.imf.org/external/datamapper/api/v1/",
+    indicator, "/", iso3
+  )
+  raw <- fromJSON(url)
+
+  # 解析 IMF 的巢狀 JSON 結構
+  values <- raw$values[[indicator]][[iso3]]
+  tibble(
+    iso3  = iso3,
+    year  = as.integer(names(values)),
+    value = as.numeric(values)
+  )
+}
+
+# 下載台灣 GDP per capita
+twn_gdp <- fetch_imf("NGDPDPC", "TWN") |>
+  filter(year >= 2000, year <= 2023) |>
+  rename(gdp_pc_usd = value)
+```
+
+### 處理手動填入的資料（CSV + 注解行）
+
+有些資料（例如 TIPO 統計年報的 PDF）必須手動整理成 CSV。
+為了讓 CSV 本身就能說明來源，可以在裡面加 `#` 注解行：
+
+```
+# 資料來源：TIPO 統計年報（民國 104 年報 + 最新統計表）
+# 變數：新申請件數（本國人＋外國人）
+# ⚠️ 發表前請對照官方 PDF 驗證
+country,iso3,year,value
+Chinese Taipei,TWN,2000,61231
+Chinese Taipei,TWN,2001,67860
+```
+
+讀取時用 `comment = "#"` 自動略過注解：
+
+```r
+# comment = "#" 讓 readr 略過以 # 開頭的說明行
+taiwan_raw <- read_csv("taiwan_patents_MANUAL.csv",
+                       comment = "#",
+                       show_col_types = FALSE)
+```
+
+---
+
+## 三、讓 Claude Code 除錯
+
+資料整理最常見的問題之一是路徑錯誤。例如 `here::here()` 找不到專案根目錄，
+會出現類似這樣的錯誤：
+
+```
+Error: '/Users/xxx/Desktop/NTU_ECON/data/raw/patent_total.csv' does not exist.
+```
+
+這時直接把錯誤訊息貼給 Claude Code，它會自動診斷根本原因（這個案例是缺少 `.here` 檔案）並修正：
+
+```bash
+# Claude Code 自動執行的修正
+touch ~/Desktop/NTU_ECON/Course/LaborEcon/SSM_Taiwan_SC/.here
+```
+
+另一個常見問題是台灣的資料合併後出現 NA。
+貼上 `summary(panel)` 的輸出，Claude Code 會發現 GDP 和 R&D 資料沒有針對台灣載入，
+並自動補上對應的 `bind_rows()` 和 `left_join()` 邏輯。
+
+---
+
+## 四、實際效益
+
+以這個研究專案為例，使用 Claude Code 之後的變化：
+
+| 任務 | 沒有 AI | 有 Claude Code |
+|------|---------|---------------|
+| 建資料夾結構 | 手動 mkdir，約 5 分鐘 | 一句話，< 30 秒 |
+| 寫 World Bank API 下載函數 | 查文件 + 測試，約 30 分鐘 | 約 3 分鐘 |
+| 除錯路徑錯誤 | 查 `here` 文件，約 15 分鐘 | 貼錯誤訊息，< 2 分鐘 |
+| 補齊台灣 GDP / R&D 資料 | 找替代來源 + 寫程式，約 1 小時 | 約 10 分鐘 |
+| 寫程式碼說明 | 每段手寫，約 20 分鐘 | 一次生成，< 1 分鐘 |
+
+---
+
+## 五、實用提示
+
+**給 Claude Code 清楚的指令**：不要只說「幫我整理資料」，要說「幫我把 `patent_resd` 和 `patent_nres` 以 iso3 + year 為鍵值合併，計算 total，存成 `patent_total_donors.csv`」。
+
+**讓 Claude Code 記住規則**：重要的規則寫進 `CLAUDE.md`（例如「每段程式都要有注解」），就不用每次重複說。
+
+**貼完整的錯誤訊息**：除錯時把整段 error message 貼進去，包含 traceback，Claude Code 才能定位問題。
+
+**分段確認**：複雜流程（例如從下載到合併到分析）可以分段執行，每段確認結果正確後再繼續，避免錯誤累積。
+
+---
+
+## 小結
+
+| 使用場景 | Claude Code 的角色 |
+|----------|-------------------|
+| 建立專案結構 | 自動建資料夾、初始化 `.here`、`CLAUDE.md` |
+| 資料下載 | 撰寫 API 呼叫函數（World Bank、IMF） |
+| 資料整理 | 撰寫 `dplyr` pipeline，處理合併、清理 |
+| 除錯 | 診斷錯誤訊息，提出修正方案 |
+| 文件化 | 為每段程式碼加注解，撰寫 `data_sources.md` |
+
+Claude Code 最大的優勢不是「取代你思考」，而是**大幅降低繁瑣實作的時間成本**，
+讓你可以把更多精力放在真正重要的事：研究設計、結果詮釋、論文撰寫。

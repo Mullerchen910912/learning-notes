@@ -60,7 +60,7 @@
     "href": "index.html#最新文章",
     "title": "Muller Chen Blog",
     "section": "最新文章",
-    "text": "最新文章\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items"
+    "text": "最新文章\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -221,7 +221,7 @@
     "href": "posts/ai-tools/index.html",
     "title": "AI 工具",
     "section": "",
-    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/index.html",
@@ -257,5 +257,61 @@
     "title": "關於我",
     "section": "主要工具",
     "text": "主要工具\nR、Python、LaTeX/Beamer、Git"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html",
+    "href": "posts/ai-tools/claude-code-economics-research.html",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "",
+    "text": "經濟學研究的日常充滿繁瑣的資料處理工作：從各種 API 抓資料、清理格式、合併 panel、寫回歸、除錯——這些步驟耗時，卻不一定是真正產生學術價值的地方。\nClaude Code 是 Anthropic 推出的 AI 程式助理，可以直接在終端機或 VS Code 裡運作，讀取、撰寫和執行程式碼。本文以一個真實的研究專案（台灣同婚合法化 × 創新產出：合成控制法分析）為例，示範如何用 Claude Code 加速資料整理流程。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#前言",
+    "href": "posts/ai-tools/claude-code-economics-research.html#前言",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "",
+    "text": "經濟學研究的日常充滿繁瑣的資料處理工作：從各種 API 抓資料、清理格式、合併 panel、寫回歸、除錯——這些步驟耗時，卻不一定是真正產生學術價值的地方。\nClaude Code 是 Anthropic 推出的 AI 程式助理，可以直接在終端機或 VS Code 裡運作，讀取、撰寫和執行程式碼。本文以一個真實的研究專案（台灣同婚合法化 × 創新產出：合成控制法分析）為例，示範如何用 Claude Code 加速資料整理流程。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#一安裝與基本設定",
+    "href": "posts/ai-tools/claude-code-economics-research.html#一安裝與基本設定",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "一、安裝與基本設定",
+    "text": "一、安裝與基本設定\n\n安裝 Claude Code\nClaude Code 透過 npm 安裝，需要 Node.js 18+：\n# 確認 Node.js 版本\nnode --version\n\n# 安裝 Claude Code CLI\nnpm install -g @anthropic-ai/claude-code\n\n# 啟動（在專案資料夾內執行）\nclaude\n\n\n設定專案記憶（CLAUDE.md）\n在專案根目錄建立 CLAUDE.md，告訴 Claude Code 這個專案的基本規則：\n# 專案規則\n\n- 語言：R，使用 tidyverse 風格\n- 路徑：用 here::here()，不用 setwd()\n- 種子：每個 script 開頭 set.seed(42)\n- 輸出：圖片存 output/figures/，處理後資料存 data/processed/\n這樣每次開啟專案，Claude Code 都會自動遵守這些規則，不需要重複說明。\n\n\n建立專案資料夾結構\n直接用對話指示 Claude Code 建立完整資料夾：\n幫我建立一個合成控制研究的資料夾，\n包含：data/raw/、data/processed/、code/、output/figures/、output/tables/、notes/\nClaude Code 會自動執行 mkdir -p 建好所有資料夾。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#二資料下載與整理",
+    "href": "posts/ai-tools/claude-code-economics-research.html#二資料下載與整理",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "二、資料下載與整理",
+    "text": "二、資料下載與整理\n\n從 World Bank API 下載資料\nWorld Bank 提供免費 REST API，可以直接在 R 裡呼叫。 以下範例下載日本、韓國等國家的專利申請數：\n# 載入套件\nlibrary(tidyverse)\nlibrary(jsonlite)  # 解析 JSON 回傳值\n\n# 定義下載函數\n# 輸入：國家 ISO3 代碼、World Bank 指標代號\n# 輸出：整理好的 tibble（country, year, value）\nfetch_wb &lt;- function(iso3, indicator) {\n  url &lt;- paste0(\n    \"https://api.worldbank.org/v2/country/\", iso3,\n    \"/indicator/\", indicator,\n    \"?date=2000:2023&format=json&per_page=1000\"\n  )\n  raw &lt;- fromJSON(url)\n  raw[[2]] |&gt;\n    select(date, value) |&gt;\n    mutate(iso3 = iso3, year = as.integer(date)) |&gt;\n    select(iso3, year, value)\n}\n\n# 下載 7 個捐贈國的本國人專利申請數（IP.PAT.RESD）\ncountries &lt;- c(\"JPN\", \"KOR\", \"HKG\", \"SGP\", \"THA\", \"PHL\", \"IDN\")\n\npatent_resd &lt;- map_dfr(countries, ~fetch_wb(.x, \"IP.PAT.RESD\"))\npatent_nres &lt;- map_dfr(countries, ~fetch_wb(.x, \"IP.PAT.NRES\"))\n\n# 計算總申請數（本國人 + 外國人），與台灣 TIPO 定義一致\npatent_total &lt;- left_join(patent_resd, patent_nres,\n                          by = c(\"iso3\", \"year\"),\n                          suffix = c(\"_resd\", \"_nres\")) |&gt;\n  mutate(total = value_resd + value_nres) |&gt;\n  select(iso3, year, total)\n\n注意：台灣不是 World Bank 成員，需要改用 IMF API 或手動填入。 遇到這類問題時，直接告訴 Claude Code「台灣不在 World Bank，幫我改用 IMF WEO API」，它會自動找替代方案。\n\n\n\n從 IMF API 下載台灣資料\n# IMF WEO API 格式與 World Bank 不同\n# 指標 NGDPDPC = GDP per capita (現價美元)\nlibrary(jsonlite)\n\nfetch_imf &lt;- function(indicator, iso3) {\n  url &lt;- paste0(\n    \"https://www.imf.org/external/datamapper/api/v1/\",\n    indicator, \"/\", iso3\n  )\n  raw &lt;- fromJSON(url)\n\n  # 解析 IMF 的巢狀 JSON 結構\n  values &lt;- raw$values[[indicator]][[iso3]]\n  tibble(\n    iso3  = iso3,\n    year  = as.integer(names(values)),\n    value = as.numeric(values)\n  )\n}\n\n# 下載台灣 GDP per capita\ntwn_gdp &lt;- fetch_imf(\"NGDPDPC\", \"TWN\") |&gt;\n  filter(year &gt;= 2000, year &lt;= 2023) |&gt;\n  rename(gdp_pc_usd = value)\n\n\n處理手動填入的資料（CSV + 注解行）\n有些資料（例如 TIPO 統計年報的 PDF）必須手動整理成 CSV。 為了讓 CSV 本身就能說明來源，可以在裡面加 # 注解行：\n# 資料來源：TIPO 統計年報（民國 104 年報 + 最新統計表）\n# 變數：新申請件數（本國人＋外國人）\n# ⚠️ 發表前請對照官方 PDF 驗證\ncountry,iso3,year,value\nChinese Taipei,TWN,2000,61231\nChinese Taipei,TWN,2001,67860\n讀取時用 comment = \"#\" 自動略過注解：\n# comment = \"#\" 讓 readr 略過以 # 開頭的說明行\ntaiwan_raw &lt;- read_csv(\"taiwan_patents_MANUAL.csv\",\n                       comment = \"#\",\n                       show_col_types = FALSE)"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#三讓-claude-code-除錯",
+    "href": "posts/ai-tools/claude-code-economics-research.html#三讓-claude-code-除錯",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "三、讓 Claude Code 除錯",
+    "text": "三、讓 Claude Code 除錯\n資料整理最常見的問題之一是路徑錯誤。例如 here::here() 找不到專案根目錄， 會出現類似這樣的錯誤：\nError: '/Users/xxx/Desktop/NTU_ECON/data/raw/patent_total.csv' does not exist.\n這時直接把錯誤訊息貼給 Claude Code，它會自動診斷根本原因（這個案例是缺少 .here 檔案）並修正：\n# Claude Code 自動執行的修正\ntouch ~/Desktop/NTU_ECON/Course/LaborEcon/SSM_Taiwan_SC/.here\n另一個常見問題是台灣的資料合併後出現 NA。 貼上 summary(panel) 的輸出，Claude Code 會發現 GDP 和 R&D 資料沒有針對台灣載入， 並自動補上對應的 bind_rows() 和 left_join() 邏輯。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#四實際效益",
+    "href": "posts/ai-tools/claude-code-economics-research.html#四實際效益",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "四、實際效益",
+    "text": "四、實際效益\n以這個研究專案為例，使用 Claude Code 之後的變化：\n\n\n\n\n\n\n\n\n任務\n沒有 AI\n有 Claude Code\n\n\n\n\n建資料夾結構\n手動 mkdir，約 5 分鐘\n一句話，&lt; 30 秒\n\n\n寫 World Bank API 下載函數\n查文件 + 測試，約 30 分鐘\n約 3 分鐘\n\n\n除錯路徑錯誤\n查 here 文件，約 15 分鐘\n貼錯誤訊息，&lt; 2 分鐘\n\n\n補齊台灣 GDP / R&D 資料\n找替代來源 + 寫程式，約 1 小時\n約 10 分鐘\n\n\n寫程式碼說明\n每段手寫，約 20 分鐘\n一次生成，&lt; 1 分鐘"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#五實用提示",
+    "href": "posts/ai-tools/claude-code-economics-research.html#五實用提示",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "五、實用提示",
+    "text": "五、實用提示\n給 Claude Code 清楚的指令：不要只說「幫我整理資料」，要說「幫我把 patent_resd 和 patent_nres 以 iso3 + year 為鍵值合併，計算 total，存成 patent_total_donors.csv」。\n讓 Claude Code 記住規則：重要的規則寫進 CLAUDE.md（例如「每段程式都要有注解」），就不用每次重複說。\n貼完整的錯誤訊息：除錯時把整段 error message 貼進去，包含 traceback，Claude Code 才能定位問題。\n分段確認：複雜流程（例如從下載到合併到分析）可以分段執行，每段確認結果正確後再繼續，避免錯誤累積。"
+  },
+  {
+    "objectID": "posts/ai-tools/claude-code-economics-research.html#小結",
+    "href": "posts/ai-tools/claude-code-economics-research.html#小結",
+    "title": "如何使用 Claude Code 進行經濟學研究",
+    "section": "小結",
+    "text": "小結\n\n\n\n使用場景\nClaude Code 的角色\n\n\n\n\n建立專案結構\n自動建資料夾、初始化 .here、CLAUDE.md\n\n\n資料下載\n撰寫 API 呼叫函數（World Bank、IMF）\n\n\n資料整理\n撰寫 dplyr pipeline，處理合併、清理\n\n\n除錯\n診斷錯誤訊息，提出修正方案\n\n\n文件化\n為每段程式碼加注解，撰寫 data_sources.md\n\n\n\nClaude Code 最大的優勢不是「取代你思考」，而是大幅降低繁瑣實作的時間成本， 讓你可以把更多精力放在真正重要的事：研究設計、結果詮釋、論文撰寫。"
   }
 ]

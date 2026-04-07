@@ -1,0 +1,332 @@
+---
+title: "R 資料整理實戰：tidyverse 函數教學與整潔程式碼原則"
+date: "2026-04-07"
+description: "以台灣 SSM 合成控制研究為例，系統性介紹 readr、dplyr、tidyr 核心函數，以及讓 R 程式碼更整潔、可讀的實用技巧。"
+categories: [R, 資料整理, tidyverse]
+---
+
+## 前言
+
+這篇文章以我的研究專案「台灣同婚合法化 × 創新產出：合成控制法分析」的資料整理腳本為例，
+介紹 `tidyverse` 的核心函數，並說明如何讓程式碼更整潔、可維護。
+
+程式碼完整版在 `code/01_prepare_data.R`。
+
+---
+
+## 一、專案結構與路徑管理：`here` 套件
+
+### 問題：`setwd()` 很脆弱
+
+很多人習慣用 `setwd("/Users/xxx/project")` 設定工作目錄，但這有兩個問題：
+
+1. 換電腦或換人就壞掉
+2. 在不同 script 裡要重複設定
+
+### 解法：`here::here()`
+
+`here` 套件會自動找到專案根目錄（有 `.Rproj`、`.here` 或 `.git` 的地方），
+讓你用相對路徑描述檔案位置。
+
+```r
+library(here)
+
+# 自動從專案根目錄往下找，不受工作目錄影響
+RAW  <- here("data", "raw")
+PROC <- here("data", "processed")
+
+read_csv(file.path(RAW, "my_data.csv"))
+```
+
+要讓 `here()` 找到正確根目錄，在專案資料夾建一個空白的 `.here` 檔案：
+
+```bash
+touch /path/to/your/project/.here
+```
+
+> **原則：永遠用 `here()`，不用 `setwd()`。**
+
+---
+
+## 二、讀取 CSV：`readr::read_csv()`
+
+### 基本用法
+
+```r
+library(readr)
+
+# show_col_types = FALSE 關閉欄位型別提示，讓輸出更乾淨
+data <- read_csv("my_file.csv", show_col_types = FALSE)
+```
+
+### 跳過注解行
+
+如果 CSV 裡有以 `#` 開頭的說明行（例如資料來源、注意事項），
+可以用 `comment = "#"` 自動略過：
+
+```r
+taiwan_raw <- read_csv("taiwan_patents_MANUAL.csv",
+                       comment = "#",
+                       show_col_types = FALSE)
+```
+
+這樣 CSV 就可以像這樣寫：
+
+```
+# 資料來源：TIPO 統計年報
+# 注意：包含本國人＋外國人申請數
+country,iso3,year,value
+Chinese Taipei,TWN,2019,74652
+```
+
+---
+
+## 三、資料篩選與轉換：`dplyr` 核心函數
+
+`dplyr` 是 `tidyverse` 資料整理的核心，以下五個函數最常用。
+
+### 3.1 `filter()`：篩選列
+
+保留符合條件的列，概念等同 SQL 的 `WHERE`。
+
+```r
+# 只保留特定國家
+donors <- donors_raw |>
+  filter(iso3 %in% c("JPN", "KOR", "HKG", "SGP", "THA", "PHL", "IDN"))
+
+# 只保留 2000–2023 年
+donors <- donors |>
+  filter(year >= 2000, year <= 2023)
+  # 逗號等同 AND，可以一次寫多個條件
+```
+
+### 3.2 `mutate()`：新增或修改欄位
+
+```r
+donors <- donors_raw |>
+  mutate(
+    year    = as.integer(year),   # 將字串轉為整數
+    patents = as.numeric(total),  # 將字串轉為數值
+    country = iso3                # 新增欄位（複製既有值）
+  )
+```
+
+> **注意**：`mutate()` 不會刪除原本的欄位，只會新增或覆蓋指定欄位。
+
+### 3.3 `select()`：選取欄位
+
+```r
+# 只保留需要的欄位，讓資料框更精簡
+donors <- donors |>
+  select(country, iso3, year, patents)
+```
+
+也可以用 `-` 去掉不需要的欄位：
+
+```r
+# 去掉 note 欄位
+data <- data |> select(-note)
+```
+
+### 3.4 `arrange()`：排序
+
+```r
+# 依 iso3 遞增，再依 year 遞增排序
+panel <- panel |>
+  arrange(iso3, year)
+
+# 遞減排序用 desc()
+panel <- panel |>
+  arrange(iso3, desc(year))
+```
+
+### 3.5 `group_by()` + `summarise()`：分組摘要
+
+```r
+# 計算每個國家的資料完整度
+panel |>
+  group_by(iso3) |>
+  summarise(
+    n_years   = n(),                     # 總列數
+    n_patents = sum(!is.na(patents)),     # 非 NA 的專利資料筆數
+    n_gdp     = sum(!is.na(gdp_pc))      # 非 NA 的 GDP 資料筆數
+  )
+```
+
+---
+
+## 四、合併資料：`bind_rows()` 與 `left_join()`
+
+### 4.1 `bind_rows()`：縱向合併（堆疊）
+
+當兩個資料框欄位相同，要縱向合併成一個時使用：
+
+```r
+# 捐贈國 + 台灣 → 完整 panel
+panel <- bind_rows(donors, taiwan)
+```
+
+等同於 SQL 的 `UNION ALL`。
+
+### 4.2 `left_join()`：橫向合併（依鍵值配對）
+
+根據共同的鍵值欄位，將另一個資料框的欄位加進來：
+
+```r
+# 將 GDP 資料合併進 panel，鍵值為 iso3 + year
+panel <- panel |>
+  left_join(gdp_pc_all, by = c("iso3", "year"))
+```
+
+`left_join` 會保留左側（`panel`）的所有列，右側（`gdp_pc_all`）沒有匹配的填 `NA`。
+
+| join 類型 | 說明 |
+|----------|------|
+| `left_join` | 保留左側所有列 |
+| `inner_join` | 只保留兩側都有的列 |
+| `full_join` | 保留兩側所有列 |
+| `anti_join` | 只保留左側「沒有」匹配到的列 |
+
+---
+
+## 五、Pipe 運算子：`|>` 讓程式碼更易讀
+
+### 傳統寫法 vs Pipe 寫法
+
+**傳統（巢狀函數）**：
+
+```r
+# 很難閱讀，從內往外讀
+result <- arrange(select(filter(mutate(donors_raw,
+  year = as.integer(year)),
+  year >= 2000), country, iso3, year), iso3, year)
+```
+
+**Pipe 寫法**：
+
+```r
+# 從上往下讀，邏輯清晰
+result <- donors_raw |>
+  mutate(year = as.integer(year)) |>
+  filter(year >= 2000) |>
+  select(country, iso3, year) |>
+  arrange(iso3, year)
+```
+
+`|>` 是 R 4.1+ 的內建 pipe，將左側的物件作為右側函數的第一個引數傳入。
+（舊版 R 用 `%>%`，功能相同但需要 `magrittr` 套件。）
+
+---
+
+## 六、讓程式碼更整潔的原則
+
+### 6.1 把路徑集中定義在最上方
+
+```r
+# ✅ 好的做法：路徑集中管理，之後改路徑只需改一處
+RAW  <- here("data", "raw")
+PROC <- here("data", "processed")
+
+read_csv(file.path(RAW, "file_a.csv"))
+read_csv(file.path(RAW, "file_b.csv"))
+
+# ❌ 壞的做法：路徑散落各處，難以維護
+read_csv(here("data", "raw", "file_a.csv"))
+read_csv(here("data", "raw", "file_b.csv"))
+```
+
+### 6.2 每一段用注解說明「在做什麼、為什麼」
+
+```r
+# ── 3. 合併為完整 panel ───────────────────────────
+# 縱向合併捐贈國與台灣資料，共 8 個國家 × 24 年 = 192 列
+panel <- bind_rows(donors, taiwan) |>
+  arrange(iso3, year)
+```
+
+> 注解要說明「為什麼這樣做」，不是只複述程式碼在做什麼。
+
+### 6.3 用安全檢查取代沉默失敗
+
+如果資料讀進來是空的，與其讓後面的分析產生奇怪的結果，不如提早報錯：
+
+```r
+if (all(is.na(taiwan$patents))) {
+  stop("Taiwan patent data is empty! 請先填入 taiwan_patents_MANUAL.csv")
+}
+```
+
+### 6.4 保持欄位命名一致
+
+同一個概念在所有資料框用相同的欄位名稱，`join` 的時候才不會出錯：
+
+```r
+# 所有資料框都用 iso3、year 作為鍵值
+# 所有 GDP 欄位都叫 gdp_pc
+# 所有 R&D 欄位都叫 rd_pct_gdp
+```
+
+### 6.5 分段時用視覺分隔線
+
+```r
+# ── 1. 載入資料 ──────────────────────────────────
+# ── 2. 整理捐贈國 ────────────────────────────────
+# ── 3. 合併 panel ────────────────────────────────
+```
+
+這樣在任何編輯器都能快速跳到各段，不需要滾輪找。
+
+---
+
+## 七、完整範例：一段整潔的資料整理流程
+
+```r
+library(tidyverse)
+library(here)
+set.seed(42)
+
+RAW  <- here("data", "raw")
+PROC <- here("data", "processed")
+
+# ── 載入並整理捐贈國資料 ─────────────────────────
+donors <- read_csv(file.path(RAW, "patent_total_donors.csv"),
+                   show_col_types = FALSE) |>
+  filter(iso3 %in% c("JPN", "KOR", "HKG", "SGP")) |>  # 選目標國家
+  mutate(
+    year    = as.integer(year),
+    patents = as.numeric(total)
+  ) |>
+  select(iso3, year, patents) |>
+  filter(year >= 2000, year <= 2023)
+
+# ── 載入台灣資料（手動填入）──────────────────────
+taiwan <- read_csv(file.path(RAW, "taiwan_patents_MANUAL.csv"),
+                   comment = "#",
+                   show_col_types = FALSE) |>
+  mutate(year = as.integer(year), patents = as.numeric(value)) |>
+  select(iso3, year, patents)
+
+# ── 合併並儲存 ────────────────────────────────────
+bind_rows(donors, taiwan) |>
+  arrange(iso3, year) |>
+  mutate(log_patents = log(patents)) |>
+  write_csv(file.path(PROC, "panel.csv"))
+```
+
+---
+
+## 小結
+
+| 任務 | 函數 |
+|------|------|
+| 讀取 CSV | `read_csv()` |
+| 篩選列 | `filter()` |
+| 新增／修改欄位 | `mutate()` |
+| 選取欄位 | `select()` |
+| 排序 | `arrange()` |
+| 分組摘要 | `group_by()` + `summarise()` |
+| 縱向合併 | `bind_rows()` |
+| 橫向合併 | `left_join()` |
+| 路徑管理 | `here::here()` |
+
+掌握這幾個函數，加上 pipe `|>` 的寫法，就能處理大多數的資料整理工作。

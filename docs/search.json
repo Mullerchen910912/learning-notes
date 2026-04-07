@@ -60,7 +60,7 @@
     "href": "index.html#最新文章",
     "title": "Muller Chen Blog",
     "section": "最新文章",
-    "text": "最新文章\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items"
+    "text": "最新文章\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -228,7 +228,7 @@
     "href": "posts/causalml/index.html",
     "title": "Causal Inference and Econometrics",
     "section": "",
-    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -313,5 +313,54 @@
     "title": "如何使用 Claude Code 進行經濟學研究",
     "section": "小結",
     "text": "小結\n\n\n\n使用場景\nClaude Code 的角色\n\n\n\n\n建立專案結構\n自動建資料夾、初始化 .here、CLAUDE.md\n\n\n資料下載\n撰寫 API 呼叫函數（World Bank、IMF）\n\n\n資料整理\n撰寫 dplyr pipeline，處理合併、清理\n\n\n除錯\n診斷錯誤訊息，提出修正方案\n\n\n文件化\n為每段程式碼加注解，撰寫 data_sources.md\n\n\n\nClaude Code 最大的優勢不是「取代你思考」，而是大幅降低繁瑣實作的時間成本， 讓你可以把更多精力放在真正重要的事：研究設計、結果詮釋、論文撰寫。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "",
+    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "",
+    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "一、跡（Trace）的微分規則",
+    "text": "一、跡（Trace）的微分規則\n跡的兩個核心性質：\n\n轉置不變性： \\(\\text{tr}(A) = \\text{tr}(A^T)\\)\n循環性質（Cyclic Property）： \\(\\text{tr}(ABC) = \\text{tr}(BCA) = \\text{tr}(CAB)\\)\n\n這兩個性質讓我們可以把複雜的矩陣乘積「轉一圈」，湊出對 \\(X\\) 求導的標準形式。\n\n常用公式\n\\[\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\]\n\\[\\frac{\\partial \\, \\text{tr}(X^T A)}{\\partial X} = A\\]\n\\[\\frac{\\partial \\, \\text{tr}(AX^T B)}{\\partial X} = B^T A^T\\]"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "二、二次型（Quadratic Form）的微分",
+    "text": "二、二次型（Quadratic Form）的微分\n二次型是 PCA 求特徵向量的關鍵。\n\n向量形式\n\\[\\frac{\\partial (x^T A x)}{\\partial x} = (A + A^T)x\\]\n\n若 \\(A\\) 對稱（如共變異數矩陣），則化簡為 \\(2Ax\\)。\n\n\n\n矩陣跡形式\n\\[\\frac{\\partial \\, \\text{tr}(X^T A X)}{\\partial X} = (A + A^T)X\\]\n\n若 \\(A\\) 對稱（如 \\(X^T X\\)），化簡為 \\(2AX\\)。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "三、行列式與逆矩陣（Determinant & Inverse）",
+    "text": "三、行列式與逆矩陣（Determinant & Inverse）\n這兩個結果常出現在最大概似估計（MLE）對數概似函數的求導中，例如多變量常態分配的參數估計。\n\n對數行列式\n\\[\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\]\n\n若 \\(X\\) 對稱（如協方差矩陣），化簡為 \\(X^{-1}\\)。\n\n\n\n逆矩陣的跡\n\\[\\frac{\\partial \\, \\text{tr}(A X^{-1})}{\\partial X} = -(X^{-1} A X^{-1})^T\\]"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "四、實際應用：因子模型（Factor Models）",
+    "text": "四、實際應用：因子模型（Factor Models）\n\nPCA 目標函數\nPCA 的最佳化問題為：\n\\[\\max_{F} \\; \\text{tr}\\!\\left(F^T (X^T X) F\\right) \\quad \\text{subject to} \\quad F^T F = I\\]\n令 \\(A = X^T X\\)（對稱矩陣），對 \\(F\\) 微分並加入 Lagrange 乘數項 \\(\\text{tr}(V(F^T F - I))\\)：\n\\[\\frac{\\partial}{\\partial F}\\left[\\text{tr}(F^T A F) - \\text{tr}(V(F^T F - I))\\right] = 2AF - 2FV = 0\\]\n整理得一階條件：\n\\[AF = FV\\]\n這正是特徵值問題（Eigenvalue Problem）：\\(F\\) 的各行是 \\(A\\) 的特徵向量，\\(V\\) 是對角的特徵值矩陣。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "小結",
+    "text": "小結\n\n\n\n\n\n\n\n\n類型\n公式\n備註\n\n\n\n\n線性跡\n\\(\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\)\n基本型\n\n\n二次型（向量）\n\\(\\frac{\\partial x^T A x}{\\partial x} = (A+A^T)x\\)\n對稱時為 \\(2Ax\\)\n\n\n二次型（矩陣跡）\n\\(\\frac{\\partial \\, \\text{tr}(X^T AX)}{\\partial X} = (A+A^T)X\\)\n對稱時為 \\(2AX\\)\n\n\n對數行列式\n\\(\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\)\n對稱時為 \\(X^{-1}\\)\n\n\n逆矩陣跡\n\\(\\frac{\\partial \\, \\text{tr}(AX^{-1})}{\\partial X} = -(X^{-1}AX^{-1})^T\\)\nMLE 常見\n\n\nPCA 一階條件\n\\(AF = FV\\)\n特徵值問題"
   }
 ]

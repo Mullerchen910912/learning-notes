@@ -1,0 +1,99 @@
+---
+title: "矩陣微分 Cheat Sheet"
+date: "2026-04-07"
+description: "整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。"
+categories: [causalml, linear-algebra]
+draft: false
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+## 前言
+
+在研讀計量經濟學，特別是**因子模型（Factor Models）**與**主成分分析（PCA）**時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用**分子佈局（Numerator Layout）**：對行向量求導結果為行向量，對矩陣求導結果與分子同形。
+
+---
+
+## 一、跡（Trace）的微分規則
+
+跡的兩個核心性質：
+
+- **轉置不變性：** $\text{tr}(A) = \text{tr}(A^T)$
+- **循環性質（Cyclic Property）：** $\text{tr}(ABC) = \text{tr}(BCA) = \text{tr}(CAB)$
+
+這兩個性質讓我們可以把複雜的矩陣乘積「轉一圈」，湊出對 $X$ 求導的標準形式。
+
+### 常用公式
+
+$$\frac{\partial \, \text{tr}(AX)}{\partial X} = A^T$$
+
+$$\frac{\partial \, \text{tr}(X^T A)}{\partial X} = A$$
+
+$$\frac{\partial \, \text{tr}(AX^T B)}{\partial X} = B^T A^T$$
+
+---
+
+## 二、二次型（Quadratic Form）的微分
+
+二次型是 PCA 求特徵向量的關鍵。
+
+### 向量形式
+
+$$\frac{\partial (x^T A x)}{\partial x} = (A + A^T)x$$
+
+> 若 $A$ 對稱（如共變異數矩陣），則化簡為 $2Ax$。
+
+### 矩陣跡形式
+
+$$\frac{\partial \, \text{tr}(X^T A X)}{\partial X} = (A + A^T)X$$
+
+> 若 $A$ 對稱（如 $X^T X$），化簡為 $2AX$。
+
+---
+
+## 三、行列式與逆矩陣（Determinant & Inverse）
+
+這兩個結果常出現在**最大概似估計（MLE）**對數概似函數的求導中，例如多變量常態分配的參數估計。
+
+### 對數行列式
+
+$$\frac{\partial \ln |X|}{\partial X} = (X^{-1})^T$$
+
+> 若 $X$ 對稱（如協方差矩陣），化簡為 $X^{-1}$。
+
+### 逆矩陣的跡
+
+$$\frac{\partial \, \text{tr}(A X^{-1})}{\partial X} = -(X^{-1} A X^{-1})^T$$
+
+---
+
+## 四、實際應用：因子模型（Factor Models）
+
+### PCA 目標函數
+
+PCA 的最佳化問題為：
+
+$$\max_{F} \; \text{tr}\!\left(F^T (X^T X) F\right) \quad \text{subject to} \quad F^T F = I$$
+
+令 $A = X^T X$（對稱矩陣），對 $F$ 微分並加入 Lagrange 乘數項 $\text{tr}(V(F^T F - I))$：
+
+$$\frac{\partial}{\partial F}\left[\text{tr}(F^T A F) - \text{tr}(V(F^T F - I))\right] = 2AF - 2FV = 0$$
+
+整理得一階條件：
+
+$$AF = FV$$
+
+這正是**特徵值問題（Eigenvalue Problem）**：$F$ 的各行是 $A$ 的特徵向量，$V$ 是對角的特徵值矩陣。
+
+---
+
+## 小結
+
+| 類型 | 公式 | 備註 |
+|------|------|------|
+| 線性跡 | $\frac{\partial \, \text{tr}(AX)}{\partial X} = A^T$ | 基本型 |
+| 二次型（向量） | $\frac{\partial x^T A x}{\partial x} = (A+A^T)x$ | 對稱時為 $2Ax$ |
+| 二次型（矩陣跡） | $\frac{\partial \, \text{tr}(X^T AX)}{\partial X} = (A+A^T)X$ | 對稱時為 $2AX$ |
+| 對數行列式 | $\frac{\partial \ln |X|}{\partial X} = (X^{-1})^T$ | 對稱時為 $X^{-1}$ |
+| 逆矩陣跡 | $\frac{\partial \, \text{tr}(AX^{-1})}{\partial X} = -(X^{-1}AX^{-1})^T$ | MLE 常見 |
+| PCA 一階條件 | $AF = FV$ | 特徵值問題 |

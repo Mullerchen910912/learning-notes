@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/ai-tools/claude-code-economics-research.html",
+      "/posts/causalml/matrix-calculus-cheat-sheet.html",
       "/posts/ai-tools/claude-code-setup.html",
       "/posts/causalml/ch8-neural-networks.html"
     ]
@@ -9,12 +11,14 @@
   {
     "listing": "/posts/ai-tools/index.html",
     "items": [
+      "/posts/ai-tools/claude-code-economics-research.html",
       "/posts/ai-tools/claude-code-setup.html"
     ]
   },
   {
     "listing": "/posts/causalml/index.html",
     "items": [
+      "/posts/causalml/matrix-calculus-cheat-sheet.html",
       "/posts/causalml/ch8-neural-networks.html"
     ]
   }

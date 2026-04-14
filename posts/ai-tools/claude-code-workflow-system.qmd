@@ -1,0 +1,323 @@
+---
+title: "用 Claude Code 建立研究生的自動化生活管理系統"
+date: "2026-04-14"
+description: "從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流"
+categories: [ai-tools, claude-code, automation, workflow]
+draft: false
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+## 前言
+
+身為研究生，同時要處理 RA 工作、TA 教學、自己的研究以及課程，資訊很容易分散在各個地方——paper 亂存在資料夾、.bib 要手動維護、每週做了什麼完全沒有紀錄。
+
+這篇文章記錄我用 Claude Code 建立的一套自動化工作流，目標是：
+
+- **紀錄**：每天發生什麼事有地方寫
+- **整理**：每週自動彙整上傳 Notion
+- **管理**：文獻、筆記、程式碼各有對應工具
+
+整套系統建立後，我每週只需要做兩件事：建本週筆記檔（請 Claude 幫我建）、平時把東西記進去。
+
+---
+
+## 一、系統架構
+
+整套工作流分為三層：
+
+```
+每天  →  Obsidian Daily Note（隨手記草稿）
+每週  →  weekly_notes/YYYY-WXX.md（整理四個區塊）
+週日  →  自動上傳 Notion Weekly Review（完全不需動手）
+```
+
+另外兩個工具各司其職：
+
+- **Zotero**：文獻管理，自動同步 `.bib` 供 LaTeX 使用
+- **Claude Code Skills**：各種研究任務的一鍵指令
+
+---
+
+## 二、每週回顧系統
+
+### 2.1 週記格式
+
+每週的筆記檔放在 `~/claude_SY/weekly_notes/YYYY-WXX.md`，固定四個區塊：
+
+```markdown
+## 📚 Paper / 文獻
+- 讀了 Callaway & Sant'Anna (2021) Section 3，
+  發現 parallel trend 假設的這個問題...
+
+## 🔬 研究進度（RA / 個人）
+- 和老師討論了 IV validity，結論是...
+
+## 🤖 AI Tools 學習
+- 學會用 /lit-review 做系統性文獻搜尋
+
+## 💡 想法 / TODO
+- 下週要看 Roth (2022) pre-trend test
+```
+
+### 2.2 自動上傳 Notion
+
+每週日 20:00，系統自動執行 `weekly_review.py`：
+
+1. 讀取本週的 `.md` 筆記檔
+2. 抓取 NTU-ECON repo 過去一週的 git commits
+3. 格式化成四個區塊
+4. 透過 Notion API 建立新的子頁面
+
+核心程式碼片段（Notion API 上傳）：
+
+```python
+def upload_to_notion(config, commits, sections):
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "parent": {"page_id": page_id},
+        "properties": {
+            "title": {"title": [{"type": "text",
+                                 "text": {"content": title}}]}
+        },
+        "children": build_notion_blocks(commits, sections, week_label)
+    }
+    response = requests.post(
+        "https://api.notion.com/v1/pages",
+        headers=headers, json=data
+    )
+```
+
+設定 cron 排程（每週日 20:00）：
+
+```bash
+0 20 * * 0 python3 ~/claude_SY/weekly_review.py \
+  >> ~/claude_SY/weekly_review.log 2>&1
+```
+
+### 2.3 Notion Token 安全儲存
+
+Token 存在獨立的 config 檔，權限設為只有自己可讀：
+
+```bash
+# 儲存
+echo "NOTION_TOKEN=your_token" > ~/claude_SY/config/notion.env
+chmod 600 ~/claude_SY/config/notion.env
+```
+
+---
+
+## 三、Zotero 文獻管理
+
+### 3.1 為什麼需要 Zotero
+
+以前的痛點：
+
+| 問題 | 頻率 |
+|---|---|
+| PDF 亂存找不到 | 每週都發生 |
+| 手動寫 `.bib` entry 打錯字 | 常見 |
+| 換電腦文獻不見 | 發生過一次，很痛 |
+
+Zotero 解決的方式：**瀏覽器一鍵抓 metadata + PDF，Better BibTeX 自動同步 `.bib`**。
+
+### 3.2 設定 Better BibTeX
+
+Citation key 格式設為 `[auth:lower][year]`，讓 key 和直覺一致：
+
+```
+Callaway & Sant'Anna (2021) → callaway2021
+Roth et al. (2022)          → roth2022
+```
+
+設定自動匯出：
+
+```
+File → Export Library
+Format: Better BibTeX
+勾選: Keep updated
+儲存至: ~/Desktop/NTU_ECON/refs.bib
+```
+
+LaTeX 裡直接引用：
+
+```latex
+\bibliography{/Users/chenshengyuan/Desktop/NTU_ECON/refs.bib}
+```
+
+之後新增任何 paper，`.bib` 自動更新，不需手動維護。
+
+### 3.3 Collections 結構
+
+```
+My Library
+├── 📥 Reading Queue        ← 新 paper 先放這裡
+├── 📐 Causal Inference
+│   ├── DiD & Staggered
+│   ├── IV & 2SLS
+│   └── RDD & Synth Control
+├── 🤖 Causal ML
+│   ├── Double ML (DML)
+│   ├── Tree Methods
+│   └── Neural Networks
+├── 📊 Econometrics
+├── 🏫 Courses
+└── 🔬 RA_jauer
+```
+
+用 Zotero 內建 JavaScript console 一次建好所有 collections（`Tools → Developer → Run JavaScript`）：
+
+```javascript
+const structure = {
+  "📥 Reading Queue": [],
+  "📐 Causal Inference": ["DiD & Staggered", "IV & 2SLS", "RDD & Synth Control"],
+  "🤖 Causal ML": ["Double ML (DML)", "Tree Methods", "Neural Networks"],
+  "📊 Econometrics": ["Panel Data", "Inference & Testing"],
+  "🏫 Courses": ["MetricML", "Advanced Econometrics"],
+  "🔬 RA_jauer": []
+};
+
+for (const [parent, children] of Object.entries(structure)) {
+  const parentCol = await Zotero.Collections.getByLibrary(1)
+    .find(c => c.name === parent)
+    || new Zotero.Collection({ name: parent, libraryID: 1 });
+  await parentCol.saveTx();
+  for (const child of children) {
+    const childCol = new Zotero.Collection({
+      name: child, libraryID: 1, parentID: parentCol.id
+    });
+    await childCol.saveTx();
+  }
+}
+"✅ 完成"
+```
+
+---
+
+## 四、Obsidian Daily Note
+
+### 4.1 Vault 設定
+
+Vault 放在研究資料夾裡，方便統一管理：
+
+```
+~/Desktop/NTU_ECON/Notes/
+├── Daily/        ← 每天的 note 自動存這裡
+├── Templates/    ← Daily Note 模板
+├── Papers/       ← 讀 paper 的詳細筆記
+├── Research/     ← 研究想法與草稿
+└── Meetings/     ← 會議記錄
+```
+
+### 4.2 Daily Note 模板
+
+```markdown
+# {{date:YYYY-MM-DD}} ({{date:dddd}})
+
+## 📚 今天讀了什麼
+-
+
+## 🔬 研究 / RA 進度
+-
+
+## 🤖 AI Tools
+-
+
+## 💡 想法 / 問題
+-
+
+## ✅ 今日完成
+-
+
+## ➡️ 明天要做
+-
+```
+
+設定路徑：`Settings → Core plugins → Daily notes → Template file location: Templates/Daily Note`
+
+每天按 `Cmd+Shift+D` 開今天的 note，套好模板自動等你填。
+
+### 4.3 和週記的關係
+
+Obsidian 是**當天的草稿紙**，週記是**每週的精華摘要**。
+
+```
+Obsidian（詳細）  →  每週整理  →  weekly_notes（精華）  →  Notion（存檔）
+```
+
+---
+
+## 五、Claude Code Skills 清單
+
+用 `/skill名稱` 觸發，依工作性質分類：
+
+### 研究流程
+
+| 指令 | 用途 |
+|---|---|
+| `/new-research 專案名` | 建立新研究專案資料夾結構 |
+| `/research-ideation 主題` | 生成具體研究問題和實證策略 |
+| `/interview-me 主題` | 引導式問答，把研究想法正式化 |
+| `/lit-review 主題` | 系統性文獻搜尋與整理 |
+| `/review-paper 路徑` | 模擬 referee 給出完整論文評論 |
+
+### 寫作與發布
+
+| 指令 | 用途 |
+|---|---|
+| `/new-post` | 發布學習筆記到這個網站 |
+| `/data-analysis 資料集` | 完整 R 分析流程 |
+| `/academic-writer` | 用我的風格生成英文論文段落 |
+
+### 簡報（LaTeX / Quarto）
+
+| 指令 | 用途 |
+|---|---|
+| `/compile-latex` | 編譯 Beamer .tex |
+| `/slide-excellence` | 視覺＋教學＋校對三合一審查 |
+| `/deploy` | 部署到 GitHub Pages |
+
+### 系統
+
+| 指令 | 用途 |
+|---|---|
+| `/commit` | git commit → PR → merge |
+| `/learn` | 把本次發現的技巧存成 skill |
+| `/context-status` | 查看 context 用量 |
+
+---
+
+## 六、完整日常流程
+
+```
+週一
+ └─ 請 Claude「幫我建本週的筆記檔」
+
+平時（每天）
+ ├─ Cmd+Shift+D → Obsidian Daily Note
+ ├─ 看到好 paper → Zotero 瀏覽器插件一鍵存入
+ └─ 研究有進展 → 記到 weekly_notes
+
+週日 20:00（自動）
+ └─ weekly_review.py 自動執行 → 上傳 Notion
+```
+
+---
+
+## 小結
+
+| 工具 | 解決的問題 |
+|---|---|
+| Obsidian Daily Note | 每天有地方記，不靠記憶 |
+| weekly_notes + cron | 每週彙整，自動上傳，不靠意志力 |
+| Notion | 長期存檔，方便回顧 |
+| Zotero + Better BibTeX | 文獻自動管理，`.bib` 永遠最新 |
+| Claude Code Skills | 研究任務標準化，降低重複工作 |
+
+這套系統的核心原則是：**降低每一個環節的摩擦力**。越容易記錄，就越會記錄；越自動化，就越不依賴自律。
+
+完整的工作流程手冊（含 PDF）存放在 `~/claude_SY/MY_WORKFLOW.md`。

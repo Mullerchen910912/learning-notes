@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-04-14">
+<meta name="description" content="從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流">
+
+<title>用 Claude Code 建立研究生的自動化生活管理系統 – Muller Chen Blog</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Muller Chen Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">首頁</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/ai-tools/index.html"> 
+<span class="menu-text">AI 工具</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
+<span class="menu-text">Causal Inference and Econometrics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">關於我</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Mullerchen910912"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#前言" id="toc-前言" class="nav-link active" data-scroll-target="#前言">前言</a></li>
+  <li><a href="#一系統架構" id="toc-一系統架構" class="nav-link" data-scroll-target="#一系統架構">一、系統架構</a></li>
+  <li><a href="#二每週回顧系統" id="toc-二每週回顧系統" class="nav-link" data-scroll-target="#二每週回顧系統">二、每週回顧系統</a>
+  <ul class="collapse">
+  <li><a href="#週記格式" id="toc-週記格式" class="nav-link" data-scroll-target="#週記格式">2.1 週記格式</a></li>
+  <li><a href="#自動上傳-notion" id="toc-自動上傳-notion" class="nav-link" data-scroll-target="#自動上傳-notion">2.2 自動上傳 Notion</a></li>
+  <li><a href="#notion-token-安全儲存" id="toc-notion-token-安全儲存" class="nav-link" data-scroll-target="#notion-token-安全儲存">2.3 Notion Token 安全儲存</a></li>
+  </ul></li>
+  <li><a href="#三zotero-文獻管理" id="toc-三zotero-文獻管理" class="nav-link" data-scroll-target="#三zotero-文獻管理">三、Zotero 文獻管理</a>
+  <ul class="collapse">
+  <li><a href="#為什麼需要-zotero" id="toc-為什麼需要-zotero" class="nav-link" data-scroll-target="#為什麼需要-zotero">3.1 為什麼需要 Zotero</a></li>
+  <li><a href="#設定-better-bibtex" id="toc-設定-better-bibtex" class="nav-link" data-scroll-target="#設定-better-bibtex">3.2 設定 Better BibTeX</a></li>
+  <li><a href="#collections-結構" id="toc-collections-結構" class="nav-link" data-scroll-target="#collections-結構">3.3 Collections 結構</a></li>
+  </ul></li>
+  <li><a href="#四obsidian-daily-note" id="toc-四obsidian-daily-note" class="nav-link" data-scroll-target="#四obsidian-daily-note">四、Obsidian Daily Note</a>
+  <ul class="collapse">
+  <li><a href="#vault-設定" id="toc-vault-設定" class="nav-link" data-scroll-target="#vault-設定">4.1 Vault 設定</a></li>
+  <li><a href="#daily-note-模板" id="toc-daily-note-模板" class="nav-link" data-scroll-target="#daily-note-模板">4.2 Daily Note 模板</a></li>
+  <li><a href="#和週記的關係" id="toc-和週記的關係" class="nav-link" data-scroll-target="#和週記的關係">4.3 和週記的關係</a></li>
+  </ul></li>
+  <li><a href="#五claude-code-skills-清單" id="toc-五claude-code-skills-清單" class="nav-link" data-scroll-target="#五claude-code-skills-清單">五、Claude Code Skills 清單</a>
+  <ul class="collapse">
+  <li><a href="#研究流程" id="toc-研究流程" class="nav-link" data-scroll-target="#研究流程">研究流程</a></li>
+  <li><a href="#寫作與發布" id="toc-寫作與發布" class="nav-link" data-scroll-target="#寫作與發布">寫作與發布</a></li>
+  <li><a href="#簡報latex-quarto" id="toc-簡報latex-quarto" class="nav-link" data-scroll-target="#簡報latex-quarto">簡報（LaTeX / Quarto）</a></li>
+  <li><a href="#系統" id="toc-系統" class="nav-link" data-scroll-target="#系統">系統</a></li>
+  </ul></li>
+  <li><a href="#六完整日常流程" id="toc-六完整日常流程" class="nav-link" data-scroll-target="#六完整日常流程">六、完整日常流程</a></li>
+  <li><a href="#小結" id="toc-小結" class="nav-link" data-scroll-target="#小結">小結</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">用 Claude Code 建立研究生的自動化生活管理系統</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">ai-tools</div>
+    <div class="quarto-category">claude-code</div>
+    <div class="quarto-category">automation</div>
+    <div class="quarto-category">workflow</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 14, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="前言" class="level2">
+<h2 class="anchored" data-anchor-id="前言">前言</h2>
+<p>身為研究生，同時要處理 RA 工作、TA 教學、自己的研究以及課程，資訊很容易分散在各個地方——paper 亂存在資料夾、.bib 要手動維護、每週做了什麼完全沒有紀錄。</p>
+<p>這篇文章記錄我用 Claude Code 建立的一套自動化工作流，目標是：</p>
+<ul>
+<li><strong>紀錄</strong>：每天發生什麼事有地方寫</li>
+<li><strong>整理</strong>：每週自動彙整上傳 Notion</li>
+<li><strong>管理</strong>：文獻、筆記、程式碼各有對應工具</li>
+</ul>
+<p>整套系統建立後，我每週只需要做兩件事：建本週筆記檔（請 Claude 幫我建）、平時把東西記進去。</p>
+<hr>
+</section>
+<section id="一系統架構" class="level2">
+<h2 class="anchored" data-anchor-id="一系統架構">一、系統架構</h2>
+<p>整套工作流分為三層：</p>
+<pre><code>每天  →  Obsidian Daily Note（隨手記草稿）
+每週  →  weekly_notes/YYYY-WXX.md（整理四個區塊）
+週日  →  自動上傳 Notion Weekly Review（完全不需動手）</code></pre>
+<p>另外兩個工具各司其職：</p>
+<ul>
+<li><strong>Zotero</strong>：文獻管理，自動同步 <code>.bib</code> 供 LaTeX 使用</li>
+<li><strong>Claude Code Skills</strong>：各種研究任務的一鍵指令</li>
+</ul>
+<hr>
+</section>
+<section id="二每週回顧系統" class="level2">
+<h2 class="anchored" data-anchor-id="二每週回顧系統">二、每週回顧系統</h2>
+<section id="週記格式" class="level3">
+<h3 class="anchored" data-anchor-id="週記格式">2.1 週記格式</h3>
+<p>每週的筆記檔放在 <code>~/claude_SY/weekly_notes/YYYY-WXX.md</code>，固定四個區塊：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📚 Paper / 文獻</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀了 Callaway &amp; Sant'Anna (2021) Section 3，</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  發現 parallel trend 假設的這個問題...</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔬 研究進度（RA / 個人）</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>和老師討論了 IV validity，結論是...</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🤖 AI Tools 學習</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>學會用 /lit-review 做系統性文獻搜尋</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## 💡 想法 / TODO</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>下週要看 Roth (2022) pre-trend test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="自動上傳-notion" class="level3">
+<h3 class="anchored" data-anchor-id="自動上傳-notion">2.2 自動上傳 Notion</h3>
+<p>每週日 20:00，系統自動執行 <code>weekly_review.py</code>：</p>
+<ol type="1">
+<li>讀取本週的 <code>.md</code> 筆記檔</li>
+<li>抓取 NTU-ECON repo 過去一週的 git commits</li>
+<li>格式化成四個區塊</li>
+<li>透過 Notion API 建立新的子頁面</li>
+</ol>
+<p>核心程式碼片段（Notion API 上傳）：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> upload_to_notion(config, commits, sections):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    headers <span class="op">=</span> {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Authorization"</span>: <span class="ss">f"Bearer </span><span class="sc">{</span>token<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Notion-Version"</span>: <span class="st">"2022-06-28"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Content-Type"</span>: <span class="st">"application/json"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"parent"</span>: {<span class="st">"page_id"</span>: page_id},</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"properties"</span>: {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"title"</span>: {<span class="st">"title"</span>: [{<span class="st">"type"</span>: <span class="st">"text"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">"text"</span>: {<span class="st">"content"</span>: title}}]}</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"children"</span>: build_notion_blocks(commits, sections, week_label)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.post(</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://api.notion.com/v1/pages"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        headers<span class="op">=</span>headers, json<span class="op">=</span>data</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>設定 cron 排程（每週日 20:00）：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 20 <span class="pp">*</span> <span class="pp">*</span> 0 python3 ~/claude_SY/weekly_review.py <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;&gt;</span> ~/claude_SY/weekly_review.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="notion-token-安全儲存" class="level3">
+<h3 class="anchored" data-anchor-id="notion-token-安全儲存">2.3 Notion Token 安全儲存</h3>
+<p>Token 存在獨立的 config 檔，權限設為只有自己可讀：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 儲存</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"NOTION_TOKEN=your_token"</span> <span class="op">&gt;</span> ~/claude_SY/config/notion.env</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/claude_SY/config/notion.env</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="三zotero-文獻管理" class="level2">
+<h2 class="anchored" data-anchor-id="三zotero-文獻管理">三、Zotero 文獻管理</h2>
+<section id="為什麼需要-zotero" class="level3">
+<h3 class="anchored" data-anchor-id="為什麼需要-zotero">3.1 為什麼需要 Zotero</h3>
+<p>以前的痛點：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>問題</th>
+<th>頻率</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PDF 亂存找不到</td>
+<td>每週都發生</td>
+</tr>
+<tr class="even">
+<td>手動寫 <code>.bib</code> entry 打錯字</td>
+<td>常見</td>
+</tr>
+<tr class="odd">
+<td>換電腦文獻不見</td>
+<td>發生過一次，很痛</td>
+</tr>
+</tbody>
+</table>
+<p>Zotero 解決的方式：<strong>瀏覽器一鍵抓 metadata + PDF，Better BibTeX 自動同步 <code>.bib</code></strong>。</p>
+</section>
+<section id="設定-better-bibtex" class="level3">
+<h3 class="anchored" data-anchor-id="設定-better-bibtex">3.2 設定 Better BibTeX</h3>
+<p>Citation key 格式設為 <code>[auth:lower][year]</code>，讓 key 和直覺一致：</p>
+<pre><code>Callaway &amp; Sant'Anna (2021) → callaway2021
+Roth et al. (2022)          → roth2022</code></pre>
+<p>設定自動匯出：</p>
+<pre><code>File → Export Library
+Format: Better BibTeX
+勾選: Keep updated
+儲存至: ~/Desktop/NTU_ECON/refs.bib</code></pre>
+<p>LaTeX 裡直接引用：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">\bibliography</span>{<span class="ex">/Users/chenshengyuan/Desktop/NTU_ECON/refs.bib</span>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>之後新增任何 paper，<code>.bib</code> 自動更新，不需手動維護。</p>
+</section>
+<section id="collections-結構" class="level3">
+<h3 class="anchored" data-anchor-id="collections-結構">3.3 Collections 結構</h3>
+<pre><code>My Library
+├── 📥 Reading Queue        ← 新 paper 先放這裡
+├── 📐 Causal Inference
+│   ├── DiD &amp; Staggered
+│   ├── IV &amp; 2SLS
+│   └── RDD &amp; Synth Control
+├── 🤖 Causal ML
+│   ├── Double ML (DML)
+│   ├── Tree Methods
+│   └── Neural Networks
+├── 📊 Econometrics
+├── 🏫 Courses
+└── 🔬 RA_jauer</code></pre>
+<p>用 Zotero 內建 JavaScript console 一次建好所有 collections（<code>Tools → Developer → Run JavaScript</code>）：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> structure <span class="op">=</span> {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"📥 Reading Queue"</span><span class="op">:</span> []<span class="op">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"📐 Causal Inference"</span><span class="op">:</span> [<span class="st">"DiD &amp; Staggered"</span><span class="op">,</span> <span class="st">"IV &amp; 2SLS"</span><span class="op">,</span> <span class="st">"RDD &amp; Synth Control"</span>]<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"🤖 Causal ML"</span><span class="op">:</span> [<span class="st">"Double ML (DML)"</span><span class="op">,</span> <span class="st">"Tree Methods"</span><span class="op">,</span> <span class="st">"Neural Networks"</span>]<span class="op">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"📊 Econometrics"</span><span class="op">:</span> [<span class="st">"Panel Data"</span><span class="op">,</span> <span class="st">"Inference &amp; Testing"</span>]<span class="op">,</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"🏫 Courses"</span><span class="op">:</span> [<span class="st">"MetricML"</span><span class="op">,</span> <span class="st">"Advanced Econometrics"</span>]<span class="op">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"🔬 RA_jauer"</span><span class="op">:</span> []</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> [parent<span class="op">,</span> children] <span class="kw">of</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">entries</span>(structure)) {</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> parentCol <span class="op">=</span> <span class="cf">await</span> Zotero<span class="op">.</span><span class="at">Collections</span><span class="op">.</span><span class="fu">getByLibrary</span>(<span class="dv">1</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">find</span>(c <span class="kw">=&gt;</span> c<span class="op">.</span><span class="at">name</span> <span class="op">===</span> parent)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">||</span> <span class="kw">new</span> Zotero<span class="op">.</span><span class="fu">Collection</span>({ <span class="dt">name</span><span class="op">:</span> parent<span class="op">,</span> <span class="dt">libraryID</span><span class="op">:</span> <span class="dv">1</span> })<span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> parentCol<span class="op">.</span><span class="fu">saveTx</span>()<span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">const</span> child <span class="kw">of</span> children) {</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> childCol <span class="op">=</span> <span class="kw">new</span> Zotero<span class="op">.</span><span class="fu">Collection</span>({</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">name</span><span class="op">:</span> child<span class="op">,</span> <span class="dt">libraryID</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">parentID</span><span class="op">:</span> parentCol<span class="op">.</span><span class="at">id</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> childCol<span class="op">.</span><span class="fu">saveTx</span>()<span class="op">;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="st">"✅ 完成"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="四obsidian-daily-note" class="level2">
+<h2 class="anchored" data-anchor-id="四obsidian-daily-note">四、Obsidian Daily Note</h2>
+<section id="vault-設定" class="level3">
+<h3 class="anchored" data-anchor-id="vault-設定">4.1 Vault 設定</h3>
+<p>Vault 放在研究資料夾裡，方便統一管理：</p>
+<pre><code>~/Desktop/NTU_ECON/Notes/
+├── Daily/        ← 每天的 note 自動存這裡
+├── Templates/    ← Daily Note 模板
+├── Papers/       ← 讀 paper 的詳細筆記
+├── Research/     ← 研究想法與草稿
+└── Meetings/     ← 會議記錄</code></pre>
+</section>
+<section id="daily-note-模板" class="level3">
+<h3 class="anchored" data-anchor-id="daily-note-模板">4.2 Daily Note 模板</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># {{date:YYYY-MM-DD}} ({{date:dddd}})</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📚 今天讀了什麼</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔬 研究 / RA 進度</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🤖 AI Tools</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## 💡 想法 / 問題</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## ✅ 今日完成</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## ➡️ 明天要做</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>-</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>設定路徑：<code>Settings → Core plugins → Daily notes → Template file location: Templates/Daily Note</code></p>
+<p>每天按 <code>Cmd+Shift+D</code> 開今天的 note，套好模板自動等你填。</p>
+</section>
+<section id="和週記的關係" class="level3">
+<h3 class="anchored" data-anchor-id="和週記的關係">4.3 和週記的關係</h3>
+<p>Obsidian 是<strong>當天的草稿紙</strong>，週記是<strong>每週的精華摘要</strong>。</p>
+<pre><code>Obsidian（詳細）  →  每週整理  →  weekly_notes（精華）  →  Notion（存檔）</code></pre>
+<hr>
+</section>
+</section>
+<section id="五claude-code-skills-清單" class="level2">
+<h2 class="anchored" data-anchor-id="五claude-code-skills-清單">五、Claude Code Skills 清單</h2>
+<p>用 <code>/skill名稱</code> 觸發，依工作性質分類：</p>
+<section id="研究流程" class="level3">
+<h3 class="anchored" data-anchor-id="研究流程">研究流程</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/new-research 專案名</code></td>
+<td>建立新研究專案資料夾結構</td>
+</tr>
+<tr class="even">
+<td><code>/research-ideation 主題</code></td>
+<td>生成具體研究問題和實證策略</td>
+</tr>
+<tr class="odd">
+<td><code>/interview-me 主題</code></td>
+<td>引導式問答，把研究想法正式化</td>
+</tr>
+<tr class="even">
+<td><code>/lit-review 主題</code></td>
+<td>系統性文獻搜尋與整理</td>
+</tr>
+<tr class="odd">
+<td><code>/review-paper 路徑</code></td>
+<td>模擬 referee 給出完整論文評論</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="寫作與發布" class="level3">
+<h3 class="anchored" data-anchor-id="寫作與發布">寫作與發布</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/new-post</code></td>
+<td>發布學習筆記到這個網站</td>
+</tr>
+<tr class="even">
+<td><code>/data-analysis 資料集</code></td>
+<td>完整 R 分析流程</td>
+</tr>
+<tr class="odd">
+<td><code>/academic-writer</code></td>
+<td>用我的風格生成英文論文段落</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="簡報latex-quarto" class="level3">
+<h3 class="anchored" data-anchor-id="簡報latex-quarto">簡報（LaTeX / Quarto）</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/compile-latex</code></td>
+<td>編譯 Beamer .tex</td>
+</tr>
+<tr class="even">
+<td><code>/slide-excellence</code></td>
+<td>視覺＋教學＋校對三合一審查</td>
+</tr>
+<tr class="odd">
+<td><code>/deploy</code></td>
+<td>部署到 GitHub Pages</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="系統" class="level3">
+<h3 class="anchored" data-anchor-id="系統">系統</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/commit</code></td>
+<td>git commit → PR → merge</td>
+</tr>
+<tr class="even">
+<td><code>/learn</code></td>
+<td>把本次發現的技巧存成 skill</td>
+</tr>
+<tr class="odd">
+<td><code>/context-status</code></td>
+<td>查看 context 用量</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="六完整日常流程" class="level2">
+<h2 class="anchored" data-anchor-id="六完整日常流程">六、完整日常流程</h2>
+<pre><code>週一
+ └─ 請 Claude「幫我建本週的筆記檔」
+
+平時（每天）
+ ├─ Cmd+Shift+D → Obsidian Daily Note
+ ├─ 看到好 paper → Zotero 瀏覽器插件一鍵存入
+ └─ 研究有進展 → 記到 weekly_notes
+
+週日 20:00（自動）
+ └─ weekly_review.py 自動執行 → 上傳 Notion</code></pre>
+<hr>
+</section>
+<section id="小結" class="level2">
+<h2 class="anchored" data-anchor-id="小結">小結</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>工具</th>
+<th>解決的問題</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Obsidian Daily Note</td>
+<td>每天有地方記，不靠記憶</td>
+</tr>
+<tr class="even">
+<td>weekly_notes + cron</td>
+<td>每週彙整，自動上傳，不靠意志力</td>
+</tr>
+<tr class="odd">
+<td>Notion</td>
+<td>長期存檔，方便回顧</td>
+</tr>
+<tr class="even">
+<td>Zotero + Better BibTeX</td>
+<td>文獻自動管理，<code>.bib</code> 永遠最新</td>
+</tr>
+<tr class="odd">
+<td>Claude Code Skills</td>
+<td>研究任務標準化，降低重複工作</td>
+</tr>
+</tbody>
+</table>
+<p>這套系統的核心原則是：<strong>降低每一個環節的摩擦力</strong>。越容易記錄，就越會記錄；越自動化，就越不依賴自律。</p>
+<p>完整的工作流程手冊（含 PDF）存放在 <code>~/claude_SY/MY_WORKFLOW.md</code>。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Muller Chen Blog</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

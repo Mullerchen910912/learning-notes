@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/ai-tools/claude-code-workflow-system.html",
       "/posts/ai-tools/claude-code-economics-research.html",
       "/posts/causalml/matrix-calculus-cheat-sheet.html",
       "/posts/ai-tools/claude-code-setup.html",
@@ -11,6 +12,7 @@
   {
     "listing": "/posts/ai-tools/index.html",
     "items": [
+      "/posts/ai-tools/claude-code-workflow-system.html",
       "/posts/ai-tools/claude-code-economics-research.html",
       "/posts/ai-tools/claude-code-setup.html"
     ]

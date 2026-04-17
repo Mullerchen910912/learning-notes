@@ -1,0 +1,412 @@
+---
+title: "Deep Diving into Synthetic Control Method"
+date: "2026-04-17"
+description: "從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。"
+categories: [causalml, synthetic-control, panel-data]
+draft: false
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+*From Abadie (2010) to Xu (2017)*
+
+---
+
+## The Problem: When Parallel Trends Fails
+
+Difference-in-differences (DiD) is the workhorse of policy evaluation.
+The setup is familiar: one group gets treated, another does not,
+and we compare the change in outcomes across the two groups.
+The identifying assumption is **parallel trends** — in the absence of treatment,
+the treated group would have followed the same trajectory as the control group.
+
+This assumption is often wrong.
+
+Abadie, Diamond, and Hainmueller (2010) open their paper with exactly this concern.
+In 1988, California passed Proposition 99 — a ballot initiative that raised cigarette taxes
+by 25 cents per pack and directed the revenue toward anti-smoking campaigns.
+The question is straightforward: did this reduce cigarette consumption?
+A naive DiD would compare California's post-1988 consumption trend against other U.S. states.
+But California was already an outlier.
+Its per-capita cigarette sales had been declining faster than the rest of the country
+since the late 1970s.
+Using any single state — or even the average of all other states — as the control group
+would confound the policy effect with whatever structural difference was already driving
+California's exceptionalism.
+
+This is the core failure mode of DiD in comparative case studies:
+the treated unit is often treated *because* it is different.
+Its pre-treatment trajectory is different. Its demographics are different.
+Assuming that the control group's trend would have applied to the treated unit
+is not an identifying assumption — it is a hope.
+
+More formally, let $Y_{it}(0)$ denote the potential outcome for unit $i$ at time $t$
+in the absence of treatment. DiD identifies the ATT under:
+
+$$\mathbb{E}[Y_{it}(0) - Y_{i,t-1}(0)] = \mathbb{E}[Y_{jt}(0) - Y_{j,t-1}(0)]$$
+
+for treated unit $i$ and control unit $j$.
+When this fails, the DiD estimate inherits the pre-existing trend gap as bias.
+
+**The key question is:** can we construct a better counterfactual for California?
+
+The intuition is simple.
+Instead of using a single control state, we use a *weighted combination* of control states —
+one that, in the pre-treatment period, closely resembles California on per-capita cigarette
+sales and on the covariates that predict them.
+If we can find such a combination, its post-1988 path is a plausible estimate of what
+California's cigarette consumption *would have been* had Proposition 99 never passed.
+
+This is the core idea of the **Synthetic Control Method** (Abadie et al. 2010).
+The method does not assume parallel trends. Instead, it asks: what weighted average of
+control units best approximates the treated unit in the pre-treatment period?
+That weighted average — the "synthetic control" — serves as the counterfactual.
+
+The appeal is partly diagnostic.
+You can *see* how well the synthetic control tracks the treated unit before the policy.
+If the fit is poor, the counterfactual is not credible, and the method tells you so explicitly.
+This transparency is one reason SCM displaced DiD as the default tool for comparative
+case studies.
+
+The same logic applies whenever a clearly-dated policy affects a small number of units.
+Taiwan legalized same-sex marriage in May 2019 — the first country in Asia to do so.
+Examining whether this reduced suicide rates requires a counterfactual for Taiwan's
+post-2019 trajectory. Taiwan's pre-treatment suicide trend looks nothing like Japan's or
+South Korea's; constructing a synthetic Taiwan from a weighted combination of regional
+neighbors is far more credible than any two-country DiD.
+
+But the original SCM has three limitations that matter in practice:
+
+1. It handles only **one treated unit**
+2. It produces no standard errors — inference relies on permutation tests
+3. It requires a long pre-treatment period to achieve good pre-treatment fit
+
+The Generalized Synthetic Control Method (Xu 2017) addresses all three.
+Before turning to Xu's proposal, the next section reviews how the original SCM
+works mechanically.
+
+---
+
+## The Original SCM: Mechanics
+
+The synthetic control method solves a matching problem.
+We observe $J+1$ units over $T$ periods.
+Unit 1 is treated starting at period $T_0 + 1$;
+units $2, \ldots, J+1$ form the donor pool and remain untreated throughout.
+The goal is to estimate what unit 1's outcome *would have been* in the post-treatment
+periods had the policy never occurred.
+
+The synthetic control for unit 1 is a weighted average of donor units:
+
+$$\hat{Y}_{1t}(0) = \sum_{j=2}^{J+1} w_j^* \, Y_{jt}, \quad t > T_0$$
+
+where the weights $w_j^* \geq 0$ sum to one.
+The estimated treatment effect at each post-treatment period is:
+
+$$\hat{\delta}_{1t} = Y_{1t} - \hat{Y}_{1t}(0)$$
+
+### Choosing the Weights
+
+The method selects $W^* = (w_2^*, \ldots, w_{J+1}^*)$ to minimize pre-treatment
+discrepancy in both the outcome variable and a set of pre-treatment predictors.
+Formally, the outer optimization minimizes:
+
+$$\| X_1 - X_0 W \|_V = \sqrt{(X_1 - X_0 W)' V (X_1 - X_0 W)}$$
+
+where $X_1$ is the vector of pre-treatment predictors for the treated unit,
+$X_0$ is the corresponding matrix for the donor pool,
+and $V$ is a diagonal matrix of predictor weights chosen to minimize out-of-sample
+prediction error.
+
+In the California example, $X_1$ includes pre-1988 averages of per-capita cigarette sales,
+income, retail price of cigarettes, and beer consumption.
+The resulting synthetic California puts most of its weight on
+Colorado (0.164), Montana (0.199), Nevada (0.234), and Utah (0.334) —
+states that together closely approximate California's pre-Proposition-99 trajectory.
+
+The pre-treatment fit is the method's first diagnostic.
+If no convex combination of donor units can approximate the treated unit's pre-treatment path,
+the synthetic control is not credible.
+In the California application, the synthetic control closely tracks actual California's
+cigarette sales from 1970 to 1988.
+The post-1988 gap — synthetic California continues on its pre-trend path while actual
+California's sales drop sharply — is the estimated effect of Proposition 99.
+By 2000, California consumed roughly **26 fewer cigarettes per capita per year**
+than the synthetic counterfactual suggests it would have.
+
+### Three Limitations
+
+The elegance of SCM obscures its constraints.
+
+**First**, the method is designed for a **single treated unit**.
+When multiple units adopt a policy at different times — as with U.S. states adopting
+Election Day Registration laws — a separate synthetic control must be constructed for each,
+with no unified framework for combining estimates or testing hypotheses across them.
+
+**Second**, **inference is weak when the donor pool is small**.
+The p-value from the permutation test is bounded below by $1/(J+1)$.
+With six donor countries, the minimum achievable p-value is $1/7 \approx 0.143$,
+regardless of how large the estimated effect is.
+
+**Third**, the method requires a **long pre-treatment period**.
+With too few pre-treatment observations, the weights overfit and the post-treatment
+counterfactual is unreliable.
+
+These are not minor caveats.
+They bind precisely in the settings where comparative case studies are most common:
+few units, short panels, multiple treated observations.
+Xu (2017) proposes a method that addresses all three — by recognizing that SCM
+is a special case of a much more general model.
+
+---
+
+## What GSC Adds: The Interactive Fixed Effects Model
+
+The original SCM works well when one unit is treated and the donor pool is rich.
+But the method has no explicit model underlying it — it is a reweighting scheme,
+not a structural model.
+Xu (2017) asks: what statistical model does SCM implicitly assume?
+The answer motivates a generalization.
+
+### From TWFE to IFE
+
+The standard two-way fixed effects (TWFE) model writes:
+
+$$Y_{it} = \delta D_{it} + \alpha_i + \xi_t + \varepsilon_{it}$$
+
+where $\alpha_i$ is a unit fixed effect and $\xi_t$ is a time fixed effect.
+The parallel trends assumption is baked into the additive structure:
+every unit's untreated potential outcome shifts by the same $\xi_t$ in each period.
+This is why TWFE fails when units respond differently to common shocks —
+for instance, when a global recession hits California harder than Montana
+because of differences in industry composition.
+
+The **Interactive Fixed Effects (IFE)** model replaces the additive time effect
+with an interactive term:
+
+$$Y_{it} = \delta_{it} D_{it} + x_{it}'\beta + \lambda_i' f_t + \varepsilon_{it}$$
+
+The key objects are:
+
+- $f_t \in \mathbb{R}^r$: a vector of **common factors** that evolve over time.
+  These capture aggregate shocks — business cycles, global trends, institutional changes —
+  that affect all units but not necessarily equally.
+- $\lambda_i \in \mathbb{R}^r$: **factor loadings** specific to each unit.
+  They measure how sensitive unit $i$ is to each common factor.
+- $\lambda_i' f_t$: the interaction. A unit with large loadings on a factor
+  will be strongly affected when that factor moves.
+
+This is a strictly more general model than TWFE.
+TWFE is the special case where $r = 1$ and all $\lambda_i$ are equal —
+meaning every unit reacts identically to the common time trend.
+The IFE model relaxes this: units can have heterogeneous reactions to common shocks,
+which is exactly what drives parallel trends violations in practice.
+
+### Why SCM Is a Special Case
+
+Xu (2017) shows that SCM implicitly estimates a version of the IFE model
+by constructing a synthetic control whose factor loadings match those of the treated unit.
+When the pre-treatment fit is perfect, the synthetic control and the treated unit
+share the same $\lambda_i$, so their post-treatment paths would be identical absent treatment.
+The IFE model makes this logic explicit and extendable.
+
+The generalization matters because the IFE framework accommodates what SCM cannot:
+multiple treated units, treatment at different times, and standard errors derived
+from a coherent probability model rather than a permutation argument.
+
+---
+
+## Estimation: The Three-Step Algorithm
+
+The GSC estimator proceeds in three steps, using only pre-treatment data on control units
+to learn the factor structure, then projecting it onto treated units to construct
+counterfactuals.
+
+**Step 1: Estimate the factor model on control units.**
+Using only the untreated observations (all control units, all periods;
+treated units in pre-treatment periods), estimate the IFE model by minimizing:
+
+$$\sum_{(i,t):\, D_{it}=0} \left( Y_{it} - x_{it}'\beta - \lambda_i' f_t \right)^2$$
+
+This yields estimates $\hat{\beta}$, $\hat{f}_t$, and $\hat{\lambda}_i$ for all control units.
+The number of factors $r$ is selected by cross-validation (described below).
+
+**Step 2: Recover factor loadings for treated units.**
+For each treated unit $i$, use its pre-treatment outcomes to find $\hat{\lambda}_i$
+that best fits the estimated factor path:
+
+$$\hat{\lambda}_i = \arg\min_{\lambda} \sum_{t \leq T_0} \left( Y_{it} - x_{it}'\hat{\beta} - \lambda' \hat{f}_t \right)^2$$
+
+This is a simple OLS projection of the treated unit's pre-treatment residuals
+onto the estimated factors.
+
+**Step 3: Impute counterfactuals and estimate ATT.**
+The counterfactual outcome for treated unit $i$ in post-treatment period $t$ is:
+
+$$\hat{Y}_{it}(0) = x_{it}'\hat{\beta} + \hat{\lambda}_i' \hat{f}_t$$
+
+The treatment effect for unit $i$ at period $t$ is $\hat{\delta}_{it} = Y_{it} - \hat{Y}_{it}(0)$,
+and the ATT averages over all treated units and post-treatment periods.
+Because the method estimates a separate $\hat{\lambda}_i$ for each treated unit,
+it naturally delivers **unit-level heterogeneous treatment effects** —
+something the original SCM cannot do when multiple units are treated.
+
+### Selecting the Number of Factors
+
+How many factors $r$ should the model include?
+Too few and the factor structure underfits, leaving systematic variation in the residuals.
+Too many and the model overfits the pre-treatment data, producing unreliable counterfactuals.
+
+Xu (2017) selects $r$ via cross-validation on control units.
+The procedure holds out one control unit at a time, estimates the IFE model
+on the remaining controls, and measures how well it predicts the held-out unit's outcomes.
+The $r$ that minimizes average prediction error across all held-out units is selected.
+This is a data-driven choice with no researcher discretion.
+
+### Inference via Parametric Bootstrap
+
+Unlike SCM's permutation test, GSC produces genuine standard errors.
+Xu (2017) uses a parametric bootstrap: draw new errors $\varepsilon_{it}^*$
+from the estimated residual distribution, construct bootstrap outcomes
+$Y_{it}^* = \hat{Y}_{it}(0) + \hat{\delta}_{it} D_{it} + \varepsilon_{it}^*$,
+re-estimate the model, and re-compute the ATT.
+Repeating this 1,000 times yields a bootstrap distribution from which confidence intervals
+are read off directly. The bootstrap is blocked at the unit level to preserve
+within-unit serial correlation.
+
+---
+
+## When Does GSC Beat TWFE? Monte Carlo Evidence
+
+Xu (2017) validates the method with Monte Carlo experiments designed to mimic realistic
+TSCS data. The data-generating process follows the IFE model with two latent factors,
+heterogeneous factor loadings, and either constant or heterogeneous treatment effects.
+The benchmark is a two-way fixed effects estimator and the standard IFE estimator (Bai 2009),
+which imposes a constant treatment effect.
+
+The central finding is easy to state: **when time-varying confounders are present,
+TWFE is badly biased and GSC is not**.
+
+With decomposable time-varying confounders (i.e., the untreated potential outcome follows
+an IFE structure), TWFE bias is large and grows with the strength of the factor loadings.
+The IFE estimator with a known number of factors is unbiased, but in practice we do not
+know $r$. The GSC estimator, using cross-validation to select $r$, is nearly unbiased
+across all configurations Xu considers.
+
+Two caveats are important.
+First, when $T_0$ is small (fewer than 10 pre-treatment periods) or $N_{co}$ is small
+(fewer than 40 control units), all estimators perform worse, and GSC's advantage shrinks
+as the factor structure becomes harder to identify.
+Second, when parallel trends holds exactly — so the true DGP is additive — TWFE and GSC
+produce similar estimates, but GSC pays a small efficiency cost from estimating unnecessary
+factors. This is an acceptable price: you rarely know in advance whether parallel trends
+holds, and GSC fails gracefully when it does.
+
+---
+
+## Empirical Illustration: EDR Laws and Voter Turnout
+
+Xu (2017) applies GSC to estimate the effect of Election Day Registration (EDR) laws on
+voter turnout in U.S. states. EDR allows citizens to register on Election Day itself,
+removing a procedural barrier to voting. Nine states adopted EDR at different points
+between 1973 and 2008 — a staggered adoption design that SCM cannot handle in a unified way.
+
+The sample covers all 50 U.S. states from 1920 to 2014, with 38 states serving as the
+donor pool. Cross-validation selects $r = 2$ factors.
+The first factor captures the sharp increase in southern states' turnout following
+the 1965 Voting Rights Act — a major structural break concentrated in a subset of states.
+The second reflects a broad downward trend in turnout across recent decades.
+Both are meaningful and interpretable, which is a useful sanity check on the method.
+
+The overall ATT estimate is approximately **$+5$ percentage points** (SE = 2.3 pp),
+consistent with existing large-sample evidence from individual-level data.
+The diagnostic that matters most here is the factor loadings plot:
+the nine treated states' estimated loadings lie mostly within the convex hull of the
+control states' loadings, which means the counterfactuals are produced by interpolation
+rather than extrapolation. This is the GSC analog of checking pre-treatment fit in SCM.
+
+### Heterogeneous Effects Across Adoption Waves
+
+The most interesting result is not the average effect but the heterogeneity.
+States adopted EDR in three waves, and their motivations differed:
+
+| Wave | States | ATT (pp) | Significant? |
+|------|--------|-----------|--------------|
+| 1st (mid-1970s) | ME, MN, WI | +7.3 | Yes |
+| 2nd (NVRA-avoiders) | ID, NH, WY | +2.2 | No |
+| 3rd (recent) | MT, IA, CT | −1.1 | No |
+
+Early adopters (Maine, Minnesota, Wisconsin) enacted EDR because officials genuinely
+wanted higher turnout — and turnout rose by about 7 percentage points.
+Later adopters introduced EDR primarily to opt out of the 1993 National Voter Registration
+Act (NVRA), which they viewed as administratively costly.
+In these states, EDR had no detectable effect.
+The NVRA had already lowered registration barriers substantially,
+leaving little room for EDR to add further.
+
+This pattern — a large effect for early adopters, near-zero for later ones — is consistent
+with selection on motivation. It is also exactly the kind of result that a pooled TWFE
+estimate would obscure, since it averages over states with very different treatment dynamics.
+
+---
+
+## Practical Checklist: When to Use GSC
+
+GSC is not always the right tool. Here is an honest accounting of when it works,
+when it struggles, and what to check before trusting the results.
+
+### Prerequisites
+
+| Condition | Recommendation |
+|-----------|---------------|
+| $T_0 \geq 10$ pre-treatment periods | Safe to proceed |
+| $N_{co} \geq 40$ control units | Safe to proceed |
+| $T_0 < 10$ or $N_{co} < 40$ | Results may be unreliable; use with caution |
+| Parallel trends holds approximately | DiD/TWFE is fine and more efficient |
+| Multiple treated units | GSC preferred over running separate SCMs |
+| One treated unit | Original SCM or GSC both work |
+| Staggered adoption timing | GSC handles it natively |
+| Dynamic treatment effects | GSC accommodates them; TWFE does not |
+
+### Three Diagnostics to Always Run
+
+**1. Pre-treatment fit.**
+Plot actual and imputed outcomes for treated units in the pre-treatment period.
+If the GSC counterfactual tracks the treated unit well before the policy,
+the post-treatment gap is credible. If not, stop.
+
+**2. Factor loadings plot.**
+Plot the estimated $\hat{\lambda}_i$ for all units in the two-dimensional factor space.
+Check that the treated units' loadings fall within or near the convex hull of the
+control units' loadings.
+If treated units are far outside the hull, the counterfactuals rely on extrapolation
+and the estimates are unreliable.
+
+**3. Sensitivity to $r$.**
+Re-run the analysis with $r - 1$ and $r + 1$ factors.
+If the estimated ATT changes substantially, the result is not robust to the
+factor selection choice.
+
+### Known Limitations
+
+Xu (2017) is explicit about what GSC cannot handle.
+The method assumes a linear IFE structure for the untreated potential outcome.
+It does not accommodate dynamic relationships between treatment and outcomes,
+structural breaks in the factor process, or random coefficients on observed covariates.
+It also cannot allow treatment timing to be endogenous to the outcome in a continuous way —
+the policy must be a discrete, clearly-dated event.
+
+When these conditions are violated, the results may be misleading,
+and the diagnostics above may not flag the problem.
+In such cases, the honest choice is to fall back on a simpler, more transparent
+estimator and acknowledge the identification limitations directly.
+
+---
+
+**The bottom line.**
+GSC fills a genuine gap: it gives researchers a principled way to construct
+counterfactuals in settings where DiD's parallel trends assumption is implausible
+and SCM's single-unit restriction is binding.
+The method is not magic — it replaces one set of assumptions with another.
+But the assumptions are more credible in many applied settings,
+and the diagnostics make it clear when they are not.

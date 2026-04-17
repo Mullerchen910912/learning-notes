@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-04-17">
+<meta name="description" content="從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。">
+
+<title>Deep Diving into Synthetic Control Method – Muller Chen Blog</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Muller Chen Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">首頁</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/ai-tools/index.html"> 
+<span class="menu-text">AI 工具</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
+<span class="menu-text">Causal Inference and Econometrics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">關於我</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Mullerchen910912"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-problem-when-parallel-trends-fails" id="toc-the-problem-when-parallel-trends-fails" class="nav-link active" data-scroll-target="#the-problem-when-parallel-trends-fails">The Problem: When Parallel Trends Fails</a></li>
+  <li><a href="#the-original-scm-mechanics" id="toc-the-original-scm-mechanics" class="nav-link" data-scroll-target="#the-original-scm-mechanics">The Original SCM: Mechanics</a>
+  <ul class="collapse">
+  <li><a href="#choosing-the-weights" id="toc-choosing-the-weights" class="nav-link" data-scroll-target="#choosing-the-weights">Choosing the Weights</a></li>
+  <li><a href="#three-limitations" id="toc-three-limitations" class="nav-link" data-scroll-target="#three-limitations">Three Limitations</a></li>
+  </ul></li>
+  <li><a href="#what-gsc-adds-the-interactive-fixed-effects-model" id="toc-what-gsc-adds-the-interactive-fixed-effects-model" class="nav-link" data-scroll-target="#what-gsc-adds-the-interactive-fixed-effects-model">What GSC Adds: The Interactive Fixed Effects Model</a>
+  <ul class="collapse">
+  <li><a href="#from-twfe-to-ife" id="toc-from-twfe-to-ife" class="nav-link" data-scroll-target="#from-twfe-to-ife">From TWFE to IFE</a></li>
+  <li><a href="#why-scm-is-a-special-case" id="toc-why-scm-is-a-special-case" class="nav-link" data-scroll-target="#why-scm-is-a-special-case">Why SCM Is a Special Case</a></li>
+  </ul></li>
+  <li><a href="#estimation-the-three-step-algorithm" id="toc-estimation-the-three-step-algorithm" class="nav-link" data-scroll-target="#estimation-the-three-step-algorithm">Estimation: The Three-Step Algorithm</a>
+  <ul class="collapse">
+  <li><a href="#selecting-the-number-of-factors" id="toc-selecting-the-number-of-factors" class="nav-link" data-scroll-target="#selecting-the-number-of-factors">Selecting the Number of Factors</a></li>
+  <li><a href="#inference-via-parametric-bootstrap" id="toc-inference-via-parametric-bootstrap" class="nav-link" data-scroll-target="#inference-via-parametric-bootstrap">Inference via Parametric Bootstrap</a></li>
+  </ul></li>
+  <li><a href="#when-does-gsc-beat-twfe-monte-carlo-evidence" id="toc-when-does-gsc-beat-twfe-monte-carlo-evidence" class="nav-link" data-scroll-target="#when-does-gsc-beat-twfe-monte-carlo-evidence">When Does GSC Beat TWFE? Monte Carlo Evidence</a></li>
+  <li><a href="#empirical-illustration-edr-laws-and-voter-turnout" id="toc-empirical-illustration-edr-laws-and-voter-turnout" class="nav-link" data-scroll-target="#empirical-illustration-edr-laws-and-voter-turnout">Empirical Illustration: EDR Laws and Voter Turnout</a>
+  <ul class="collapse">
+  <li><a href="#heterogeneous-effects-across-adoption-waves" id="toc-heterogeneous-effects-across-adoption-waves" class="nav-link" data-scroll-target="#heterogeneous-effects-across-adoption-waves">Heterogeneous Effects Across Adoption Waves</a></li>
+  </ul></li>
+  <li><a href="#practical-checklist-when-to-use-gsc" id="toc-practical-checklist-when-to-use-gsc" class="nav-link" data-scroll-target="#practical-checklist-when-to-use-gsc">Practical Checklist: When to Use GSC</a>
+  <ul class="collapse">
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#three-diagnostics-to-always-run" id="toc-three-diagnostics-to-always-run" class="nav-link" data-scroll-target="#three-diagnostics-to-always-run">Three Diagnostics to Always Run</a></li>
+  <li><a href="#known-limitations" id="toc-known-limitations" class="nav-link" data-scroll-target="#known-limitations">Known Limitations</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Deep Diving into Synthetic Control Method</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">causalml</div>
+    <div class="quarto-category">synthetic-control</div>
+    <div class="quarto-category">panel-data</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 17, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><em>From Abadie (2010) to Xu (2017)</em></p>
+<hr>
+<section id="the-problem-when-parallel-trends-fails" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-when-parallel-trends-fails">The Problem: When Parallel Trends Fails</h2>
+<p>Difference-in-differences (DiD) is the workhorse of policy evaluation. The setup is familiar: one group gets treated, another does not, and we compare the change in outcomes across the two groups. The identifying assumption is <strong>parallel trends</strong> — in the absence of treatment, the treated group would have followed the same trajectory as the control group.</p>
+<p>This assumption is often wrong.</p>
+<p>Abadie, Diamond, and Hainmueller (2010) open their paper with exactly this concern. In 1988, California passed Proposition 99 — a ballot initiative that raised cigarette taxes by 25 cents per pack and directed the revenue toward anti-smoking campaigns. The question is straightforward: did this reduce cigarette consumption? A naive DiD would compare California’s post-1988 consumption trend against other U.S. states. But California was already an outlier. Its per-capita cigarette sales had been declining faster than the rest of the country since the late 1970s. Using any single state — or even the average of all other states — as the control group would confound the policy effect with whatever structural difference was already driving California’s exceptionalism.</p>
+<p>This is the core failure mode of DiD in comparative case studies: the treated unit is often treated <em>because</em> it is different. Its pre-treatment trajectory is different. Its demographics are different. Assuming that the control group’s trend would have applied to the treated unit is not an identifying assumption — it is a hope.</p>
+<p>More formally, let <span class="math inline">\(Y_{it}(0)\)</span> denote the potential outcome for unit <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> in the absence of treatment. DiD identifies the ATT under:</p>
+<p><span class="math display">\[\mathbb{E}[Y_{it}(0) - Y_{i,t-1}(0)] = \mathbb{E}[Y_{jt}(0) - Y_{j,t-1}(0)]\]</span></p>
+<p>for treated unit <span class="math inline">\(i\)</span> and control unit <span class="math inline">\(j\)</span>. When this fails, the DiD estimate inherits the pre-existing trend gap as bias.</p>
+<p><strong>The key question is:</strong> can we construct a better counterfactual for California?</p>
+<p>The intuition is simple. Instead of using a single control state, we use a <em>weighted combination</em> of control states — one that, in the pre-treatment period, closely resembles California on per-capita cigarette sales and on the covariates that predict them. If we can find such a combination, its post-1988 path is a plausible estimate of what California’s cigarette consumption <em>would have been</em> had Proposition 99 never passed.</p>
+<p>This is the core idea of the <strong>Synthetic Control Method</strong> (Abadie et al.&nbsp;2010). The method does not assume parallel trends. Instead, it asks: what weighted average of control units best approximates the treated unit in the pre-treatment period? That weighted average — the “synthetic control” — serves as the counterfactual.</p>
+<p>The appeal is partly diagnostic. You can <em>see</em> how well the synthetic control tracks the treated unit before the policy. If the fit is poor, the counterfactual is not credible, and the method tells you so explicitly. This transparency is one reason SCM displaced DiD as the default tool for comparative case studies.</p>
+<p>The same logic applies whenever a clearly-dated policy affects a small number of units. Taiwan legalized same-sex marriage in May 2019 — the first country in Asia to do so. Examining whether this reduced suicide rates requires a counterfactual for Taiwan’s post-2019 trajectory. Taiwan’s pre-treatment suicide trend looks nothing like Japan’s or South Korea’s; constructing a synthetic Taiwan from a weighted combination of regional neighbors is far more credible than any two-country DiD.</p>
+<p>But the original SCM has three limitations that matter in practice:</p>
+<ol type="1">
+<li>It handles only <strong>one treated unit</strong></li>
+<li>It produces no standard errors — inference relies on permutation tests</li>
+<li>It requires a long pre-treatment period to achieve good pre-treatment fit</li>
+</ol>
+<p>The Generalized Synthetic Control Method (Xu 2017) addresses all three. Before turning to Xu’s proposal, the next section reviews how the original SCM works mechanically.</p>
+<hr>
+</section>
+<section id="the-original-scm-mechanics" class="level2">
+<h2 class="anchored" data-anchor-id="the-original-scm-mechanics">The Original SCM: Mechanics</h2>
+<p>The synthetic control method solves a matching problem. We observe <span class="math inline">\(J+1\)</span> units over <span class="math inline">\(T\)</span> periods. Unit 1 is treated starting at period <span class="math inline">\(T_0 + 1\)</span>; units <span class="math inline">\(2, \ldots, J+1\)</span> form the donor pool and remain untreated throughout. The goal is to estimate what unit 1’s outcome <em>would have been</em> in the post-treatment periods had the policy never occurred.</p>
+<p>The synthetic control for unit 1 is a weighted average of donor units:</p>
+<p><span class="math display">\[\hat{Y}_{1t}(0) = \sum_{j=2}^{J+1} w_j^* \, Y_{jt}, \quad t &gt; T_0\]</span></p>
+<p>where the weights <span class="math inline">\(w_j^* \geq 0\)</span> sum to one. The estimated treatment effect at each post-treatment period is:</p>
+<p><span class="math display">\[\hat{\delta}_{1t} = Y_{1t} - \hat{Y}_{1t}(0)\]</span></p>
+<section id="choosing-the-weights" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-the-weights">Choosing the Weights</h3>
+<p>The method selects <span class="math inline">\(W^* = (w_2^*, \ldots, w_{J+1}^*)\)</span> to minimize pre-treatment discrepancy in both the outcome variable and a set of pre-treatment predictors. Formally, the outer optimization minimizes:</p>
+<p><span class="math display">\[\| X_1 - X_0 W \|_V = \sqrt{(X_1 - X_0 W)' V (X_1 - X_0 W)}\]</span></p>
+<p>where <span class="math inline">\(X_1\)</span> is the vector of pre-treatment predictors for the treated unit, <span class="math inline">\(X_0\)</span> is the corresponding matrix for the donor pool, and <span class="math inline">\(V\)</span> is a diagonal matrix of predictor weights chosen to minimize out-of-sample prediction error.</p>
+<p>In the California example, <span class="math inline">\(X_1\)</span> includes pre-1988 averages of per-capita cigarette sales, income, retail price of cigarettes, and beer consumption. The resulting synthetic California puts most of its weight on Colorado (0.164), Montana (0.199), Nevada (0.234), and Utah (0.334) — states that together closely approximate California’s pre-Proposition-99 trajectory.</p>
+<p>The pre-treatment fit is the method’s first diagnostic. If no convex combination of donor units can approximate the treated unit’s pre-treatment path, the synthetic control is not credible. In the California application, the synthetic control closely tracks actual California’s cigarette sales from 1970 to 1988. The post-1988 gap — synthetic California continues on its pre-trend path while actual California’s sales drop sharply — is the estimated effect of Proposition 99. By 2000, California consumed roughly <strong>26 fewer cigarettes per capita per year</strong> than the synthetic counterfactual suggests it would have.</p>
+</section>
+<section id="three-limitations" class="level3">
+<h3 class="anchored" data-anchor-id="three-limitations">Three Limitations</h3>
+<p>The elegance of SCM obscures its constraints.</p>
+<p><strong>First</strong>, the method is designed for a <strong>single treated unit</strong>. When multiple units adopt a policy at different times — as with U.S. states adopting Election Day Registration laws — a separate synthetic control must be constructed for each, with no unified framework for combining estimates or testing hypotheses across them.</p>
+<p><strong>Second</strong>, <strong>inference is weak when the donor pool is small</strong>. The p-value from the permutation test is bounded below by <span class="math inline">\(1/(J+1)\)</span>. With six donor countries, the minimum achievable p-value is <span class="math inline">\(1/7 \approx 0.143\)</span>, regardless of how large the estimated effect is.</p>
+<p><strong>Third</strong>, the method requires a <strong>long pre-treatment period</strong>. With too few pre-treatment observations, the weights overfit and the post-treatment counterfactual is unreliable.</p>
+<p>These are not minor caveats. They bind precisely in the settings where comparative case studies are most common: few units, short panels, multiple treated observations. Xu (2017) proposes a method that addresses all three — by recognizing that SCM is a special case of a much more general model.</p>
+<hr>
+</section>
+</section>
+<section id="what-gsc-adds-the-interactive-fixed-effects-model" class="level2">
+<h2 class="anchored" data-anchor-id="what-gsc-adds-the-interactive-fixed-effects-model">What GSC Adds: The Interactive Fixed Effects Model</h2>
+<p>The original SCM works well when one unit is treated and the donor pool is rich. But the method has no explicit model underlying it — it is a reweighting scheme, not a structural model. Xu (2017) asks: what statistical model does SCM implicitly assume? The answer motivates a generalization.</p>
+<section id="from-twfe-to-ife" class="level3">
+<h3 class="anchored" data-anchor-id="from-twfe-to-ife">From TWFE to IFE</h3>
+<p>The standard two-way fixed effects (TWFE) model writes:</p>
+<p><span class="math display">\[Y_{it} = \delta D_{it} + \alpha_i + \xi_t + \varepsilon_{it}\]</span></p>
+<p>where <span class="math inline">\(\alpha_i\)</span> is a unit fixed effect and <span class="math inline">\(\xi_t\)</span> is a time fixed effect. The parallel trends assumption is baked into the additive structure: every unit’s untreated potential outcome shifts by the same <span class="math inline">\(\xi_t\)</span> in each period. This is why TWFE fails when units respond differently to common shocks — for instance, when a global recession hits California harder than Montana because of differences in industry composition.</p>
+<p>The <strong>Interactive Fixed Effects (IFE)</strong> model replaces the additive time effect with an interactive term:</p>
+<p><span class="math display">\[Y_{it} = \delta_{it} D_{it} + x_{it}'\beta + \lambda_i' f_t + \varepsilon_{it}\]</span></p>
+<p>The key objects are:</p>
+<ul>
+<li><span class="math inline">\(f_t \in \mathbb{R}^r\)</span>: a vector of <strong>common factors</strong> that evolve over time. These capture aggregate shocks — business cycles, global trends, institutional changes — that affect all units but not necessarily equally.</li>
+<li><span class="math inline">\(\lambda_i \in \mathbb{R}^r\)</span>: <strong>factor loadings</strong> specific to each unit. They measure how sensitive unit <span class="math inline">\(i\)</span> is to each common factor.</li>
+<li><span class="math inline">\(\lambda_i' f_t\)</span>: the interaction. A unit with large loadings on a factor will be strongly affected when that factor moves.</li>
+</ul>
+<p>This is a strictly more general model than TWFE. TWFE is the special case where <span class="math inline">\(r = 1\)</span> and all <span class="math inline">\(\lambda_i\)</span> are equal — meaning every unit reacts identically to the common time trend. The IFE model relaxes this: units can have heterogeneous reactions to common shocks, which is exactly what drives parallel trends violations in practice.</p>
+</section>
+<section id="why-scm-is-a-special-case" class="level3">
+<h3 class="anchored" data-anchor-id="why-scm-is-a-special-case">Why SCM Is a Special Case</h3>
+<p>Xu (2017) shows that SCM implicitly estimates a version of the IFE model by constructing a synthetic control whose factor loadings match those of the treated unit. When the pre-treatment fit is perfect, the synthetic control and the treated unit share the same <span class="math inline">\(\lambda_i\)</span>, so their post-treatment paths would be identical absent treatment. The IFE model makes this logic explicit and extendable.</p>
+<p>The generalization matters because the IFE framework accommodates what SCM cannot: multiple treated units, treatment at different times, and standard errors derived from a coherent probability model rather than a permutation argument.</p>
+<hr>
+</section>
+</section>
+<section id="estimation-the-three-step-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-the-three-step-algorithm">Estimation: The Three-Step Algorithm</h2>
+<p>The GSC estimator proceeds in three steps, using only pre-treatment data on control units to learn the factor structure, then projecting it onto treated units to construct counterfactuals.</p>
+<p><strong>Step 1: Estimate the factor model on control units.</strong> Using only the untreated observations (all control units, all periods; treated units in pre-treatment periods), estimate the IFE model by minimizing:</p>
+<p><span class="math display">\[\sum_{(i,t):\, D_{it}=0} \left( Y_{it} - x_{it}'\beta - \lambda_i' f_t \right)^2\]</span></p>
+<p>This yields estimates <span class="math inline">\(\hat{\beta}\)</span>, <span class="math inline">\(\hat{f}_t\)</span>, and <span class="math inline">\(\hat{\lambda}_i\)</span> for all control units. The number of factors <span class="math inline">\(r\)</span> is selected by cross-validation (described below).</p>
+<p><strong>Step 2: Recover factor loadings for treated units.</strong> For each treated unit <span class="math inline">\(i\)</span>, use its pre-treatment outcomes to find <span class="math inline">\(\hat{\lambda}_i\)</span> that best fits the estimated factor path:</p>
+<p><span class="math display">\[\hat{\lambda}_i = \arg\min_{\lambda} \sum_{t \leq T_0} \left( Y_{it} - x_{it}'\hat{\beta} - \lambda' \hat{f}_t \right)^2\]</span></p>
+<p>This is a simple OLS projection of the treated unit’s pre-treatment residuals onto the estimated factors.</p>
+<p><strong>Step 3: Impute counterfactuals and estimate ATT.</strong> The counterfactual outcome for treated unit <span class="math inline">\(i\)</span> in post-treatment period <span class="math inline">\(t\)</span> is:</p>
+<p><span class="math display">\[\hat{Y}_{it}(0) = x_{it}'\hat{\beta} + \hat{\lambda}_i' \hat{f}_t\]</span></p>
+<p>The treatment effect for unit <span class="math inline">\(i\)</span> at period <span class="math inline">\(t\)</span> is <span class="math inline">\(\hat{\delta}_{it} = Y_{it} - \hat{Y}_{it}(0)\)</span>, and the ATT averages over all treated units and post-treatment periods. Because the method estimates a separate <span class="math inline">\(\hat{\lambda}_i\)</span> for each treated unit, it naturally delivers <strong>unit-level heterogeneous treatment effects</strong> — something the original SCM cannot do when multiple units are treated.</p>
+<section id="selecting-the-number-of-factors" class="level3">
+<h3 class="anchored" data-anchor-id="selecting-the-number-of-factors">Selecting the Number of Factors</h3>
+<p>How many factors <span class="math inline">\(r\)</span> should the model include? Too few and the factor structure underfits, leaving systematic variation in the residuals. Too many and the model overfits the pre-treatment data, producing unreliable counterfactuals.</p>
+<p>Xu (2017) selects <span class="math inline">\(r\)</span> via cross-validation on control units. The procedure holds out one control unit at a time, estimates the IFE model on the remaining controls, and measures how well it predicts the held-out unit’s outcomes. The <span class="math inline">\(r\)</span> that minimizes average prediction error across all held-out units is selected. This is a data-driven choice with no researcher discretion.</p>
+</section>
+<section id="inference-via-parametric-bootstrap" class="level3">
+<h3 class="anchored" data-anchor-id="inference-via-parametric-bootstrap">Inference via Parametric Bootstrap</h3>
+<p>Unlike SCM’s permutation test, GSC produces genuine standard errors. Xu (2017) uses a parametric bootstrap: draw new errors <span class="math inline">\(\varepsilon_{it}^*\)</span> from the estimated residual distribution, construct bootstrap outcomes <span class="math inline">\(Y_{it}^* = \hat{Y}_{it}(0) + \hat{\delta}_{it} D_{it} + \varepsilon_{it}^*\)</span>, re-estimate the model, and re-compute the ATT. Repeating this 1,000 times yields a bootstrap distribution from which confidence intervals are read off directly. The bootstrap is blocked at the unit level to preserve within-unit serial correlation.</p>
+<hr>
+</section>
+</section>
+<section id="when-does-gsc-beat-twfe-monte-carlo-evidence" class="level2">
+<h2 class="anchored" data-anchor-id="when-does-gsc-beat-twfe-monte-carlo-evidence">When Does GSC Beat TWFE? Monte Carlo Evidence</h2>
+<p>Xu (2017) validates the method with Monte Carlo experiments designed to mimic realistic TSCS data. The data-generating process follows the IFE model with two latent factors, heterogeneous factor loadings, and either constant or heterogeneous treatment effects. The benchmark is a two-way fixed effects estimator and the standard IFE estimator (Bai 2009), which imposes a constant treatment effect.</p>
+<p>The central finding is easy to state: <strong>when time-varying confounders are present, TWFE is badly biased and GSC is not</strong>.</p>
+<p>With decomposable time-varying confounders (i.e., the untreated potential outcome follows an IFE structure), TWFE bias is large and grows with the strength of the factor loadings. The IFE estimator with a known number of factors is unbiased, but in practice we do not know <span class="math inline">\(r\)</span>. The GSC estimator, using cross-validation to select <span class="math inline">\(r\)</span>, is nearly unbiased across all configurations Xu considers.</p>
+<p>Two caveats are important. First, when <span class="math inline">\(T_0\)</span> is small (fewer than 10 pre-treatment periods) or <span class="math inline">\(N_{co}\)</span> is small (fewer than 40 control units), all estimators perform worse, and GSC’s advantage shrinks as the factor structure becomes harder to identify. Second, when parallel trends holds exactly — so the true DGP is additive — TWFE and GSC produce similar estimates, but GSC pays a small efficiency cost from estimating unnecessary factors. This is an acceptable price: you rarely know in advance whether parallel trends holds, and GSC fails gracefully when it does.</p>
+<hr>
+</section>
+<section id="empirical-illustration-edr-laws-and-voter-turnout" class="level2">
+<h2 class="anchored" data-anchor-id="empirical-illustration-edr-laws-and-voter-turnout">Empirical Illustration: EDR Laws and Voter Turnout</h2>
+<p>Xu (2017) applies GSC to estimate the effect of Election Day Registration (EDR) laws on voter turnout in U.S. states. EDR allows citizens to register on Election Day itself, removing a procedural barrier to voting. Nine states adopted EDR at different points between 1973 and 2008 — a staggered adoption design that SCM cannot handle in a unified way.</p>
+<p>The sample covers all 50 U.S. states from 1920 to 2014, with 38 states serving as the donor pool. Cross-validation selects <span class="math inline">\(r = 2\)</span> factors. The first factor captures the sharp increase in southern states’ turnout following the 1965 Voting Rights Act — a major structural break concentrated in a subset of states. The second reflects a broad downward trend in turnout across recent decades. Both are meaningful and interpretable, which is a useful sanity check on the method.</p>
+<p>The overall ATT estimate is approximately <strong><span class="math inline">\(+5\)</span> percentage points</strong> (SE = 2.3 pp), consistent with existing large-sample evidence from individual-level data. The diagnostic that matters most here is the factor loadings plot: the nine treated states’ estimated loadings lie mostly within the convex hull of the control states’ loadings, which means the counterfactuals are produced by interpolation rather than extrapolation. This is the GSC analog of checking pre-treatment fit in SCM.</p>
+<section id="heterogeneous-effects-across-adoption-waves" class="level3">
+<h3 class="anchored" data-anchor-id="heterogeneous-effects-across-adoption-waves">Heterogeneous Effects Across Adoption Waves</h3>
+<p>The most interesting result is not the average effect but the heterogeneity. States adopted EDR in three waves, and their motivations differed:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Wave</th>
+<th>States</th>
+<th>ATT (pp)</th>
+<th>Significant?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1st (mid-1970s)</td>
+<td>ME, MN, WI</td>
+<td>+7.3</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>2nd (NVRA-avoiders)</td>
+<td>ID, NH, WY</td>
+<td>+2.2</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>3rd (recent)</td>
+<td>MT, IA, CT</td>
+<td>−1.1</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Early adopters (Maine, Minnesota, Wisconsin) enacted EDR because officials genuinely wanted higher turnout — and turnout rose by about 7 percentage points. Later adopters introduced EDR primarily to opt out of the 1993 National Voter Registration Act (NVRA), which they viewed as administratively costly. In these states, EDR had no detectable effect. The NVRA had already lowered registration barriers substantially, leaving little room for EDR to add further.</p>
+<p>This pattern — a large effect for early adopters, near-zero for later ones — is consistent with selection on motivation. It is also exactly the kind of result that a pooled TWFE estimate would obscure, since it averages over states with very different treatment dynamics.</p>
+<hr>
+</section>
+</section>
+<section id="practical-checklist-when-to-use-gsc" class="level2">
+<h2 class="anchored" data-anchor-id="practical-checklist-when-to-use-gsc">Practical Checklist: When to Use GSC</h2>
+<p>GSC is not always the right tool. Here is an honest accounting of when it works, when it struggles, and what to check before trusting the results.</p>
+<section id="prerequisites" class="level3">
+<h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Condition</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_0 \geq 10\)</span> pre-treatment periods</td>
+<td>Safe to proceed</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(N_{co} \geq 40\)</span> control units</td>
+<td>Safe to proceed</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_0 &lt; 10\)</span> or <span class="math inline">\(N_{co} &lt; 40\)</span></td>
+<td>Results may be unreliable; use with caution</td>
+</tr>
+<tr class="even">
+<td>Parallel trends holds approximately</td>
+<td>DiD/TWFE is fine and more efficient</td>
+</tr>
+<tr class="odd">
+<td>Multiple treated units</td>
+<td>GSC preferred over running separate SCMs</td>
+</tr>
+<tr class="even">
+<td>One treated unit</td>
+<td>Original SCM or GSC both work</td>
+</tr>
+<tr class="odd">
+<td>Staggered adoption timing</td>
+<td>GSC handles it natively</td>
+</tr>
+<tr class="even">
+<td>Dynamic treatment effects</td>
+<td>GSC accommodates them; TWFE does not</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="three-diagnostics-to-always-run" class="level3">
+<h3 class="anchored" data-anchor-id="three-diagnostics-to-always-run">Three Diagnostics to Always Run</h3>
+<p><strong>1. Pre-treatment fit.</strong> Plot actual and imputed outcomes for treated units in the pre-treatment period. If the GSC counterfactual tracks the treated unit well before the policy, the post-treatment gap is credible. If not, stop.</p>
+<p><strong>2. Factor loadings plot.</strong> Plot the estimated <span class="math inline">\(\hat{\lambda}_i\)</span> for all units in the two-dimensional factor space. Check that the treated units’ loadings fall within or near the convex hull of the control units’ loadings. If treated units are far outside the hull, the counterfactuals rely on extrapolation and the estimates are unreliable.</p>
+<p><strong>3. Sensitivity to <span class="math inline">\(r\)</span>.</strong> Re-run the analysis with <span class="math inline">\(r - 1\)</span> and <span class="math inline">\(r + 1\)</span> factors. If the estimated ATT changes substantially, the result is not robust to the factor selection choice.</p>
+</section>
+<section id="known-limitations" class="level3">
+<h3 class="anchored" data-anchor-id="known-limitations">Known Limitations</h3>
+<p>Xu (2017) is explicit about what GSC cannot handle. The method assumes a linear IFE structure for the untreated potential outcome. It does not accommodate dynamic relationships between treatment and outcomes, structural breaks in the factor process, or random coefficients on observed covariates. It also cannot allow treatment timing to be endogenous to the outcome in a continuous way — the policy must be a discrete, clearly-dated event.</p>
+<p>When these conditions are violated, the results may be misleading, and the diagnostics above may not flag the problem. In such cases, the honest choice is to fall back on a simpler, more transparent estimator and acknowledge the identification limitations directly.</p>
+<hr>
+<p><strong>The bottom line.</strong> GSC fills a genuine gap: it gives researchers a principled way to construct counterfactuals in settings where DiD’s parallel trends assumption is implausible and SCM’s single-unit restriction is binding. The method is not magic — it replaces one set of assumptions with another. But the assumptions are more credible in many applied settings, and the diagnostics make it clear when they are not.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Muller Chen Blog</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

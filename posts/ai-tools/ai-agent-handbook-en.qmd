@@ -1,0 +1,135 @@
+---
+title: "My AI Agent Handbook: Turning a Tool List into Workflows"
+date: "2026-06-11"
+description: "Mental models, saving tokens, CLAUDE.md, and picking the right model — a grad student's method for working with AI agents"
+categories: [ai-tools, claude-code, agent, workflow, productivity]
+draft: true
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+## Why write a "handbook"
+
+After using Claude Code for a while, I had accumulated dozens of skills — for research, writing, slides, data analysis, publishing notes. The problem: **the more tools you have, the less obvious it is which one to reach for**. And the more common failure is the "kitchen-sink session," where you ask many unrelated things in one conversation and the AI gradually starts to "forget" and degrade.
+
+So I wrote myself a handbook answering three questions:
+
+1. Which tools do I have, and **when do I use each**?
+2. How do I chain scattered tools into **workflows** instead of re-deciding every time?
+3. How do I use an AI agent **efficiently** — saving tokens, managing context, writing a good `CLAUDE.md`, and choosing the right model for the task?
+
+This is the public version. Every factual claim about Claude Code is checked against Anthropic's official docs (sources at the end).
+
+---
+
+## 1. Get the mental model right
+
+### An AI agent is not a chatbot
+
+A chatbot answers and waits. **An agent (like Claude Code) reads your files, runs commands, makes changes, verifies, and iterates** while you watch, redirect, or step away [@claudecode_bestpractices].
+
+For research this means: stop hand-holding step by step. **State the goal, the constraints, and the acceptance check, then let it run.** Instead of "demean this variable," say "estimate this panel DML with first-differencing, return a bias/SE table, and compare against OLS."
+
+### Three mechanisms: Skills / CLAUDE.md / Memory
+
+| Mechanism | What it is | Role |
+|-----------|------------|------|
+| **Skills** (`/skill-name` or auto-triggered) | A `SKILL.md` + scripts giving domain knowledge and repeatable workflows | Loaded only when relevant |
+| **CLAUDE.md** | A project brief auto-loaded at the start of every session | Always-loaded standing rules |
+| **Memory** | Long-term memory across sessions (preferences, project state) | Your personal notes |
+
+In one line: **CLAUDE.md = always loaded; Skill = loaded on demand; Memory = your preferences and state.** Keeping them distinct matters for token efficiency below.
+
+---
+
+## 2. Organize skills into workflows, not a tool list
+
+A tool list makes you re-decide every time; a **workflow** fixes a common task into a chain. A few examples (paste the trigger sentence to the agent):
+
+- **Read and present one paper:** read the PDF → build an intermediate representation (understanding → outline → per-frame plan → layout) → write the `.tex` → inspect every page. Don't let the AI jump straight from PDF to slides; keep checkable, repairable stages in between.
+- **Find research gaps across many papers:** synthesize *across* the papers (not paper-by-paper), classify each gap and grade it Strong/Medium/Weak, ground every claim in a paper location, and mark uncertain ones "to verify."
+- **From idea to draft:** have the AI interview you into a `SPEC.md` first — it asks about trade-offs and edge cases you hadn't considered — then start a fresh session to execute against the spec [@claudecode_bestpractices].
+- **Data to tables/figures:** ask for a reproducible script plus evidence, never raw `data/raw/` edits.
+
+### The common principle: give it a check it can run
+
+Across every workflow, the highest-leverage move is to **give the AI a check that returns pass/fail** (a test, a build, a regression comparison, a screenshot diff). Then it iterates to green on its own and you stop being the verification loop [@claudecode_bestpractices]. Ask for **evidence** (test output, command results), not "it's done."
+
+---
+
+## 3. The core: context is your scarcest resource
+
+### Why an AI "gets dumber" over a long session: context rot
+
+The **context window** holds the entire conversation — every message, every file read, every command output. It fills fast, and **performance degrades as it fills**: the model starts "forgetting" earlier instructions and making mistakes [@claudecode_bestpractices].
+
+Anthropic calls this **context rot**: transformers must model $n^2$ pairwise token relationships, so attention thins out as context grows, and models see less training data at very long sequences. Accuracy declines gradually — a gradient, not a cliff [@anthropic_context_engineering].
+
+> Core principle: find the *smallest* set of high-signal tokens that achieves the task, not the largest pile.
+
+### Concrete ways to save tokens
+
+1. **`/clear` between unrelated tasks.** The kitchen-sink session is the most common waste.
+2. **After correcting the same issue twice, `/clear` and restart** with a better prompt. A clean session with a good prompt almost always beats a long one full of failed attempts.
+3. **`/compact` when a phase ends** (not when it's already degraded); add focus, e.g. `/compact focus on the R code`.
+4. **`/context`** to see what is consuming context.
+5. **Make the AI *read files* rather than pasting long text.** Use `@filename` or let it read/fetch. Pasting a whole paper permanently occupies context; reading a file is controllable.
+6. **Send heavy exploration to a subagent** — it explores in a separate context and reports back a ~1,000–2,000 token summary [@anthropic_context_engineering].
+7. **Use side questions** for quick asks that shouldn't stay in history.
+8. **Keep `CLAUDE.md` lean** — it loads every session.
+
+### What CLAUDE.md is, and how to write it
+
+**Definition:** a project brief the AI reads at the start of every conversation. Put things it **can't infer from code but needs every time**: key commands, code style, workflow rules, conventions [@claudecode_memory].
+
+Locations merge automatically: `~/.claude/CLAUDE.md` (global), `./CLAUDE.md` (project, committed), `./CLAUDE.local.md` (personal, gitignored), and parent/child directories.
+
+Official rules worth copying:
+
+- **Keep it short and human-readable.** For each line, ask: "would removing this cause a mistake?" If not, cut it.
+- **A bloated CLAUDE.md makes the AI ignore your real instructions** — important rules drown in noise [@claudecode_bestpractices].
+- Include: non-obvious commands, non-default style, test commands, repo etiquette, project-specific architecture, environment quirks, gotchas.
+- Exclude: anything readable from code, standard conventions, **frequently changing information**, long tutorials.
+- `#` writes a line straight into `CLAUDE.md`; `/init` generates a starter.
+
+My own pattern: treat the project-root `CLAUDE.md` as a **routing table** — only "which `STATUS.md` to read for which task" — and push changing progress into per-project `STATUS.md` files, so the always-loaded file never holds stale content.
+
+### Explore → plan → implement → commit
+
+Official advice is four phases, but **plan mode has overhead**: do small fixes directly; only plan when the approach is uncertain, the change spans files, or you're unfamiliar with the code [@claudecode_bestpractices].
+
+---
+
+## 4. Strengths of different AIs
+
+Versions and benchmarks change fast; this is a mid-2026 summary of durable strengths — re-check specifics before relying on them [@playcode_2026; @towardsai_2026]:
+
+| Model family | Relative strengths | When to reach for it |
+|--------------|--------------------|----------------------|
+| **Claude** (Anthropic) | Coding/agentic tasks, complex logic and debugging, long workflows, the least "AI-sounding" prose | Agentic workflows, R/LaTeX, writing in your own voice |
+| **GPT** (OpenAI) | Versatile, broad knowledge, structured/business reasoning, large ecosystem | Quick broad solutions, brainstorming, tool integrations |
+| **Gemini** (Google) | Speed, very large context window, native Google Search, multimodal | One-shot huge inputs, live web info, image/video |
+
+For an econometrics-×-ML workflow: Claude/Claude Code for agentic work, coding, and English writing; Gemini's large context for one-shot reading of many PDFs; a search-enabled model for live facts. Don't chase a single benchmark winner — pick by task type. Within Claude: **Opus** for the hardest reasoning, **Sonnet** as the fast strong workhorse, **Haiku** for high-volume simple tasks.
+
+---
+
+## Summary
+
+| Theme | One-line takeaway |
+|-------|-------------------|
+| **Mental model** | State goal + acceptance check; let the agent run |
+| **Workflows** | Fix common tasks into chains with reusable trigger sentences |
+| **Verification** | Give a check that returns pass/fail; demand evidence |
+| **Context** | Scarcest resource; fuller = dumber (context rot) |
+| **Save tokens** | `/clear` between tasks, `/compact` after phases, read files, offload to subagents |
+| **CLAUDE.md** | Short; only non-obvious + always-needed; push changing state to `STATUS.md` |
+| **Choosing AI** | By task type: Claude for agentic/writing, Gemini for big context, GPT for breadth |
+
+Tools keep multiplying, but "understand first, plan, then act; manage context; give it a check it can verify" won't go stale.
+
+---
+
+## Sources
+
+Claude Code facts come from Anthropic's official docs; the model comparison is third-party 2026 material whose numbers will date — directional only.

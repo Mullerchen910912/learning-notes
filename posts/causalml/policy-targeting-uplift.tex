@@ -1,0 +1,85 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xeCJK}
+\setCJKmainfont{cwTeX Q Ming}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
+
+\title{該把資源投給誰？用 Causal ML 做 Policy Targeting}
+\author{Sheng-Yuan Chen}
+\date{2026-07-06}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+完整程式碼與圖表：\url{https://github.com/Mullerchen910912/causal-ml-policy-targeting}
+\end{center}
+
+\section{前言：預測 vs 因果}
+
+一般的預測模型回答的是「\textbf{誰會購買}」。但真正值錢的商業問題往往是因果的：「\textbf{誰是因為我們介入（寄 e-mail、發優惠）才購買}」。差別很關鍵：本來就會買的顧客，行銷是浪費預算；被 e-mail 惹惱而流失的顧客，則是負效果。所以我們要估的不是購買機率，而是\textbf{個體處理效果（uplift）}。
+
+\section{一、要估的是 CATE（uplift）}
+
+用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：
+$$\tau(x) = \mathbb{E}\left[\,Y(1) - Y(0) \mid X = x\,\right],$$
+其中 $Y(1), Y(0)$ 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自\textbf{隨機實驗}，分派機率 $e = \Pr(T=1)$ 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別。
+
+估 $\tau(x)$ 的工具箱（皆在 EconML）：Meta-learners（S/T/X-learner）把問題拆成標準回歸；Double Machine Learning（LinearDML）用 cross-fitting 殘差化得到去偏的效果估計；Causal Forest 以無母數方式估 $\tau(x)$。
+
+\begin{lstlisting}[language=Python]
+from econml.dml import LinearDML
+from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
+
+est = LinearDML(
+    model_y=GradientBoostingRegressor(),      # E[Y | X]
+    model_t=GradientBoostingClassifier(),     # E[T | X]
+    discrete_treatment=True, cv=5,
+)
+est.fit(Y, T, X=X)             # Y=visit, T=email, X=features
+tau_hat = est.effect(X)        # per-customer uplift
+print(est.ate(X), est.ate_interval(X))
+\end{lstlisting}
+
+\section{二、怎麼評估「目標鎖定」好不好？}
+
+重點不是預測準度，而是\textbf{決策價值}：Qini coefficient／uplift@k 衡量排序品質；policy value 才是老闆在意的。給定 targeting rule $\pi(x)\in\{0,1\}$，在隨機資料上可用逆傾向加權無偏估計其價值：
+$$V(\pi) = \mathbb{E}\!\left[\,Y \cdot \left( \frac{\pi(X)\,T}{e} + \frac{(1-\pi(X))(1-T)}{1-e} \right)\right].$$
+若每次介入有成本 $c$，最優規則就是「當 $\hat\tau(x) > c$ 才介入」。
+
+\section{三、在 Hillstrom 實驗上的結果}
+
+資料是 Hillstrom 的 e-mail 行銷實驗：6.4 萬名顧客被\textbf{隨機}分派到「收到女裝 e-mail」或「不收到」。三個發現：
+
+\begin{enumerate}
+  \item \textbf{平均效果被準確識別。} DML 估出的 ATE 為 $+0.049$（95\% 信賴區間排除 0），與實驗的 diff-in-means 幾乎一致。
+  \item \textbf{效果高度異質。} 個體效果從 $-0.50$ 到 $+0.61$，且 \textbf{12\% 的顧客效果為負} —— e-mail 反而把他們趕跑。
+  \item \textbf{鎖定目標真的省錢。} 一旦把每封 e-mail 的成本算進去，只寄給預測 uplift 前 \textbf{49\%} 的顧客，淨值比「全部都寄」高約 \textbf{12\%}，而且只寄一半的量。
+\end{enumerate}
+
+\section{小結}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+面向 & 預測模型 & 因果 targeting \\
+\midrule
+問「誰會買」 & $\checkmark$ & \\
+問「誰因介入才買」 & & $\checkmark$（uplift）\\
+對「本來就買／被惹惱」的人 & 誤投 & 避開 \\
+衡量標準 & AUC／準度 & Qini／policy value \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。完整實作都在 GitHub：\url{https://github.com/Mullerchen910912/causal-ml-policy-targeting}。
+
+\end{document}

@@ -1,0 +1,127 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{xeCJK}
+\usepackage{tabularx}
+\setCJKmainfont{PingFang TC}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!10}
+}
+\usepackage{xcolor}
+
+\title{用 Claude Code 建立研究生的自動化生活管理系統}
+\author{Sheng-Yuan Chen}
+\date{2026-04-14}
+
+\begin{document}
+\maketitle
+
+\section*{前言}
+
+身為研究生，同時要處理 RA 工作、TA 教學、自己的研究以及課程，資訊很容易分散在各個地方。這篇文章記錄我用 Claude Code 建立的一套自動化工作流，目標是：紀錄、整理、管理三位一體。
+
+\section{系統架構}
+
+整套工作流分為三層：
+
+\begin{itemize}
+  \item \textbf{每天}：Obsidian Daily Note（隨手記草稿）
+  \item \textbf{每週}：\texttt{weekly\_notes/YYYY-WXX.md}（整理四個區塊）
+  \item \textbf{週日}：自動上傳 Notion Weekly Review（完全不需動手）
+\end{itemize}
+
+\section{每週回顧系統}
+
+\subsection{週記格式}
+
+每週的筆記檔放在 \texttt{\textasciitilde/claude\_SY/weekly\_notes/YYYY-WXX.md}，固定四個區塊：
+📚 Paper / 文獻、🔬 研究進度、🤖 AI Tools 學習、💡 想法 / TODO。
+
+\subsection{自動上傳 Notion}
+
+每週日 20:00，系統自動執行 \texttt{weekly\_review.py}：讀取週記 → 抓 git commits → 格式化 → Notion API 建立新頁面。
+
+Cron 排程設定：
+
+\begin{lstlisting}[language=bash]
+0 20 * * 0 python3 ~/claude_SY/weekly_review.py \
+  >> ~/claude_SY/weekly_review.log 2>&1
+\end{lstlisting}
+
+\section{Zotero 文獻管理}
+
+\subsection{Better BibTeX 設定}
+
+Citation key 格式：\texttt{[auth:lower][year]}，例如 \texttt{callaway2021}。
+
+自動匯出設定：\texttt{File → Export Library → Better BibTeX → Keep updated → \textasciitilde/Desktop/NTU\_ECON/refs.bib}
+
+LaTeX 引用：
+\begin{lstlisting}[language=tex]
+\bibliography{/Users/chenshengyuan/Desktop/NTU_ECON/refs.bib}
+\end{lstlisting}
+
+\subsection{Collections 結構}
+
+\begin{itemize}
+  \item 📥 Reading Queue（新 paper 先放這裡）
+  \item 📐 Causal Inference（DiD \& Staggered、IV \& 2SLS、RDD \& Synth Control）
+  \item 🤖 Causal ML（Double ML、Tree Methods、Neural Networks）
+  \item 📊 Econometrics（Panel Data、Inference \& Testing）
+  \item 🏫 Courses（MetricML、Advanced Econometrics）
+  \item 🔬 RA\_jauer
+\end{itemize}
+
+\section{Obsidian Daily Note}
+
+Vault 位置：\texttt{\textasciitilde/Desktop/NTU\_ECON/Notes/}，每天按 \textbf{Cmd+Shift+D} 開今天的 note。
+
+Daily Note 模板涵蓋：今天讀了什麼、研究進度、AI Tools 心得、想法與問題、今日完成、明天待辦。
+
+\section{Claude Code Skills 清單}
+
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{指令} & \textbf{用途} \\
+\midrule
+\texttt{/new-research} & 建立新研究專案資料夾結構 \\
+\texttt{/research-ideation} & 生成研究問題與實證策略 \\
+\texttt{/interview-me} & 引導式問答正式化研究想法 \\
+\texttt{/lit-review} & 系統性文獻搜尋 \\
+\texttt{/review-paper} & 模擬 referee 論文評論 \\
+\texttt{/new-post} & 發布學習筆記到網站 \\
+\texttt{/data-analysis} & 完整 R 分析流程 \\
+\texttt{/compile-latex} & 編譯 Beamer .tex \\
+\texttt{/slide-excellence} & 簡報三合一審查 \\
+\texttt{/commit} & git commit → PR → merge \\
+\texttt{/learn} & 儲存本次技巧為 skill \\
+\bottomrule
+\end{tabularx}
+
+\section{小結}
+
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{工具} & \textbf{解決的問題} \\
+\midrule
+Obsidian Daily Note & 每天有地方記，不靠記憶 \\
+weekly\_notes + cron & 每週彙整，自動上傳，不靠意志力 \\
+Notion & 長期存檔，方便回顧 \\
+Zotero + Better BibTeX & 文獻自動管理，.bib 永遠最新 \\
+Claude Code Skills & 研究任務標準化，降低重複工作 \\
+\bottomrule
+\end{tabularx}
+
+核心原則：\textbf{降低每一個環節的摩擦力}。越容易記錄，就越會記錄；越自動化，就越不依賴自律。
+
+\end{document}

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2026-07-06">
+<meta name="description" content="從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。">
 
-<title>Muller Chen Blog</title>
+<title>該把資源投給誰？用 Causal ML 做 Policy Targeting – Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,32 +25,85 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -76,35 +131,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-recent-posts .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-recent-posts'] = new List('listing-recent-posts', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -136,7 +162,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -308,7 +334,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
@@ -319,19 +345,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">首頁</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/ai-tools/index.html"> 
+    <a class="nav-link" href="../../posts/ai-tools/index.html"> 
 <span class="menu-text">AI 工具</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/causalml/index.html"> 
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
 <span class="menu-text">Causal Inference and Econometrics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">關於我</span></a>
   </li>  
 </ul>
@@ -350,25 +376,54 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#前言預測-vs-因果" id="toc-前言預測-vs-因果" class="nav-link active" data-scroll-target="#前言預測-vs-因果">前言：預測 vs 因果</a></li>
+  <li><a href="#一要估的是-cateuplift" id="toc-一要估的是-cateuplift" class="nav-link" data-scroll-target="#一要估的是-cateuplift">一、要估的是 CATE（uplift）</a></li>
+  <li><a href="#二怎麼評估目標鎖定好不好" id="toc-二怎麼評估目標鎖定好不好" class="nav-link" data-scroll-target="#二怎麼評估目標鎖定好不好">二、怎麼評估「目標鎖定」好不好？</a></li>
+  <li><a href="#三在-hillstrom-實驗上的結果" id="toc-三在-hillstrom-實驗上的結果" class="nav-link" data-scroll-target="#三在-hillstrom-實驗上的結果">三、在 Hillstrom 實驗上的結果</a></li>
+  <li><a href="#小結" id="toc-小結" class="nav-link" data-scroll-target="#小結">小結</a></li>
+  <li><a href="#參考文獻" id="toc-參考文獻" class="nav-link" data-scroll-target="#參考文獻">參考文獻</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Muller Chen Blog</h1>
-<p class="subtitle lead">台大經濟所 · 因果推論 · AI 工具 · Causal ML</p>
+<h1 class="title">該把資源投給誰？用 Causal ML 做 Policy Targeting</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">causalml</div>
+    <div class="quarto-category">uplift</div>
+    <div class="quarto-category">policy-learning</div>
+    <div class="quarto-category">double-ml</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。
+  </div>
 </div>
 
 
-
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 6, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -378,121 +433,120 @@ window.Quarto = {
 </header>
 
 
-<section id="muller-chen-blog" class="level1 hero">
-<h1>Muller Chen Blog</h1>
-<p>記錄 AI 工具探索與 Causal ML 的閱讀筆記。</p>
-</section>
+<p><em>完整程式碼與圖表：<a href="https://github.com/Mullerchen910912/causal-ml-policy-targeting">github.com/Mullerchen910912/causal-ml-policy-targeting</a></em></p>
 <hr>
-<section id="最新文章" class="level2">
-<h2 class="anchored" data-anchor-id="最新文章">最新文章</h2>
-<div id="listing-recent-posts" class="quarto-listing quarto-listing-container-default">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Y2F1c2FsbWwlMkN1cGxpZnQlMkNwb2xpY3ktbGVhcm5pbmclMkNkb3VibGUtbWw=" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783319609927" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="259">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">該把資源投給誰？用 Causal ML 做 Policy Targeting</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<p>從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。</p>
-</a></div>
+<section id="前言預測-vs-因果" class="level2">
+<h2 class="anchored" data-anchor-id="前言預測-vs-因果">前言：預測 vs 因果</h2>
+<p>一般的預測模型回答的是「<strong>誰會購買</strong>」。但真正值錢的商業問題往往是因果的：「<strong>誰是因為我們介入（寄 e-mail、發優惠）才購買</strong>」。</p>
+<p>差別很關鍵：</p>
+<ul>
+<li>一個本來就會買的顧客，你寄不寄 e-mail 他都會買 —— 對他行銷是<strong>浪費預算</strong>。</li>
+<li>更糟的是，有些顧客被 e-mail 惹惱反而流失 —— 這是<strong>負效果</strong>。</li>
+</ul>
+<p>所以我們要估的，不是購買機率，而是<strong>個體處理效果（uplift）</strong>。這篇短文用一個公開的隨機行銷實驗，示範怎麼估 uplift、怎麼把它變成「該投給誰」的政策，並且<strong>用金錢衡量這個政策值多少</strong>。</p>
+</section>
+<section id="一要估的是-cateuplift" class="level2">
+<h2 class="anchored" data-anchor-id="一要估的是-cateuplift">一、要估的是 CATE（uplift）</h2>
+<p>用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：</p>
+<p><span class="math display">\[\tau(x) = \mathbb{E}\left[\,Y(1) - Y(0) \mid X = x\,\right],\]</span></p>
+<p>其中 <span class="math inline">\(Y(1), Y(0)\)</span> 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自<strong>隨機實驗</strong>，分派機率（propensity）<span class="math inline">\(e = \Pr(T=1)\)</span> 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。</p>
+<p>估 <span class="math inline">\(\tau(x)\)</span> 的工具箱（都在 <a href="https://github.com/py-why/EconML">EconML</a> 裡）：</p>
+<ul>
+<li><strong>Meta-learners</strong>：S/T/X-learner <span class="citation" data-cites="kunzel2019">(<a href="#ref-kunzel2019" role="doc-biblioref">Künzel et al., 2019</a>)</span>，把問題拆成標準回歸。</li>
+<li><strong>Double Machine Learning</strong>（LinearDML）<span class="citation" data-cites="chernozhukov2018">(<a href="#ref-chernozhukov2018" role="doc-biblioref">Chernozhukov et al., 2018</a>)</span>，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。</li>
+<li><strong>Causal Forest</strong> <span class="citation" data-cites="wager2018">(<a href="#ref-wager2018" role="doc-biblioref">Wager &amp; Athey, 2018</a>)</span>，以無母數方式估 <span class="math inline">\(\tau(x)\)</span>。</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> econml.dml <span class="im">import</span> LinearDML</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> GradientBoostingRegressor, GradientBoostingClassifier</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>est <span class="op">=</span> LinearDML(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    model_y<span class="op">=</span>GradientBoostingRegressor(),      <span class="co"># E[Y | X]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    model_t<span class="op">=</span>GradientBoostingClassifier(),     <span class="co"># E[T | X]，二元處理</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    discrete_treatment<span class="op">=</span><span class="va">True</span>, cv<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>est.fit(Y, T, X<span class="op">=</span>X)             <span class="co"># Y=是否造訪, T=是否寄信, X=顧客特徵</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tau_hat <span class="op">=</span> est.effect(X)        <span class="co"># 每位顧客的 uplift τ̂(x)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(est.ate(X), est.ate_interval(X))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>model_y</code>、<code>model_t</code> 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。</p>
+</section>
+<section id="二怎麼評估目標鎖定好不好" class="level2">
+<h2 class="anchored" data-anchor-id="二怎麼評估目標鎖定好不好">二、怎麼評估「目標鎖定」好不好？</h2>
+<p>重點不是預測準度，而是<strong>決策價值</strong>：</p>
+<ul>
+<li><strong>Qini coefficient / uplift@k</strong> —— 衡量「把顧客依 uplift 排序」排得好不好。</li>
+<li><strong>Policy value</strong> —— 這才是老闆在意的。給定一個 targeting rule <span class="math inline">\(\pi(x)\in\{0,1\}\)</span>（要不要對這位顧客介入），在隨機資料上可用逆傾向加權（IPW）<strong>無偏</strong>估計其價值：</li>
+</ul>
+<p><span class="math display">\[V(\pi) = \mathbb{E}\!\left[\,Y \cdot \left( \frac{\pi(X)\,T}{e} + \frac{(1-\pi(X))(1-T)}{1-e} \right)\right].\]</span></p>
+<p>若每次介入有成本 <span class="math inline">\(c\)</span>，最優規則就是「<strong>當 <span class="math inline">\(\hat\tau(x) &gt; c\)</span> 才介入</strong>」<span class="citation" data-cites="athey2021policy">(<a href="#ref-athey2021policy" role="doc-biblioref">Athey &amp; Wager, 2021</a>)</span>。把「介入比例」從 0 掃到 100%，就能畫出政策價值曲線，找到那個內部最優點。</p>
+</section>
+<section id="三在-hillstrom-實驗上的結果" class="level2">
+<h2 class="anchored" data-anchor-id="三在-hillstrom-實驗上的結果">三、在 Hillstrom 實驗上的結果</h2>
+<p>資料是 Hillstrom 的 e-mail 行銷實驗 <span class="citation" data-cites="hillstrom2008">(<a href="#ref-hillstrom2008" role="doc-biblioref">Hillstrom, 2008</a>)</span>：6.4 萬名顧客被<strong>隨機</strong>分派到「收到女裝 e-mail」或「不收到」。三個發現：</p>
+<ol type="1">
+<li><strong>平均效果被準確識別。</strong> DML 估出的 ATE 為 <span class="math inline">\(+0.049\)</span>（95% 信賴區間排除 0），與實驗的 diff-in-means 幾乎一致 —— 這是對整條 pipeline 的乾淨驗證。</li>
+<li><strong>效果高度異質。</strong> 個體效果從 <span class="math inline">\(-0.50\)</span> 到 <span class="math inline">\(+0.61\)</span>，而且 <strong>12% 的顧客效果為負</strong> —— e-mail 反而把他們趕跑。一刀切的行銷完全看不到這件事。</li>
+<li><strong>鎖定目標真的省錢。</strong> 一旦把每封 e-mail 的成本算進去，只寄給模型預測 uplift 前 <strong>49%</strong> 的顧客，淨值比「全部都寄」高約 <strong>12%</strong>，而且<strong>只寄一半的量</strong>。</li>
+</ol>
+<p>換句話說：與其問「這波行銷平均有沒有效」，不如問「<strong>該寄給誰</strong>」—— 錢就藏在後面這個問題裡。</p>
+</section>
+<section id="小結" class="level2">
+<h2 class="anchored" data-anchor-id="小結">小結</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>面向</th>
+<th style="text-align: center;">預測模型</th>
+<th style="text-align: center;">因果 targeting</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>問「誰會買」</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td>問「誰因介入才買」</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓（uplift）</td>
+</tr>
+<tr class="odd">
+<td>對「本來就買 / 被惹惱」的人</td>
+<td style="text-align: center;">誤投</td>
+<td style="text-align: center;">避開</td>
+</tr>
+<tr class="even">
+<td>衡量標準</td>
+<td style="text-align: center;">AUC / 準度</td>
+<td style="text-align: center;">Qini / policy value</td>
+</tr>
+</tbody>
+</table>
+<p>因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov et al., 2024</a>)</span>。</p>
+<p>完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：<a href="https://github.com/Mullerchen910912/causal-ml-policy-targeting"><strong>causal-ml-policy-targeting</strong></a>。</p>
+</section>
+<section id="參考文獻" class="level2">
+<h2 class="anchored" data-anchor-id="參考文獻">參考文獻</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-athey2021policy" class="csl-entry" role="listitem">
+Athey, S., &amp; Wager, S. (2021). Policy learning with observational data. <em>Econometrica</em>, <em>89</em>(1), 133–161.
 </div>
-<div class="metadata">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<div class="listing-date">
-2026-07-06
+<div id="ref-chernozhukov2018" class="csl-entry" role="listitem">
+Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, <em>21</em>(1), C1–C68.
 </div>
-</a>
+<div id="ref-chernozhukov2024" class="csl-entry" role="listitem">
+Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal machine learning</em>. MIT Press.
 </div>
+<div id="ref-hillstrom2008" class="csl-entry" role="listitem">
+Hillstrom, K. (2008). <em>The MineThatData e-mail analytics and data mining challenge</em>. <a href="https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html">https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html</a>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2FnZW50JTJDd29ya2Zsb3clMkNwcm9kdWN0aXZpdHk=" data-listing-date-sort="1781107200000" data-listing-file-modified-sort="1781144450795" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="516">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">我的 AI Agent 使用手冊：把工具清單變成工作流</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<p>從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論</p>
-</a></div>
+<div id="ref-kunzel2019" class="csl-entry" role="listitem">
+Künzel, S. R., Sekhon, J. S., Bickel, P. J., &amp; Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. <em>Proceedings of the National Academy of Sciences</em>, <em>116</em>(10), 4156–4165.
 </div>
-<div class="metadata">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<div class="listing-date">
-2026-06-11
-</div>
-</a>
+<div id="ref-wager2018" class="csl-entry" role="listitem">
+Wager, S., &amp; Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. <em>Journal of the American Statistical Association</em>, <em>113</em>(523), 1228–1242.
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-categories="Y2F1c2FsbWwlMkNzeW50aGV0aWMtY29udHJvbCUyQ3BhbmVsLWRhdGE=" data-listing-date-sort="1776355200000" data-listing-file-modified-sort="1776387940663" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2734">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">Deep Diving into Synthetic Control Method</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<p>從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<div class="listing-date">
-2026-04-17
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2F1dG9tYXRpb24lMkN3b3JrZmxvdw==" data-listing-date-sort="1776096000000" data-listing-file-modified-sort="1776130075592" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="845">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">用 Claude Code 建立研究生的自動化生活管理系統</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<p>從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<div class="listing-date">
-2026-04-14
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="YWktdG9vbHMlMkNDbGF1ZGUlMjBDb2RlJTJDUiUyQyVFNyVBMCU5NCVFNyVBOSVCNiVFNiU5NiVCOSVFNiVCMyU5NQ==" data-listing-date-sort="1775491200000" data-listing-file-modified-sort="1775527134865" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="617">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/claude-code-economics-research.html" class="no-external">如何使用 Claude Code 進行經濟學研究</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/claude-code-economics-research.html" class="no-external">
-<p>介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/claude-code-economics-research.html" class="no-external">
-<div class="listing-date">
-2026-04-07
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="Y2F1c2FsbWwlMkNsaW5lYXItYWxnZWJyYQ==" data-listing-date-sort="1775491200000" data-listing-file-modified-sort="1775563541816" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="219">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/matrix-calculus-cheat-sheet.html" class="no-external">矩陣微分 Cheat Sheet</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/matrix-calculus-cheat-sheet.html" class="no-external">
-<p>整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/matrix-calculus-cheat-sheet.html" class="no-external">
-<div class="listing-date">
-2026-04-07
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-
 
 
 </section>

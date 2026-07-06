@@ -51,16 +51,16 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "AI 工具",
+    "title": "Muller Chen Blog",
     "section": "",
     "text": "記錄 AI 工具探索與 Causal ML 的閱讀筆記。"
   },
   {
     "objectID": "index.html#最新文章",
     "href": "index.html#最新文章",
-    "title": "AI 工具",
+    "title": "Muller Chen Blog",
     "section": "最新文章",
-    "text": "最新文章\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026-06-11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026-04-14\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026-04-06\n\n\n\n\n\nNo matching items\n\n\n\n\n記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。"
+    "text": "最新文章\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026-06-11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026-04-14\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -228,7 +228,7 @@
     "href": "posts/causalml/index.html",
     "title": "Causal Inference and Econometrics",
     "section": "",
-    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -537,5 +537,54 @@
     "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
     "section": "參考來源",
     "text": "參考來源\n\n\n\n\n\n\n本文關於 Claude Code 的事實均來自 Anthropic 官方文件；模型比較為第三方 2026 年資料，數字會過期，僅供方向參考。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html",
+    "href": "posts/causalml/policy-targeting-uplift.html",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "",
+    "text": "完整程式碼與圖表：github.com/Mullerchen910912/causal-ml-policy-targeting"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
+    "href": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "前言：預測 vs 因果",
+    "text": "前言：預測 vs 因果\n一般的預測模型回答的是「誰會購買」。但真正值錢的商業問題往往是因果的：「誰是因為我們介入（寄 e-mail、發優惠）才購買」。\n差別很關鍵：\n\n一個本來就會買的顧客，你寄不寄 e-mail 他都會買 —— 對他行銷是浪費預算。\n更糟的是，有些顧客被 e-mail 惹惱反而流失 —— 這是負效果。\n\n所以我們要估的，不是購買機率，而是個體處理效果（uplift）。這篇短文用一個公開的隨機行銷實驗，示範怎麼估 uplift、怎麼把它變成「該投給誰」的政策，並且用金錢衡量這個政策值多少。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
+    "href": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "一、要估的是 CATE（uplift）",
+    "text": "一、要估的是 CATE（uplift）\n用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：\n\\[\\tau(x) = \\mathbb{E}\\left[\\,Y(1) - Y(0) \\mid X = x\\,\\right],\\]\n其中 \\(Y(1), Y(0)\\) 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自隨機實驗，分派機率（propensity）\\(e = \\Pr(T=1)\\) 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。\n估 \\(\\tau(x)\\) 的工具箱（都在 EconML 裡）：\n\nMeta-learners：S/T/X-learner (Künzel et al., 2019)，把問題拆成標準回歸。\nDouble Machine Learning（LinearDML）(Chernozhukov et al., 2018)，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。\nCausal Forest (Wager & Athey, 2018)，以無母數方式估 \\(\\tau(x)\\)。\n\nfrom econml.dml import LinearDML\nfrom sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier\n\nest = LinearDML(\n    model_y=GradientBoostingRegressor(),      # E[Y | X]\n    model_t=GradientBoostingClassifier(),     # E[T | X]，二元處理\n    discrete_treatment=True, cv=5,\n)\nest.fit(Y, T, X=X)             # Y=是否造訪, T=是否寄信, X=顧客特徵\ntau_hat = est.effect(X)        # 每位顧客的 uplift τ̂(x)\nprint(est.ate(X), est.ate_interval(X))\nmodel_y、model_t 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
+    "href": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "二、怎麼評估「目標鎖定」好不好？",
+    "text": "二、怎麼評估「目標鎖定」好不好？\n重點不是預測準度，而是決策價值：\n\nQini coefficient / uplift@k —— 衡量「把顧客依 uplift 排序」排得好不好。\nPolicy value —— 這才是老闆在意的。給定一個 targeting rule \\(\\pi(x)\\in\\{0,1\\}\\)（要不要對這位顧客介入），在隨機資料上可用逆傾向加權（IPW）無偏估計其價值：\n\n\\[V(\\pi) = \\mathbb{E}\\!\\left[\\,Y \\cdot \\left( \\frac{\\pi(X)\\,T}{e} + \\frac{(1-\\pi(X))(1-T)}{1-e} \\right)\\right].\\]\n若每次介入有成本 \\(c\\)，最優規則就是「當 \\(\\hat\\tau(x) &gt; c\\) 才介入」(Athey & Wager, 2021)。把「介入比例」從 0 掃到 100%，就能畫出政策價值曲線，找到那個內部最優點。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
+    "href": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "三、在 Hillstrom 實驗上的結果",
+    "text": "三、在 Hillstrom 實驗上的結果\n資料是 Hillstrom 的 e-mail 行銷實驗 (Hillstrom, 2008)：6.4 萬名顧客被隨機分派到「收到女裝 e-mail」或「不收到」。三個發現：\n\n平均效果被準確識別。 DML 估出的 ATE 為 \\(+0.049\\)（95% 信賴區間排除 0），與實驗的 diff-in-means 幾乎一致 —— 這是對整條 pipeline 的乾淨驗證。\n效果高度異質。 個體效果從 \\(-0.50\\) 到 \\(+0.61\\)，而且 12% 的顧客效果為負 —— e-mail 反而把他們趕跑。一刀切的行銷完全看不到這件事。\n鎖定目標真的省錢。 一旦把每封 e-mail 的成本算進去，只寄給模型預測 uplift 前 49% 的顧客，淨值比「全部都寄」高約 12%，而且只寄一半的量。\n\n換句話說：與其問「這波行銷平均有沒有效」，不如問「該寄給誰」—— 錢就藏在後面這個問題裡。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#小結",
+    "href": "posts/causalml/policy-targeting-uplift.html#小結",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "小結",
+    "text": "小結\n\n\n\n面向\n預測模型\n因果 targeting\n\n\n\n\n問「誰會買」\n✓\n\n\n\n問「誰因介入才買」\n\n✓（uplift）\n\n\n對「本來就買 / 被惹惱」的人\n誤投\n避開\n\n\n衡量標準\nAUC / 準度\nQini / policy value\n\n\n\n因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 (Chernozhukov et al., 2024)。\n完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：causal-ml-policy-targeting。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#參考文獻",
+    "href": "posts/causalml/policy-targeting-uplift.html#參考文獻",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData e-mail analytics and data mining challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
   }
 ]

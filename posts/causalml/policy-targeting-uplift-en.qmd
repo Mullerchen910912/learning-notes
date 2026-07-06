@@ -1,0 +1,120 @@
+---
+title: "Who Should We Target? Causal ML for Policy Targeting"
+date: "2026-07-06"
+description: "From 'did it work on average' to 'who should get it': uplift modeling and policy value on the Hillstrom experiment."
+categories: [causalml, uplift, policy-learning, double-ml]
+draft: true
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+*Code and figures: [github.com/Mullerchen910912/causal-ml-policy-targeting](https://github.com/Mullerchen910912/causal-ml-policy-targeting)*
+
+---
+
+## Prediction vs. causation
+
+A predictive model answers *"who is likely to buy?"* The more valuable business
+question is causal: *"who buys **because** we intervened (sent the e-mail, offered
+the coupon)?"*
+
+The distinction matters:
+
+- A customer who would have bought anyway is **wasted budget** — the e-mail
+  changed nothing.
+- Worse, some customers are *annoyed* by the e-mail and churn — a **negative
+  effect**.
+
+So the quantity we want is not a purchase probability but an **individual
+treatment effect (uplift)**. This short post uses a public randomized marketing
+experiment to estimate uplift, turn it into a "who to target" policy, and — crucially
+— **measure what that policy is worth in money**.
+
+## 1. The target is the CATE (uplift)
+
+In potential-outcomes notation we want the conditional average treatment effect:
+
+$$\tau(x) = \mathbb{E}\left[\,Y(1) - Y(0) \mid X = x\,\right],$$
+
+where $Y(1), Y(0)$ are the same customer's outcomes with and without the
+intervention. Because the data is a **randomized experiment**, the propensity
+$e = \Pr(T=1)$ is known and constant, and effects are identified without extra
+unconfoundedness assumptions — an ideal test bed.
+
+The estimator toolbox (all in [EconML](https://github.com/py-why/EconML)):
+
+- **Meta-learners** — S/T/X-learner [@kunzel2019], splitting the problem into
+  standard regressions.
+- **Double Machine Learning** (LinearDML) [@chernozhukov2018], which residualizes
+  outcome and treatment with cross-fitting for a debiased (Neyman-orthogonal)
+  effect.
+- **Causal Forest** [@wager2018], estimating $\tau(x)$ nonparametrically.
+
+```python
+from econml.dml import LinearDML
+from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
+
+est = LinearDML(
+    model_y=GradientBoostingRegressor(),      # E[Y | X]
+    model_t=GradientBoostingClassifier(),     # E[T | X], binary treatment
+    discrete_treatment=True, cv=5,
+)
+est.fit(Y, T, X=X)             # Y=visit, T=email, X=customer features
+tau_hat = est.effect(X)        # per-customer uplift
+print(est.ate(X), est.ate_interval(X))
+```
+
+`model_y` and `model_t` are nuisance models; DML residualizes with them and
+recovers the CATE in a final linear stage, with cross-fitting so nuisance error
+doesn't contaminate the effect to first order.
+
+## 2. Evaluating a targeting policy
+
+What matters is decision value, not predictive accuracy:
+
+- **Qini coefficient / uplift@k** — how well the model *ranks* customers by uplift.
+- **Policy value** — the number a manager cares about. For a targeting rule
+  $\pi(x)\in\{0,1\}$, randomized data gives an unbiased inverse-propensity estimate:
+
+$$V(\pi) = \mathbb{E}\!\left[\,Y \cdot \left( \frac{\pi(X)\,T}{e} + \frac{(1-\pi(X))(1-T)}{1-e} \right)\right].$$
+
+With a per-intervention cost $c$, the optimal rule is simply "**treat iff
+$\hat\tau(x) > c$**" [@athey2021policy]. Sweeping the treated fraction from 0 to
+100% traces a policy-value curve with an interior optimum.
+
+## 3. Results on the Hillstrom experiment
+
+The data is Hillstrom's e-mail experiment [@hillstrom2008]: 64,000 customers
+**randomly** assigned to receive a women's-merchandise e-mail or nothing. Three
+findings:
+
+1. **The average effect is well identified.** DML recovers an ATE of $+0.049$
+   (95% CI excludes 0), matching the experimental difference-in-means — a clean
+   validation of the pipeline.
+2. **Effects are strongly heterogeneous.** Individual effects range from $-0.50$
+   to $+0.61$, and **12% of customers have a negative effect** — the e-mail drives
+   them away. A one-size-fits-all campaign is blind to this.
+3. **Targeting saves real money.** Once each e-mail carries a modest cost, mailing
+   only the top **49%** by predicted uplift beats mailing everyone by about **12%**
+   in net value — while sending **half the volume**.
+
+In short: instead of asking "did the campaign work on average," ask "**who should
+get it**" — that's where the money is.
+
+## Takeaways
+
+| Dimension | Predictive model | Causal targeting |
+|---|:---:|:---:|
+| "Who will buy" | ✓ | |
+| "Who buys *because* of the intervention" | | ✓ (uplift) |
+| Would-buy-anyway / annoyed customers | mis-targeted | avoided |
+| Metric | AUC / accuracy | Qini / policy value |
+
+Full implementation (S/T/X-learners, DML, Causal Forest, Qini and policy-value
+figures) is on GitHub: [**causal-ml-policy-targeting**](https://github.com/Mullerchen910912/causal-ml-policy-targeting).
+For the broader Causal ML framework see [@chernozhukov2024].
+
+## References
+
+::: {#refs}
+:::

@@ -72,6 +72,7 @@
     <a class="home" href="index.html">← 回網站</a>
     <span class="spacer"></span>
     <button class="btn" id="btnCheat">Σ 巨集</button>
+    <button class="btn" id="btnHelp">說明</button>
     <button class="btn" id="btnFm">Frontmatter</button>
     <button class="btn" id="btnImport">匯入 .md</button>
     <button class="btn" id="btnMd">下載 .md</button>
@@ -131,6 +132,75 @@
     </div>
   </div>
 </div>
+
+<script type="text/markdown" id="cheatDoc">
+# 📖 筆記編輯器 · 功能速查
+
+> 這篇本身就是一則筆記——直接編輯它、右邊會即時渲染。左寫、右預覽（螢幕夠寬時並排）。
+
+## 儲存與匯出
+- **自動存**在瀏覽器（localStorage），改完顯示「已儲存 ✓」。
+- 左側清單管理多篇筆記，**＋ 新筆記**建立、點一下切換。
+- **下載 .md**／**下載 .qmd**（含 frontmatter，直接發到 learning-notes）／**複製 .qmd**／**匯入 .md**。
+- 快捷鍵：`Cmd/Ctrl + S` 手動存；`Tab` 插入兩格空白。
+
+## 工具列
+| 按鈕 | 作用 |
+|---|---|
+| H | 標題 `## ` |
+| **B** ／ *I* | 粗體／斜體 |
+| `<code>` ／ 代碼塊 | 行內碼／程式碼區塊 |
+| $x$ ／ $$…$$ | 行內／區塊數學 |
+| 清單／引用／連結／表格 | 各種 Markdown 插入 |
+
+## ⚡ 巨集自動展開（只在 `$…$` 數學模式內）
+打縮寫、放開即變 LaTeX。按上方 **Σ 巨集** 看全表。
+
+**希臘字母**：`@a`→α、`@b`→β、`@q`→θ、`@p`→π、`@l`→λ、`@S`→Σ、`@W`→Ω …（`@`+字母；大寫用 `@`+大寫字母）
+
+**常用數學**：
+
+| 打這個 | 變成 |
+|---|---|
+| `sr` `cb` | 上標 `^2` `^3` |
+| `//` | 分數 `\frac{}{}` |
+| `sq` `hat` `bar` `vec` | `\sqrt{}` `\hat{}` `\bar{}` `\vec{}` |
+| `EE` `PP` `RR` `NN` | `\mathbb{E}` `\mathbb{P}` `\mathbb{R}` `\mathbb{N}` |
+| `sum` `int` `lim` `argmax` | `\sum_{}^{}` `\int_{}^{}` `\lim_{}` `\arg\max` |
+| `->` `!=` `>=` `<=` `ooo` `xx` | `\to` `\neq` `\geq` `\leq` `\infty` `\times` |
+
+> 貼心設計：打中文／一般文字**不會誤觸**；字中間（如 `xhat`）也**不會亂展開**。
+
+## Markdown 示範
+**粗體**、*斜體*、`行內碼`、[連結](https://example.com)
+
+- 項目一
+- 項目二
+  1. 巢狀清單
+  2. 第二項
+
+> 引用區塊
+
+## 數學示範（即時渲染）
+行內：$E=mc^2$、OLS 估計量 $\hat\beta=(X'X)^{-1}X'y$。
+
+區塊：
+$$
+\mathbb{E}[Y\mid X]=\int y\,f(y\mid X)\,dy
+$$
+
+## 程式碼示範
+```python
+import pandas as pd
+df = pd.read_csv("data.csv")
+print(df.describe())
+```
+
+## 發文流程
+1. 寫內容 → 填 **Frontmatter**（標題／日期／分類／draft）
+2. **下載 .qmd** → 放進 `learning-notes/posts/<分類>/`
+3. （或把 `.qmd` 傳給 Claude，幫你 render + push）
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -344,6 +414,13 @@ function expandSnippets(){
   }
 }
 $("#btnCheat").onclick=()=>$("#cheat").classList.toggle("show");
+$("#btnHelp").onclick=()=>{
+  const existing=Object.values(state.docs).find(d=>d.title==="筆記編輯器 · 功能速查");
+  if(existing){ selectDoc(existing.id); return; }
+  const id=uid(); const d=blank(id,"功能速查"); d.title="筆記編輯器 · 功能速查";
+  d.content=document.getElementById("cheatDoc").textContent.trim();
+  state.docs[id]=d; selectDoc(id); src.focus();
+};
 (function(){
   const fmt=a=>a.map(s=>'<code>'+s.t+'</code>→'+s.r.replace('#0','').trim()).join('　');
   $("#cheat").innerHTML='<div style="font-size:.8rem;line-height:2.1">'+

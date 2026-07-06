@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - editor.html
 
 website:
   title: "Muller Chen Blog"
@@ -15,6 +17,8 @@ website:
         href: posts/causalml/index.qmd
       - text: "論文筆記"
         href: posts/paper-notes/index.qmd
+      - text: "✍️ 編輯器"
+        href: editor.html
       - text: "關於我"
         href: about.qmd
     right:

@@ -63,53 +63,221 @@
     "text": "最新文章\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026-06-11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026-04-14\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html",
-    "href": "posts/causalml/ch8-neural-networks.html",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "objectID": "posts/causalml/ife-vs-cce-panel.html",
+    "href": "posts/causalml/ife-vs-cce-panel.html",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
     "section": "",
-    "text": "第 8 章討論三個主題：\n\nTrees / Random Forests / Boosting（8.1–8.2）\nDeep Neural Networks（8.3）\nLearning Guarantees（8.4）\n\n本篇筆記主要整理 8.3 節的神經網路部分。"
+    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/panel-factor-model-comparison"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#本章架構",
-    "href": "posts/causalml/ch8-neural-networks.html#本章架構",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
+    "href": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "前言：當「固定效果」不夠用",
+    "text": "前言：當「固定效果」不夠用\npanel data 最常見的招式是固定效果（fixed effects）：把每個個體、每個時間的加成性差異吸收掉。但很多時候，資料背後有共同因子（common factors）——例如一個總體衝擊，對不同公司的影響程度不一樣。這時模型長這樣：\n\\[y_{it} = \\beta\\, x_{it} + \\underbrace{\\lambda_i' f_t}_{\\text{interactive fixed effects}} + \\varepsilon_{it},\\]\n其中 \\(f_t\\) 是沒觀察到的共同因子、\\(\\lambda_i\\) 是個體對它的敏感度。麻煩在於：如果 \\(x_{it}\\) 也受 \\(f_t\\) 影響（例如同一個總體衝擊同時驅動了 regressor 和結果），那麼 \\(x_{it}\\) 就與誤差相關 —— 普通的雙向固定效果（two-way FE）會偏誤，因為它只能吸收「加成性」的效果，吸不掉 \\(\\lambda_i' f_t\\) 這種「交乘」結構。\n兩個經典解法：\n\nCCE（Common Correlated Effects）(Pesaran, 2006)：用截面平均當作因子的代理，投影掉它。直覺是「大 N 時，\\(\\bar y_t, \\bar x_t\\) 帶著 \\(f_t\\) 的資訊」。\nIFE（Interactive Fixed Effects）(Bai, 2009)：直接用主成分把因子空間估出來，再反覆更新 \\(\\beta\\)。\n\n這篇用 Python 把兩個估計量手刻出來，再用 Monte Carlo 比較。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
+    "href": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "一、CCE：用截面平均代理因子",
+    "text": "一、CCE：用截面平均代理因子\nCCE 的核心是一個投影矩陣。令 \\(\\bar y_t, \\bar x_t\\) 為每期的截面平均，\\(H = [\\mathbf{1}, \\bar y, \\bar x]\\)，投影矩陣 \\(M = I - H(H'H)^{-1}H'\\)，然後對每個個體做 \\(M\\)-投影後的迴歸：\nimport numpy as np\n\ndef cce(Y, X):                       # Y, X 都是 T×N\n    T, N = Y.shape\n    ybar, xbar = Y.mean(1), X.mean(1)          # 截面平均\n    H = np.column_stack([np.ones(T), ybar, xbar])\n    M = np.eye(T) - H @ np.linalg.solve(H.T @ H, H.T)   # 投影矩陣\n    b = np.array([(X[:, i] @ M @ Y[:, i]) / (X[:, i] @ M @ X[:, i])\n                  for i in range(N)])\n    return b.mean()                  # CCE mean-group"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
+    "href": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "二、IFE：用主成分估因子",
+    "text": "二、IFE：用主成分估因子\nIFE 是個交替迭代：先用 OLS 起步，殘差取主成分當因子 \\(\\hat F\\)，估載荷 \\(\\hat\\Lambda\\)，再用去掉因子的資料更新 \\(\\beta\\)，反覆到收斂。\ndef ife(Y, X, r, max_iter=1000, tol=1e-10):\n    T, N = Y.shape\n    XtX = (X * X).sum()\n    beta = (X * Y).sum() / XtX               # OLS 起步（忽略因子）\n    for _ in range(max_iter):\n        W = Y - beta * X                     # 殘差\n        vals, vecs = np.linalg.eigh(W @ W.T / N)\n        F = np.sqrt(T) * vecs[:, -r:]        # 前 r 個特徵向量 = 因子\n        Lam = (W.T @ F) / T                  # 載荷\n        beta_new = (X * (Y - F @ Lam.T)).sum() / XtX\n        if abs(beta_new - beta) &lt; tol:\n            break\n        beta = beta_new\n    return beta"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
+    "href": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "三、Monte Carlo：誰勝出？",
+    "text": "三、Monte Carlo：誰勝出？\n用一個 \\(x\\) 透過共同因子而內生的 DGP（真值 \\(\\beta = 1\\)），跑 300 次、四種 \\((N,T)\\) 設計，比較 TWFE / CCE / IFE 的 RMSE：\n\n\n\n設計\nTWFE\nCCE\nIFE\n\n\n\n\nN=50, T=10\n0.613\n0.069\n0.007\n\n\nN=100, T=10\n0.611\n0.040\n0.001\n\n\nN=50, T=50\n0.622\n0.071\n0.002\n\n\nN=20, T=100\n0.621\n0.143\n0.003\n\n\n\n\n\n\nMonte Carlo：TWFE 在交互固定效果下失效，CCE 與 IFE 修正之\n\n\n三個觀察：\n\nTWFE 直接爆掉。 偏誤約 \\(+0.61\\)（真值才 1！），在所有設計都一樣糟 —— 交互固定效果不是普通 FE 能處理的。\nCCE 有效，但吃大 N。 因為它用截面平均代理因子，N 越大越準；在 \\(N=20\\) 時明顯變差（RMSE 0.143）。\nIFE 最準。 只要因子數 \\(r\\) 設對，它幾乎無偏。代價是要事先決定 \\(r\\)。\n\n\n注意：CCE 與 IFE 誰勝出很吃 DGP。這裡的 Python 版用了一個內生性很強的設計；repo 裡的 R 期末論文跑了更多設計（含 \\(I(1)\\) 因子、大 N 大 T），結論是「小 T 相對大 N 時 CCE 佔優，兩維都大時兩者相當」。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#小結",
+    "href": "posts/causalml/ife-vs-cce-panel.html#小結",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "小結",
+    "text": "小結\n\n\n\n\n普通 TWFE\nCCE\nIFE\n\n\n\n\n處理交互固定效果\n✗（偏誤）\n✓\n✓\n\n\n需要知道因子數 \\(r\\)\n—\n不用\n要\n\n\n主要靠\n—\n大 N\n大 N 且大 T\n\n\n直覺\n只吸加成效果\n截面平均代理因子\n主成分估因子\n\n\n\n這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：panel-factor-model-comparison；整體 Causal ML 框架見 (Chernozhukov et al., 2024)。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
+    "href": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nBai, J. (2009). Panel data models with interactive fixed effects. Econometrica, 77(4), 1229–1279.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nPesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. Econometrica, 74(4), 967–1012."
+  },
+  {
+    "objectID": "posts/causalml/index.html",
+    "href": "posts/causalml/index.html",
+    "title": "Causal Inference and Econometrics",
     "section": "",
-    "text": "第 8 章討論三個主題：\n\nTrees / Random Forests / Boosting（8.1–8.2）\nDeep Neural Networks（8.3）\nLearning Guarantees（8.4）\n\n本篇筆記主要整理 8.3 節的神經網路部分。"
+    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#deep-neural-networks",
-    "href": "posts/causalml/ch8-neural-networks.html#deep-neural-networks",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
-    "section": "8.3 Deep Neural Networks",
-    "text": "8.3 Deep Neural Networks\n\n單層網路：自動特徵工程\n最基本的神經網路是單層結構，預測函數為：\n\\[\\hat{g}(Z) := \\sum_{m=1}^{M} \\hat{\\beta}_m \\, \\sigma(\\hat{\\alpha}_m' Z)\\]\n其中：\n\n\\(Z \\in \\mathbb{R}^d\\)：輸入向量\n\\(\\alpha_m\\)：決定第 \\(m\\) 個神經元「形狀」的權重\n\\(\\sigma(\\cdot)\\)：激活函數（ReLU、Sigmoid、Softplus 等）\n\\(\\beta_m\\)：輸出層係數\n\n直覺： 模型「學習」最佳的非線性轉換，不需要研究者手動指定函數形式。\n\n\n深度神經網路（DNN）\n多層結構的前向傳播：\n\\[H^{(l)} := \\sigma_l \\left( W^{(l)} H^{(l-1)} + b^{(l)} \\right), \\quad l = 1, \\dots, m\\]\n\n\\(H^{(0)} = Z\\)：原始輸入\n\\(W^{(l)} \\in \\mathbb{R}^{K_l \\times K_{l-1}}\\)：第 \\(l\\) 層權重矩陣\n\\(b^{(l)} \\in \\mathbb{R}^{K_l}\\)：偏差向量\n深度（depth）\\(m\\)：隱藏層數\n寬度（width）\\(K_l\\)：第 \\(l\\) 層的神經元數\n\n\n\n表徵學習（Representation Learning）\nDNN 的核心洞見：最後一個隱藏層 \\(H^{(m)}(Z)\\) 是從原始輸入學習到的嵌入（embedding）。\n輸出層在這個表徵上做線性組合：\n\\[\\hat{g}(Z) := (w^{out})' H^{(m)} + b^{out}\\]\n模型的彈性來自隱藏層的反覆非線性組合，不是最後的線性組合。"
+    "objectID": "posts/causalml/factor-models-pca.html",
+    "href": "posts/causalml/factor-models-pca.html",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "",
+    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/factor-models-in-r"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#多任務學習multitask-learning",
-    "href": "posts/causalml/ch8-neural-networks.html#多任務學習multitask-learning",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
-    "section": "多任務學習（Multitask Learning）",
-    "text": "多任務學習（Multitask Learning）\n在 Causal ML 中特別有用，因為我們需要同時估計多個 nuisance function。\n共享同一個 backbone，各任務有自己的輸出頭：\n\\[\\hat{g}_t(Z) := \\sigma_{out,t} \\left( (w^{(t)})' H^{(m)} + b^{(t)} \\right)\\]\n計量應用：\n\nTask 1（\\(Y^1 = Y\\)）：結果模型 \\(\\mathbb{E}[Y | Z]\\)\nTask 2（\\(Y^2 = D\\)）：處理模型 \\(\\mathbb{E}[D | Z]\\)（傾向分數）\n\n優點： 共享特徵學習能改善正則化，特別是兩個任務相關時。"
+    "objectID": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
+    "href": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "前言：少數幾股力量，驅動一大票序列",
+    "text": "前言：少數幾股力量，驅動一大票序列\nFactor model 的核心想法是：很多觀察到的序列，其實是被少數幾個看不到的共同因子驅動的。89 檔股票的報酬每天一起漲跌，背後可能只是「大盤」「產業輪動」幾股力量。這篇用 Python 對 S&P 500 的日報酬動手做一次，讓資料自己告訴我們：要幾個因子？這些因子又是什麼？"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#learning-guarantees",
-    "href": "posts/causalml/ch8-neural-networks.html#learning-guarantees",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
-    "section": "8.4 Learning Guarantees",
-    "text": "8.4 Learning Guarantees\n\nAssumption 8.4.1（非參數稀疏性）\n\\[g(Z) = f(Z_S), \\quad |S| = r \\ll d\\]\n真實函數只依賴 \\(r\\) 個相關特徵，而非全部 \\(d\\) 個。\n\n\nTheorem 8.4.3（DNN 收斂速率）\n深度神經網路的收斂速率由有效維度決定：\n\\[s = \\max_j \\, n^{t_j / (2\\beta_j + t_j)}\\]\n此速率克服了傳統非參數方法的維度詛咒，因為 DNN 能利用組合稀疏性（Compositional Sparsity）。"
+    "objectID": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
+    "href": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "一、資料整理：從價格到報酬矩陣",
+    "text": "一、資料整理：從價格到報酬矩陣\n資料是 89 檔 S&P 500 成分股、2013–2022 的日調整價。先算日報酬，再攤成 date × stock 的寬矩陣：\nimport pandas as pd\n\ndf = pd.read_csv(\"sp500_prices.csv\", usecols=[\"symbol\", \"date\", \"adjusted\"])\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf = df.sort_values([\"symbol\", \"date\"])\ndf[\"ret\"] = df.groupby(\"symbol\")[\"adjusted\"].pct_change()      # 每檔的日報酬\nwide = df.pivot(index=\"date\", columns=\"symbol\", values=\"ret\").dropna()\n# 結果：2,384 天 × 89 檔"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#個人心得",
-    "href": "posts/causalml/ch8-neural-networks.html#個人心得",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
-    "section": "個人心得",
-    "text": "個人心得\n為什麼計量學家用 Shallow 而非 Deep？\n書中提到一個實際上的觀察：對於 tabular data（一般經濟資料）， 較淺但較寬的網路往往優於深層網路。\n這可能是因為： 1. 經濟資料的樣本量通常遠小於影像/文字資料 2. 過多層數在小樣本下容易過擬合 3. DML 框架對 nuisance function 的要求是「夠好」，不需要最先進的模型"
+    "objectID": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
+    "href": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "二、要幾個因子？用 PCA 看",
+    "text": "二、要幾個因子？用 PCA 看\n對標準化後的報酬做 PCA，看前幾個主成分能解釋多少變異：\nfrom sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\n\nX = StandardScaler().fit_transform(wide.values)\npca = PCA().fit(X)\nevr = pca.explained_variance_ratio_\nprint(evr[0], evr[:3].sum(), evr[:5].sum())\n結果：PC1 就解釋了 40.8% 的變異（這就是「大盤」共同因子），前 3 個解釋 50.8%、前 5 個 55.2%。89 檔股票的共同起伏，用少數幾個因子就抓住一大半 —— 這正是 factor model 的精神。\n\n\n\nScree plot：少數幾個共同因子驅動了大部分的共同起伏"
   },
   {
-    "objectID": "posts/causalml/ch8-neural-networks.html#投影片",
-    "href": "posts/causalml/ch8-neural-networks.html#投影片",
-    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
-    "section": "投影片",
-    "text": "投影片\n這一章的 Beamer 投影片（19 頁）已放在 NTU-ECON repo。"
+    "objectID": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
+    "href": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "三、這些因子是什麼？用 varimax + 產業標籤",
+    "text": "三、這些因子是什麼？用 varimax + 產業標籤\nPCA 告訴我們「幾個」，但因子的意義要靠因子分析 + 旋轉來讀。用 3 因子 varimax，再把每個因子載荷最高的股票貼上它的產業別——讓資料自己命名：\nfrom sklearn.decomposition import FactorAnalysis\n\nfa = FactorAnalysis(n_components=3, rotation=\"varimax\").fit(X)\nloadings = pd.DataFrame(fa.components_.T, index=wide.columns,\n                        columns=[\"Factor1\", \"Factor2\", \"Factor3\"])\n# 對每個因子，取載荷最大的股票，並對照它們的 sector\n跑出來的三個因子乾淨得驚人：\n\n\n\n\n\n\n\n\n因子\n載荷最高的股票\n資料標出的產業\n\n\n\n\nFactor 1\nADBE, SNPS, MSFT, NVDA, GOOGL\nInformation Technology\n\n\nFactor 2\nCOP, CVX, XOM, EOG, PXD\nEnergy\n\n\nFactor 3\nDUK, D, PEP, NEE, PG, KO\nUtilities／Consumer Staples（防禦股）\n\n\n\n我們沒有告訴模型任何產業資訊，它卻自己把「科技、能源、防禦」這三股力量抽了出來。這就是統計因子模型的威力。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
+    "href": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "四、往因果推論走一步",
+    "text": "四、往因果推論走一步\n同樣的因子結構，也是現代因果推論的基礎。Bai & Wang (2024) 的因果因子模型 (Bai & Wang, 2024) 就是把這套「用因子吸收共同衝擊」的想法，用來估計處理效果——這和我另一篇談的 IFE / CCE panel 估計、以及 policy targeting 是同一條線上的方法。repo 裡也附了 Bai-Wang 的 R 實作與 walkthrough。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#小結",
+    "href": "posts/causalml/factor-models-pca.html#小結",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "小結",
+    "text": "小結\n\n\n\n步驟\n工具\n回答的問題\n\n\n\n\n資料整理\npandas\n價格 → 報酬寬矩陣\n\n\n要幾個因子\nPCA（sklearn）\n共同變異的維度\n\n\n因子是什麼\nFactorAnalysis + varimax\n因子的經濟意義\n\n\n往因果走\nBai-Wang 因果因子模型\n用因子估處理效果\n\n\n\n統計因子模型是「無母數地找出共同結構」的基本功；理論可參考 Tsay (2010) 第 9 章 (Tsay, 2010)。完整程式碼在 GitHub：factor-models-in-r。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#參考文獻",
+    "href": "posts/causalml/factor-models-pca.html#參考文獻",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nBai, J., & Wang, P. (2024). Causal inference with factor models. Working Paper.\n\n\nTsay, R. S. (2010). Analysis of financial time series (3rd ed.). Wiley."
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "",
+    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "",
+    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "一、跡（Trace）的微分規則",
+    "text": "一、跡（Trace）的微分規則\n跡的兩個核心性質：\n\n轉置不變性： \\(\\text{tr}(A) = \\text{tr}(A^T)\\)\n循環性質（Cyclic Property）： \\(\\text{tr}(ABC) = \\text{tr}(BCA) = \\text{tr}(CAB)\\)\n\n這兩個性質讓我們可以把複雜的矩陣乘積「轉一圈」，湊出對 \\(X\\) 求導的標準形式。\n\n常用公式\n\\[\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\]\n\\[\\frac{\\partial \\, \\text{tr}(X^T A)}{\\partial X} = A\\]\n\\[\\frac{\\partial \\, \\text{tr}(AX^T B)}{\\partial X} = B^T A^T\\]"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "二、二次型（Quadratic Form）的微分",
+    "text": "二、二次型（Quadratic Form）的微分\n二次型是 PCA 求特徵向量的關鍵。\n\n向量形式\n\\[\\frac{\\partial (x^T A x)}{\\partial x} = (A + A^T)x\\]\n\n若 \\(A\\) 對稱（如共變異數矩陣），則化簡為 \\(2Ax\\)。\n\n\n\n矩陣跡形式\n\\[\\frac{\\partial \\, \\text{tr}(X^T A X)}{\\partial X} = (A + A^T)X\\]\n\n若 \\(A\\) 對稱（如 \\(X^T X\\)），化簡為 \\(2AX\\)。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "三、行列式與逆矩陣（Determinant & Inverse）",
+    "text": "三、行列式與逆矩陣（Determinant & Inverse）\n這兩個結果常出現在最大概似估計（MLE）對數概似函數的求導中，例如多變量常態分配的參數估計。\n\n對數行列式\n\\[\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\]\n\n若 \\(X\\) 對稱（如協方差矩陣），化簡為 \\(X^{-1}\\)。\n\n\n\n逆矩陣的跡\n\\[\\frac{\\partial \\, \\text{tr}(A X^{-1})}{\\partial X} = -(X^{-1} A X^{-1})^T\\]"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "四、實際應用：因子模型（Factor Models）",
+    "text": "四、實際應用：因子模型（Factor Models）\n\nPCA 目標函數\nPCA 的最佳化問題為：\n\\[\\max_{F} \\; \\text{tr}\\!\\left(F^T (X^T X) F\\right) \\quad \\text{subject to} \\quad F^T F = I\\]\n令 \\(A = X^T X\\)（對稱矩陣），對 \\(F\\) 微分並加入 Lagrange 乘數項 \\(\\text{tr}(V(F^T F - I))\\)：\n\\[\\frac{\\partial}{\\partial F}\\left[\\text{tr}(F^T A F) - \\text{tr}(V(F^T F - I))\\right] = 2AF - 2FV = 0\\]\n整理得一階條件：\n\\[AF = FV\\]\n這正是特徵值問題（Eigenvalue Problem）：\\(F\\) 的各行是 \\(A\\) 的特徵向量，\\(V\\) 是對角的特徵值矩陣。"
+  },
+  {
+    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
+    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
+    "title": "矩陣微分 Cheat Sheet",
+    "section": "小結",
+    "text": "小結\n\n\n\n\n\n\n\n\n類型\n公式\n備註\n\n\n\n\n線性跡\n\\(\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\)\n基本型\n\n\n二次型（向量）\n\\(\\frac{\\partial x^T A x}{\\partial x} = (A+A^T)x\\)\n對稱時為 \\(2Ax\\)\n\n\n二次型（矩陣跡）\n\\(\\frac{\\partial \\, \\text{tr}(X^T AX)}{\\partial X} = (A+A^T)X\\)\n對稱時為 \\(2AX\\)\n\n\n對數行列式\n\\(\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\)\n對稱時為 \\(X^{-1}\\)\n\n\n逆矩陣跡\n\\(\\frac{\\partial \\, \\text{tr}(AX^{-1})}{\\partial X} = -(X^{-1}AX^{-1})^T\\)\nMLE 常見\n\n\nPCA 一階條件\n\\(AF = FV\\)\n特徵值問題"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html",
+    "href": "posts/ai-tools/ai-agent-handbook.html",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "",
+    "text": "用 Claude Code 一段時間後，我累積了一大堆 skills——研究、寫作、投影片、數據分析、發筆記，零零總總幾十個。問題是：工具一多，反而不知道什麼時候該用哪個。更常見的狀況是，同一個 session 裡東問西問，最後 AI 開始「忘東忘西」、品質下滑。\n於是我把自己的用法整理成一本手冊，回答三個問題：\n\n我有哪些工具、什麼情況用哪個？\n怎麼把零散的工具串成「工作流」，而不是每次重想？\n怎麼有效率地用 AI agent——省 token、管理 context、寫好 CLAUDE.md、什麼任務該開哪家 AI？\n\n這篇是那本手冊的公開版。內容裡所有關於 Claude Code 的事實，我都對照了 Anthropic 官方文件，沒有憑空編造（來源見文末）。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#前言為什麼要寫一本使用手冊",
+    "href": "posts/ai-tools/ai-agent-handbook.html#前言為什麼要寫一本使用手冊",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "",
+    "text": "用 Claude Code 一段時間後，我累積了一大堆 skills——研究、寫作、投影片、數據分析、發筆記，零零總總幾十個。問題是：工具一多，反而不知道什麼時候該用哪個。更常見的狀況是，同一個 session 裡東問西問，最後 AI 開始「忘東忘西」、品質下滑。\n於是我把自己的用法整理成一本手冊，回答三個問題：\n\n我有哪些工具、什麼情況用哪個？\n怎麼把零散的工具串成「工作流」，而不是每次重想？\n怎麼有效率地用 AI agent——省 token、管理 context、寫好 CLAUDE.md、什麼任務該開哪家 AI？\n\n這篇是那本手冊的公開版。內容裡所有關於 Claude Code 的事實，我都對照了 Anthropic 官方文件，沒有憑空編造（來源見文末）。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#一先建立正確的心智模型",
+    "href": "posts/ai-tools/ai-agent-handbook.html#一先建立正確的心智模型",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "一、先建立正確的心智模型",
+    "text": "一、先建立正確的心智模型\n\nAI agent ≠ 聊天機器人\n聊天機器人是「你問、它答、它等你」。Agent（像 Claude Code）是「你描述目標，它自己讀檔、跑指令、改檔、驗證、迭代」——你在旁邊看、必要時導正，或直接走開 (Anthropic, 2026a)。\n對研究的意義是：你不該再「自己想好每一步、一句句下指令」，而是把目標、限制、驗收標準講清楚，讓它自己跑。\n\n比方說，不要說「幫我把這個變數 demean」，而是說：「用 first-difference 估這個 panel DML，跑完給我 bias / SE 表，並和 OLS 對照。」前者是把 agent 當手腳，後者才是把它當研究助理。\n\n\n\n三個延伸機制：Skills / CLAUDE.md / Memory\n\n\n\n\n\n\n\n\n機制\n是什麼\n角色\n\n\n\n\nSkills（/skill-name 或自動觸發）\n一包 SKILL.md ＋ 腳本，給 AI 特定領域知識與可重複流程\n只在相關時才載入的「專門流程」\n\n\nCLAUDE.md\n每次開場自動載入的「專案說明書」\n每次都載入的「常駐規則」\n\n\nMemory\n跨 session 的長期記憶（偏好、專案狀態）\n你的「個人筆記」\n\n\n\n一句話記住分工：CLAUDE.md＝每次都載入的常駐說明；Skill＝需要時才載入的專門流程；Memory＝你的偏好與狀態。三者別混用——這在後面省 token 的部分很關鍵。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#二把技能整理成工作流而不是工具清單",
+    "href": "posts/ai-tools/ai-agent-handbook.html#二把技能整理成工作流而不是工具清單",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "二、把技能整理成「工作流」，而不是「工具清單」",
+    "text": "二、把技能整理成「工作流」，而不是「工具清單」\n工具清單會讓你每次都重想；工作流則是把「某個常見任務」固定成一條串接。我把自己的 skills 依場景分群，再串成幾條主力工作流。以下是幾個對研究生最實用的例子（觸發句直接貼給 agent 即可）。\n\n工作流 A — 讀懂並報告一篇論文\n\n串接： 讀 PDF → 建投影片 skill → 視覺／教學品管 → 上台\n觸發句：「讀 papers/X.pdf，做一份詳盡的 Beamer 投影片，先建立『理解 → 大綱 → 逐張 frame → 版面』的中介表示，再寫 .tex，最後逐頁做視覺檢查。」\n\n重點在「先理解、再規劃、才動手」——別讓 AI 從 PDF 直接跳到投影片，中間要有可檢查、可修補的階段。\n\n\n工作流 B — 多篇文獻找研究缺口\n\n串接： 文獻搜尋 skill → 研究缺口分析 skill → 把缺口磨成題目\n觸發句：「分析 papers/ 這幾篇論文，做跨論文 synthesis（不要逐篇摘要），把 gap 分類並評 Strong / Medium / Weak，每個 claim 要標出論文出處，不確定的標 to verify。」\n\n這條對寫 proposal、開題前掃描特別有用。關鍵是要求它橫向比較、證據落地、誠實標註不確定，而不是給你一堆樂觀的 bullet。\n\n\n工作流 C — 從想法到論文初稿\n\n串接： 訪談我 → 逼出 spec → 研究／寫作／審稿 pipeline → 自審\n觸發句：「先用問答把我這個想法逼成一份 SPEC.md，確認後再走完整的研究 → 寫作 → 審稿 → 修訂流程，英文用我的口吻。」\n\n「讓 AI 先訪談你」是官方很推薦的招：它會問你沒想到的取捨與 edge case，問完寫成 spec，再開新 session 執行——新 session context 乾淨、又有 spec 可循 (Anthropic, 2026a)。\n\n\n工作流 D — 數據分析到出表／圖\n\n觸發句：「跑這個 panel 的 FD-DML 與 OLS 對照，出 publication-ready 的 bias / RMSE 表和一張比較圖；data/raw/ 不要動，清理後存 data/processed/，跑完做 code review。」\n\n要求它給可重現的腳本＋證據，而不是只丟一個數字。\n\n\n共通原則：給它一個能跑的「驗收檢查」\n不管哪條工作流，最有效的一招是：給 AI 一個能自己跑、會回傳 pass / fail 的檢查（測試、編譯、跑回歸對照、screenshot 比對）。有了它，AI 會自己跑到通過，你不用當「人肉驗證迴圈」(Anthropic, 2026a)。並且要求它給證據（測試輸出、指令回傳），而不是一句「我做好了」。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#三高效使用-ai-agent-的核心context-是最稀缺的資源",
+    "href": "posts/ai-tools/ai-agent-handbook.html#三高效使用-ai-agent-的核心context-是最稀缺的資源",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "三、高效使用 AI agent 的核心：context 是最稀缺的資源",
+    "text": "三、高效使用 AI agent 的核心：context 是最稀缺的資源\n這是整本手冊最重要的一節。\n\n為什麼 AI 用久了會「變笨」：context rot\nAI 的 context window（脈絡視窗）裝著整段對話——每則訊息、每個被讀的檔、每次指令輸出。它會很快填滿，而且越滿、表現越差：模型開始「忘記」前面的指令、變多錯 (Anthropic, 2026a)。\nAnthropic 把這現象叫 context rot：transformer 要處理 \\(n^2\\) 的 token 兩兩關係，context 越長、注意力被攤越薄；模型在超長序列上的訓練資料也較少。結果是準確率隨 context 變長而漸降（是斜坡、不是斷崖）(Anthropic, 2025)。\n\n核心心法一句話：用「最小的高訊號 token 集合」達成任務，不是塞越多越好。\n\n\n\n省 token 的具體做法\n依重要性排序：\n\n任務之間 /clear。換到不相關的工作就清空 context。最常見的浪費就是「kitchen sink session」（一個 session 裡東問西問）。\n同一問題被你糾正超過兩次 → /clear 重開，用更好的 prompt。乾淨 session ＋ 好 prompt，幾乎總是贏過拖很長、塞滿失敗嘗試的 session。\n階段做完就 /compact（不是等到變笨才壓）。可加指示：/compact 著重在 R 程式與回歸設定。\n用 /context 看現在誰在吃 context。\n要 AI「去讀檔」而不是「貼長文進來」。用 @檔名 引用、或叫它自己讀檔／抓網址。貼一大段論文進對話 = 永久佔 context；讓它讀檔 = 可控。\n大量讀檔的探索 → 丟給 subagent。subagent 在獨立的 context 探索，只回報約 1,000–2,000 token 的摘要，不污染你的主對話 (Anthropic, 2025)。\n小問題用 side question（/btw），答案不進對話歷史。\nCLAUDE.md 保持精簡（見下）——它每次都載入、整段常駐。\n\n\n\nCLAUDE.md 是什麼、怎麼寫\n定義： 每次對話開場 AI 都會自動讀的「專案說明書」。放它從程式碼推不出來、但每次都需要的東西：常用指令、程式風格、工作流規則、專案慣例 (Anthropic, 2026b)。\n放的位置會自動合併：\n\n\n\n位置\n作用\n\n\n\n\n~/.claude/CLAUDE.md\n全域，套用到所有 session\n\n\n./CLAUDE.md（專案根）\n專案層，commit 進 git 與人共享\n\n\n./CLAUDE.local.md\n個人專案筆記，記得加進 .gitignore\n\n\n父／子目錄\nmonorepo 會自動往上拉、讀子目錄檔時才拉子目錄的\n\n\n\n官方的寫法守則很值得抄：\n\n保持短、人類可讀。每一行問自己：「拿掉這行會讓 AI 犯錯嗎？」不會就刪。\n臃腫的 CLAUDE.md 會讓 AI 忽略你真正的指令——重要規則淹沒在雜訊裡 (Anthropic, 2026a)。\n該放：猜不到的指令、與預設不同的風格、測試方式、repo 禮儀、專案特有的架構決定、環境怪癖、常見地雷。\n不該放：讀程式就知道的事、標準慣例、會頻繁變動的資訊、長篇教學。\n加 IMPORTANT / YOU MUST 可提高遵從度；在對話裡按 # 可把一句話直接寫進 CLAUDE.md；/init 可產生起始版本。\n\n我自己的做法是：把專案根的 CLAUDE.md 當成路由表，只寫「哪個任務先讀哪個 STATUS.md」，把會變動的進度交給各專案的 STATUS.md。這樣常駐檔永遠不會塞會過期的內容——正好對應官方「會頻繁變動的資訊不要放 CLAUDE.md」這條。\n\n\n先探索 → 再計畫 → 才動手\n官方建議四階段：Explore（plan mode 只讀不改）→ Plan（產出計畫）→ Implement（寫並驗證）→ Commit。但 plan mode 有 overhead：小事（改錯字、加一行 log）直接做；只在「不確定做法、會動多個檔、對該段不熟」時才用 (Anthropic, 2026a)。一句話能描述改動，就跳過計畫。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#四不同-ai-的優勢與選用",
+    "href": "posts/ai-tools/ai-agent-handbook.html#四不同-ai-的優勢與選用",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "四、不同 AI 的優勢與選用",
+    "text": "四、不同 AI 的優勢與選用\n模型版本與 benchmark 變很快，下面是 2026 年中的「相對強項」歸納，確切數字請臨用前再查 (Playcode Blog, 2026; Towards AI, 2026)：\n\n\n\n\n\n\n\n\n模型家族\n相對強項\n什麼情況開它\n\n\n\n\nClaude（Anthropic）\n程式／agentic 任務、複雜邏輯與除錯、長流程、最不「AI 腔」的英文寫作\nagentic 工作流、寫改 R／LaTeX、用自己口吻寫英文論文\n\n\nGPT（OpenAI）\n通用、知識面廣、結構化／商務型推理、外掛生態\n快速廣博的解法、brainstorming、大量工具整合\n\n\nGemini（Google）\n速度快、context window 超大、原生 Google 搜尋、多模態\n一次塞超大量文字、需要即時網路資訊、處理圖片影片\n\n\n\n對「計量 × 機器學習」這種研究工作流的實務建議：\n\nagentic 流程 ＋ 寫 code ＋ 英文論文寫作（主力）→ Claude / Claude Code。\n超長一次性閱讀（一次丟十幾篇 PDF 做粗略 landscape）→ 可考慮 Gemini 的大 context；但要嚴謹 synthesis 仍建議走結構化的研究流程。\n快速查證／即時資訊 → 帶 Google 搜尋的 Gemini，或讓 Claude 用內建 web search。\n不要迷信單一 benchmark 冠軍：挑模型看「你的任務類型」，不是看排行榜。\n\n至於 Claude 家族內部：Opus 做最難的推理與長流程、Sonnet 是又快又強的日常主力、Haiku 處理量大重複的小事；趕時間又想要 Opus 品質可開 fast mode。簡單任務用小模型、難任務才上 Opus，是最直接的省錢心法。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#小結",
+    "href": "posts/ai-tools/ai-agent-handbook.html#小結",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "小結",
+    "text": "小結\n把這套方法濃縮成一張表：\n\n\n\n\n\n\n\n主題\n一句話心法\n\n\n\n\n心智模型\n描述目標與驗收標準，讓 agent 自己跑，別當它的手腳\n\n\n工作流\n把常見任務固定成串接，附「觸發句」，每次複製即用\n\n\n驗收\n給一個能自己跑、回傳 pass/fail 的檢查；要證據不要「我做好了」\n\n\ncontext\n它是最稀缺資源；越滿越笨（context rot）\n\n\n省 token\n任務間 /clear、階段後 /compact、讀檔別貼長文、探索丟 subagent\n\n\nCLAUDE.md\n短、只放猜不到又每次要的；會變動的進度交給 STATUS.md\n\n\n選 AI\n看任務類型選家族；Claude 做 agentic／寫作、Gemini 大 context、GPT 廣博\n\n\n\n工具會一直變多，但「先理解、再規劃、才動手；管好 context；給它能驗證的檢查」這幾條原則不太會過期。這份手冊我會持續更新——用一陣子後，把真正好用的工作流沉澱下來，比追新工具更重要。"
+  },
+  {
+    "objectID": "posts/ai-tools/ai-agent-handbook.html#參考來源",
+    "href": "posts/ai-tools/ai-agent-handbook.html#參考來源",
+    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "section": "參考來源",
+    "text": "參考來源\n\n\n\n\n\n\n本文關於 Claude Code 的事實均來自 Anthropic 官方文件；模型比較為第三方 2026 年資料，數字會過期，僅供方向參考。"
   },
   {
     "objectID": "posts/ai-tools/claude-code-setup.html",
@@ -217,46 +385,18 @@
     "text": "小結\n\n\n\n任務\n函數\n\n\n\n\n讀取 CSV\nread_csv()\n\n\n篩選列\nfilter()\n\n\n新增／修改欄位\nmutate()\n\n\n選取欄位\nselect()\n\n\n排序\narrange()\n\n\n分組摘要\ngroup_by() + summarise()\n\n\n縱向合併\nbind_rows()\n\n\n橫向合併\nleft_join()\n\n\n路徑管理\nhere::here()\n\n\n\n掌握這幾個函數，加上 pipe |&gt; 的寫法，就能處理大多數的資料整理工作。"
   },
   {
+    "objectID": "posts/paper-notes/index.html",
+    "href": "posts/paper-notes/index.html",
+    "title": "論文筆記",
+    "section": "",
+    "text": "讀論文的筆記與總結 —— 每篇一頁，記錄問題、方法、貢獻、與我的評論。主題以因果推論、計量經濟學、機器學習為主。\n\n\n\n\n\n\nNote每篇筆記的固定結構\n\n\n\n\n\n\n一句話：這篇在做什麼、為什麼重要\n問題 / 動機：想解決什麼、既有方法的缺口\n方法：核心假設、識別策略、估計方式（含關鍵數學）\n主要結果：實證或理論的重點發現\n我的評論：貢獻、限制、可延伸之處、對我研究的啟發\n一句話帶走：TL;DR\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
     "objectID": "posts/ai-tools/index.html",
     "href": "posts/ai-tools/index.html",
     "title": "AI 工具",
     "section": "",
     "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\nJun 11, 2026\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\nApr 14, 2026\n\n\n\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/causalml/index.html",
-    "href": "posts/causalml/index.html",
-    "title": "Causal Inference and Econometrics",
-    "section": "",
-    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "關於我",
-    "section": "",
-    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
-  },
-  {
-    "objectID": "about.html#muller",
-    "href": "about.html#muller",
-    "title": "關於我",
-    "section": "",
-    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
-  },
-  {
-    "objectID": "about.html#這個部落格",
-    "href": "about.html#這個部落格",
-    "title": "關於我",
-    "section": "這個部落格",
-    "text": "這個部落格\n這裡記錄兩個主題：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal Inference and Econometrics\n因果推論與計量方法筆記"
-  },
-  {
-    "objectID": "about.html#主要工具",
-    "href": "about.html#主要工具",
-    "title": "關於我",
-    "section": "主要工具",
-    "text": "主要工具\nR、Python、LaTeX/Beamer、Git"
   },
   {
     "objectID": "posts/ai-tools/claude-code-economics-research.html",
@@ -313,55 +453,6 @@
     "title": "如何使用 Claude Code 進行經濟學研究",
     "section": "小結",
     "text": "小結\n\n\n\n使用場景\nClaude Code 的角色\n\n\n\n\n建立專案結構\n自動建資料夾、初始化 .here、CLAUDE.md\n\n\n資料下載\n撰寫 API 呼叫函數（World Bank、IMF）\n\n\n資料整理\n撰寫 dplyr pipeline，處理合併、清理\n\n\n除錯\n診斷錯誤訊息，提出修正方案\n\n\n文件化\n為每段程式碼加注解，撰寫 data_sources.md\n\n\n\nClaude Code 最大的優勢不是「取代你思考」，而是大幅降低繁瑣實作的時間成本， 讓你可以把更多精力放在真正重要的事：研究設計、結果詮釋、論文撰寫。"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "",
-    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#前言",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "",
-    "text": "在研讀計量經濟學，特別是因子模型（Factor Models）與主成分分析（PCA）時，矩陣微分是一個不可缺少的工具。本文整理常用公式，統一採用分子佈局（Numerator Layout）：對行向量求導結果為行向量，對矩陣求導結果與分子同形。"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#一跡trace的微分規則",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "一、跡（Trace）的微分規則",
-    "text": "一、跡（Trace）的微分規則\n跡的兩個核心性質：\n\n轉置不變性： \\(\\text{tr}(A) = \\text{tr}(A^T)\\)\n循環性質（Cyclic Property）： \\(\\text{tr}(ABC) = \\text{tr}(BCA) = \\text{tr}(CAB)\\)\n\n這兩個性質讓我們可以把複雜的矩陣乘積「轉一圈」，湊出對 \\(X\\) 求導的標準形式。\n\n常用公式\n\\[\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\]\n\\[\\frac{\\partial \\, \\text{tr}(X^T A)}{\\partial X} = A\\]\n\\[\\frac{\\partial \\, \\text{tr}(AX^T B)}{\\partial X} = B^T A^T\\]"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#二二次型quadratic-form的微分",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "二、二次型（Quadratic Form）的微分",
-    "text": "二、二次型（Quadratic Form）的微分\n二次型是 PCA 求特徵向量的關鍵。\n\n向量形式\n\\[\\frac{\\partial (x^T A x)}{\\partial x} = (A + A^T)x\\]\n\n若 \\(A\\) 對稱（如共變異數矩陣），則化簡為 \\(2Ax\\)。\n\n\n\n矩陣跡形式\n\\[\\frac{\\partial \\, \\text{tr}(X^T A X)}{\\partial X} = (A + A^T)X\\]\n\n若 \\(A\\) 對稱（如 \\(X^T X\\)），化簡為 \\(2AX\\)。"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#三行列式與逆矩陣determinant-inverse",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "三、行列式與逆矩陣（Determinant & Inverse）",
-    "text": "三、行列式與逆矩陣（Determinant & Inverse）\n這兩個結果常出現在最大概似估計（MLE）對數概似函數的求導中，例如多變量常態分配的參數估計。\n\n對數行列式\n\\[\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\]\n\n若 \\(X\\) 對稱（如協方差矩陣），化簡為 \\(X^{-1}\\)。\n\n\n\n逆矩陣的跡\n\\[\\frac{\\partial \\, \\text{tr}(A X^{-1})}{\\partial X} = -(X^{-1} A X^{-1})^T\\]"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#四實際應用因子模型factor-models",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "四、實際應用：因子模型（Factor Models）",
-    "text": "四、實際應用：因子模型（Factor Models）\n\nPCA 目標函數\nPCA 的最佳化問題為：\n\\[\\max_{F} \\; \\text{tr}\\!\\left(F^T (X^T X) F\\right) \\quad \\text{subject to} \\quad F^T F = I\\]\n令 \\(A = X^T X\\)（對稱矩陣），對 \\(F\\) 微分並加入 Lagrange 乘數項 \\(\\text{tr}(V(F^T F - I))\\)：\n\\[\\frac{\\partial}{\\partial F}\\left[\\text{tr}(F^T A F) - \\text{tr}(V(F^T F - I))\\right] = 2AF - 2FV = 0\\]\n整理得一階條件：\n\\[AF = FV\\]\n這正是特徵值問題（Eigenvalue Problem）：\\(F\\) 的各行是 \\(A\\) 的特徵向量，\\(V\\) 是對角的特徵值矩陣。"
-  },
-  {
-    "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
-    "href": "posts/causalml/matrix-calculus-cheat-sheet.html#小結",
-    "title": "矩陣微分 Cheat Sheet",
-    "section": "小結",
-    "text": "小結\n\n\n\n\n\n\n\n\n類型\n公式\n備註\n\n\n\n\n線性跡\n\\(\\frac{\\partial \\, \\text{tr}(AX)}{\\partial X} = A^T\\)\n基本型\n\n\n二次型（向量）\n\\(\\frac{\\partial x^T A x}{\\partial x} = (A+A^T)x\\)\n對稱時為 \\(2Ax\\)\n\n\n二次型（矩陣跡）\n\\(\\frac{\\partial \\, \\text{tr}(X^T AX)}{\\partial X} = (A+A^T)X\\)\n對稱時為 \\(2AX\\)\n\n\n對數行列式\n\\(\\frac{\\partial \\ln |X|}{\\partial X} = (X^{-1})^T\\)\n對稱時為 \\(X^{-1}\\)\n\n\n逆矩陣跡\n\\(\\frac{\\partial \\, \\text{tr}(AX^{-1})}{\\partial X} = -(X^{-1}AX^{-1})^T\\)\nMLE 常見\n\n\nPCA 一階條件\n\\(AF = FV\\)\n特徵值問題"
   },
   {
     "objectID": "posts/ai-tools/claude-code-workflow-system.html",
@@ -427,6 +518,104 @@
     "text": "小結\n\n\n\n工具\n解決的問題\n\n\n\n\nObsidian Daily Note\n每天有地方記，不靠記憶\n\n\nweekly_notes + cron\n每週彙整，自動上傳，不靠意志力\n\n\nNotion\n長期存檔，方便回顧\n\n\nZotero + Better BibTeX\n文獻自動管理，.bib 永遠最新\n\n\nClaude Code Skills\n研究任務標準化，降低重複工作\n\n\n\n這套系統的核心原則是：降低每一個環節的摩擦力。越容易記錄，就越會記錄；越自動化，就越不依賴自律。\n完整的工作流程手冊（含 PDF）存放在 ~/claude_SY/MY_WORKFLOW.md。"
   },
   {
+    "objectID": "posts/causalml/policy-targeting-uplift.html",
+    "href": "posts/causalml/policy-targeting-uplift.html",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "",
+    "text": "完整程式碼與圖表：github.com/Mullerchen910912/causal-ml-policy-targeting"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
+    "href": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "前言：預測 vs 因果",
+    "text": "前言：預測 vs 因果\n一般的預測模型回答的是「誰會購買」。但真正值錢的商業問題往往是因果的：「誰是因為我們介入（寄 e-mail、發優惠）才購買」。\n差別很關鍵：\n\n一個本來就會買的顧客，你寄不寄 e-mail 他都會買 —— 對他行銷是浪費預算。\n更糟的是，有些顧客被 e-mail 惹惱反而流失 —— 這是負效果。\n\n所以我們要估的，不是購買機率，而是個體處理效果（uplift）。這篇短文用一個公開的隨機行銷實驗，示範怎麼估 uplift、怎麼把它變成「該投給誰」的政策，並且用金錢衡量這個政策值多少。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
+    "href": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "一、要估的是 CATE（uplift）",
+    "text": "一、要估的是 CATE（uplift）\n用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：\n\\[\\tau(x) = \\mathbb{E}\\left[\\,Y(1) - Y(0) \\mid X = x\\,\\right],\\]\n其中 \\(Y(1), Y(0)\\) 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自隨機實驗，分派機率（propensity）\\(e = \\Pr(T=1)\\) 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。\n估 \\(\\tau(x)\\) 的工具箱（都在 EconML 裡）：\n\nMeta-learners：S/T/X-learner (Künzel et al., 2019)，把問題拆成標準回歸。\nDouble Machine Learning（LinearDML）(Chernozhukov et al., 2018)，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。\nCausal Forest (Wager & Athey, 2018)，以無母數方式估 \\(\\tau(x)\\)。\n\nfrom econml.dml import LinearDML\nfrom sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier\n\nest = LinearDML(\n    model_y=GradientBoostingRegressor(),      # E[Y | X]\n    model_t=GradientBoostingClassifier(),     # E[T | X]，二元處理\n    discrete_treatment=True, cv=5,\n)\nest.fit(Y, T, X=X)             # Y=是否造訪, T=是否寄信, X=顧客特徵\ntau_hat = est.effect(X)        # 每位顧客的 uplift τ̂(x)\nprint(est.ate(X), est.ate_interval(X))\nmodel_y、model_t 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
+    "href": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "二、怎麼評估「目標鎖定」好不好？",
+    "text": "二、怎麼評估「目標鎖定」好不好？\n重點不是預測準度，而是決策價值：\n\nQini coefficient / uplift@k —— 衡量「把顧客依 uplift 排序」排得好不好。\nPolicy value —— 這才是老闆在意的。給定一個 targeting rule \\(\\pi(x)\\in\\{0,1\\}\\)（要不要對這位顧客介入），在隨機資料上可用逆傾向加權（IPW）無偏估計其價值：\n\n\\[V(\\pi) = \\mathbb{E}\\!\\left[\\,Y \\cdot \\left( \\frac{\\pi(X)\\,T}{e} + \\frac{(1-\\pi(X))(1-T)}{1-e} \\right)\\right].\\]\n若每次介入有成本 \\(c\\)，最優規則就是「當 \\(\\hat\\tau(x) &gt; c\\) 才介入」(Athey & Wager, 2021)。把「介入比例」從 0 掃到 100%，就能畫出政策價值曲線，找到那個內部最優點。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
+    "href": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "三、在 Hillstrom 實驗上的結果",
+    "text": "三、在 Hillstrom 實驗上的結果\n資料是 Hillstrom 的 e-mail 行銷實驗 (Hillstrom, 2008)：6.4 萬名顧客被隨機分派到「收到女裝 e-mail」或「不收到」。三個發現：\n\n平均效果被準確識別。 DML 估出的 ATE 為 \\(+0.049\\)（95% 信賴區間排除 0），與實驗的 diff-in-means 幾乎一致 —— 這是對整條 pipeline 的乾淨驗證。\n效果高度異質。 個體效果從 \\(-0.50\\) 到 \\(+0.61\\)，而且 12% 的顧客效果為負 —— e-mail 反而把他們趕跑。一刀切的行銷完全看不到這件事。\n鎖定目標真的省錢。 一旦把每封 e-mail 的成本算進去，只寄給模型預測 uplift 前 49% 的顧客，淨值比「全部都寄」高約 12%，而且只寄一半的量。\n\n換句話說：與其問「這波行銷平均有沒有效」，不如問「該寄給誰」—— 錢就藏在後面這個問題裡。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#小結",
+    "href": "posts/causalml/policy-targeting-uplift.html#小結",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "小結",
+    "text": "小結\n\n\n\n面向\n預測模型\n因果 targeting\n\n\n\n\n問「誰會買」\n✓\n\n\n\n問「誰因介入才買」\n\n✓（uplift）\n\n\n對「本來就買 / 被惹惱」的人\n誤投\n避開\n\n\n衡量標準\nAUC / 準度\nQini / policy value\n\n\n\n因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 (Chernozhukov et al., 2024)。\n完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：causal-ml-policy-targeting。"
+  },
+  {
+    "objectID": "posts/causalml/policy-targeting-uplift.html#參考文獻",
+    "href": "posts/causalml/policy-targeting-uplift.html#參考文獻",
+    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData e-mail analytics and data mining challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html",
+    "href": "posts/causalml/ch8-neural-networks.html",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "",
+    "text": "第 8 章討論三個主題：\n\nTrees / Random Forests / Boosting（8.1–8.2）\nDeep Neural Networks（8.3）\nLearning Guarantees（8.4）\n\n本篇筆記主要整理 8.3 節的神經網路部分。"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#本章架構",
+    "href": "posts/causalml/ch8-neural-networks.html#本章架構",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "",
+    "text": "第 8 章討論三個主題：\n\nTrees / Random Forests / Boosting（8.1–8.2）\nDeep Neural Networks（8.3）\nLearning Guarantees（8.4）\n\n本篇筆記主要整理 8.3 節的神經網路部分。"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#deep-neural-networks",
+    "href": "posts/causalml/ch8-neural-networks.html#deep-neural-networks",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "8.3 Deep Neural Networks",
+    "text": "8.3 Deep Neural Networks\n\n單層網路：自動特徵工程\n最基本的神經網路是單層結構，預測函數為：\n\\[\\hat{g}(Z) := \\sum_{m=1}^{M} \\hat{\\beta}_m \\, \\sigma(\\hat{\\alpha}_m' Z)\\]\n其中：\n\n\\(Z \\in \\mathbb{R}^d\\)：輸入向量\n\\(\\alpha_m\\)：決定第 \\(m\\) 個神經元「形狀」的權重\n\\(\\sigma(\\cdot)\\)：激活函數（ReLU、Sigmoid、Softplus 等）\n\\(\\beta_m\\)：輸出層係數\n\n直覺： 模型「學習」最佳的非線性轉換，不需要研究者手動指定函數形式。\n\n\n深度神經網路（DNN）\n多層結構的前向傳播：\n\\[H^{(l)} := \\sigma_l \\left( W^{(l)} H^{(l-1)} + b^{(l)} \\right), \\quad l = 1, \\dots, m\\]\n\n\\(H^{(0)} = Z\\)：原始輸入\n\\(W^{(l)} \\in \\mathbb{R}^{K_l \\times K_{l-1}}\\)：第 \\(l\\) 層權重矩陣\n\\(b^{(l)} \\in \\mathbb{R}^{K_l}\\)：偏差向量\n深度（depth）\\(m\\)：隱藏層數\n寬度（width）\\(K_l\\)：第 \\(l\\) 層的神經元數\n\n\n\n表徵學習（Representation Learning）\nDNN 的核心洞見：最後一個隱藏層 \\(H^{(m)}(Z)\\) 是從原始輸入學習到的嵌入（embedding）。\n輸出層在這個表徵上做線性組合：\n\\[\\hat{g}(Z) := (w^{out})' H^{(m)} + b^{out}\\]\n模型的彈性來自隱藏層的反覆非線性組合，不是最後的線性組合。"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#多任務學習multitask-learning",
+    "href": "posts/causalml/ch8-neural-networks.html#多任務學習multitask-learning",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "多任務學習（Multitask Learning）",
+    "text": "多任務學習（Multitask Learning）\n在 Causal ML 中特別有用，因為我們需要同時估計多個 nuisance function。\n共享同一個 backbone，各任務有自己的輸出頭：\n\\[\\hat{g}_t(Z) := \\sigma_{out,t} \\left( (w^{(t)})' H^{(m)} + b^{(t)} \\right)\\]\n計量應用：\n\nTask 1（\\(Y^1 = Y\\)）：結果模型 \\(\\mathbb{E}[Y | Z]\\)\nTask 2（\\(Y^2 = D\\)）：處理模型 \\(\\mathbb{E}[D | Z]\\)（傾向分數）\n\n優點： 共享特徵學習能改善正則化，特別是兩個任務相關時。"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#learning-guarantees",
+    "href": "posts/causalml/ch8-neural-networks.html#learning-guarantees",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "8.4 Learning Guarantees",
+    "text": "8.4 Learning Guarantees\n\nAssumption 8.4.1（非參數稀疏性）\n\\[g(Z) = f(Z_S), \\quad |S| = r \\ll d\\]\n真實函數只依賴 \\(r\\) 個相關特徵，而非全部 \\(d\\) 個。\n\n\nTheorem 8.4.3（DNN 收斂速率）\n深度神經網路的收斂速率由有效維度決定：\n\\[s = \\max_j \\, n^{t_j / (2\\beta_j + t_j)}\\]\n此速率克服了傳統非參數方法的維度詛咒，因為 DNN 能利用組合稀疏性（Compositional Sparsity）。"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#個人心得",
+    "href": "posts/causalml/ch8-neural-networks.html#個人心得",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "個人心得",
+    "text": "個人心得\n為什麼計量學家用 Shallow 而非 Deep？\n書中提到一個實際上的觀察：對於 tabular data（一般經濟資料）， 較淺但較寬的網路往往優於深層網路。\n這可能是因為： 1. 經濟資料的樣本量通常遠小於影像/文字資料 2. 過多層數在小樣本下容易過擬合 3. DML 框架對 nuisance function 的要求是「夠好」，不需要最先進的模型"
+  },
+  {
+    "objectID": "posts/causalml/ch8-neural-networks.html#投影片",
+    "href": "posts/causalml/ch8-neural-networks.html#投影片",
+    "title": "Ch.8 Deep Neural Networks and Multitask Learning",
+    "section": "投影片",
+    "text": "投影片\n這一章的 Beamer 投影片（19 頁）已放在 NTU-ECON repo。"
+  },
+  {
     "objectID": "posts/causalml/deep-diving-synthetic-control.html",
     "href": "posts/causalml/deep-diving-synthetic-control.html",
     "title": "Deep Diving into Synthetic Control Method",
@@ -483,213 +672,31 @@
     "text": "Practical Checklist: When to Use GSC\nGSC is not always the right tool. Here is an honest accounting of when it works, when it struggles, and what to check before trusting the results.\n\nPrerequisites\n\n\n\n\n\n\n\nCondition\nRecommendation\n\n\n\n\n\\(T_0 \\geq 10\\) pre-treatment periods\nSafe to proceed\n\n\n\\(N_{co} \\geq 40\\) control units\nSafe to proceed\n\n\n\\(T_0 &lt; 10\\) or \\(N_{co} &lt; 40\\)\nResults may be unreliable; use with caution\n\n\nParallel trends holds approximately\nDiD/TWFE is fine and more efficient\n\n\nMultiple treated units\nGSC preferred over running separate SCMs\n\n\nOne treated unit\nOriginal SCM or GSC both work\n\n\nStaggered adoption timing\nGSC handles it natively\n\n\nDynamic treatment effects\nGSC accommodates them; TWFE does not\n\n\n\n\n\nThree Diagnostics to Always Run\n1. Pre-treatment fit. Plot actual and imputed outcomes for treated units in the pre-treatment period. If the GSC counterfactual tracks the treated unit well before the policy, the post-treatment gap is credible. If not, stop.\n2. Factor loadings plot. Plot the estimated \\(\\hat{\\lambda}_i\\) for all units in the two-dimensional factor space. Check that the treated units’ loadings fall within or near the convex hull of the control units’ loadings. If treated units are far outside the hull, the counterfactuals rely on extrapolation and the estimates are unreliable.\n3. Sensitivity to \\(r\\). Re-run the analysis with \\(r - 1\\) and \\(r + 1\\) factors. If the estimated ATT changes substantially, the result is not robust to the factor selection choice.\n\n\nKnown Limitations\nXu (2017) is explicit about what GSC cannot handle. The method assumes a linear IFE structure for the untreated potential outcome. It does not accommodate dynamic relationships between treatment and outcomes, structural breaks in the factor process, or random coefficients on observed covariates. It also cannot allow treatment timing to be endogenous to the outcome in a continuous way — the policy must be a discrete, clearly-dated event.\nWhen these conditions are violated, the results may be misleading, and the diagnostics above may not flag the problem. In such cases, the honest choice is to fall back on a simpler, more transparent estimator and acknowledge the identification limitations directly.\n\nThe bottom line. GSC fills a genuine gap: it gives researchers a principled way to construct counterfactuals in settings where DiD’s parallel trends assumption is implausible and SCM’s single-unit restriction is binding. The method is not magic — it replaces one set of assumptions with another. But the assumptions are more credible in many applied settings, and the diagnostics make it clear when they are not."
   },
   {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html",
-    "href": "posts/ai-tools/ai-agent-handbook.html",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "關於我",
     "section": "",
-    "text": "用 Claude Code 一段時間後，我累積了一大堆 skills——研究、寫作、投影片、數據分析、發筆記，零零總總幾十個。問題是：工具一多，反而不知道什麼時候該用哪個。更常見的狀況是，同一個 session 裡東問西問，最後 AI 開始「忘東忘西」、品質下滑。\n於是我把自己的用法整理成一本手冊，回答三個問題：\n\n我有哪些工具、什麼情況用哪個？\n怎麼把零散的工具串成「工作流」，而不是每次重想？\n怎麼有效率地用 AI agent——省 token、管理 context、寫好 CLAUDE.md、什麼任務該開哪家 AI？\n\n這篇是那本手冊的公開版。內容裡所有關於 Claude Code 的事實，我都對照了 Anthropic 官方文件，沒有憑空編造（來源見文末）。"
+    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
   },
   {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#前言為什麼要寫一本使用手冊",
-    "href": "posts/ai-tools/ai-agent-handbook.html#前言為什麼要寫一本使用手冊",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
+    "objectID": "about.html#muller",
+    "href": "about.html#muller",
+    "title": "關於我",
     "section": "",
-    "text": "用 Claude Code 一段時間後，我累積了一大堆 skills——研究、寫作、投影片、數據分析、發筆記，零零總總幾十個。問題是：工具一多，反而不知道什麼時候該用哪個。更常見的狀況是，同一個 session 裡東問西問，最後 AI 開始「忘東忘西」、品質下滑。\n於是我把自己的用法整理成一本手冊，回答三個問題：\n\n我有哪些工具、什麼情況用哪個？\n怎麼把零散的工具串成「工作流」，而不是每次重想？\n怎麼有效率地用 AI agent——省 token、管理 context、寫好 CLAUDE.md、什麼任務該開哪家 AI？\n\n這篇是那本手冊的公開版。內容裡所有關於 Claude Code 的事實，我都對照了 Anthropic 官方文件，沒有憑空編造（來源見文末）。"
+    "text": "經濟學研究所碩士生。\n研究興趣圍繞因果推論（Causal Inference）與計量方法，特別關注：\n\nCausal Machine Learning：Double/Debiased ML、Neyman orthogonality\n政策評估：勞動市場、教育政策"
   },
   {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#一先建立正確的心智模型",
-    "href": "posts/ai-tools/ai-agent-handbook.html#一先建立正確的心智模型",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "一、先建立正確的心智模型",
-    "text": "一、先建立正確的心智模型\n\nAI agent ≠ 聊天機器人\n聊天機器人是「你問、它答、它等你」。Agent（像 Claude Code）是「你描述目標，它自己讀檔、跑指令、改檔、驗證、迭代」——你在旁邊看、必要時導正，或直接走開 (Anthropic, 2026a)。\n對研究的意義是：你不該再「自己想好每一步、一句句下指令」，而是把目標、限制、驗收標準講清楚，讓它自己跑。\n\n比方說，不要說「幫我把這個變數 demean」，而是說：「用 first-difference 估這個 panel DML，跑完給我 bias / SE 表，並和 OLS 對照。」前者是把 agent 當手腳，後者才是把它當研究助理。\n\n\n\n三個延伸機制：Skills / CLAUDE.md / Memory\n\n\n\n\n\n\n\n\n機制\n是什麼\n角色\n\n\n\n\nSkills（/skill-name 或自動觸發）\n一包 SKILL.md ＋ 腳本，給 AI 特定領域知識與可重複流程\n只在相關時才載入的「專門流程」\n\n\nCLAUDE.md\n每次開場自動載入的「專案說明書」\n每次都載入的「常駐規則」\n\n\nMemory\n跨 session 的長期記憶（偏好、專案狀態）\n你的「個人筆記」\n\n\n\n一句話記住分工：CLAUDE.md＝每次都載入的常駐說明；Skill＝需要時才載入的專門流程；Memory＝你的偏好與狀態。三者別混用——這在後面省 token 的部分很關鍵。"
+    "objectID": "about.html#這個部落格",
+    "href": "about.html#這個部落格",
+    "title": "關於我",
+    "section": "這個部落格",
+    "text": "這個部落格\n這裡記錄兩個主題：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal Inference and Econometrics\n因果推論與計量方法筆記"
   },
   {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#二把技能整理成工作流而不是工具清單",
-    "href": "posts/ai-tools/ai-agent-handbook.html#二把技能整理成工作流而不是工具清單",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "二、把技能整理成「工作流」，而不是「工具清單」",
-    "text": "二、把技能整理成「工作流」，而不是「工具清單」\n工具清單會讓你每次都重想；工作流則是把「某個常見任務」固定成一條串接。我把自己的 skills 依場景分群，再串成幾條主力工作流。以下是幾個對研究生最實用的例子（觸發句直接貼給 agent 即可）。\n\n工作流 A — 讀懂並報告一篇論文\n\n串接： 讀 PDF → 建投影片 skill → 視覺／教學品管 → 上台\n觸發句：「讀 papers/X.pdf，做一份詳盡的 Beamer 投影片，先建立『理解 → 大綱 → 逐張 frame → 版面』的中介表示，再寫 .tex，最後逐頁做視覺檢查。」\n\n重點在「先理解、再規劃、才動手」——別讓 AI 從 PDF 直接跳到投影片，中間要有可檢查、可修補的階段。\n\n\n工作流 B — 多篇文獻找研究缺口\n\n串接： 文獻搜尋 skill → 研究缺口分析 skill → 把缺口磨成題目\n觸發句：「分析 papers/ 這幾篇論文，做跨論文 synthesis（不要逐篇摘要），把 gap 分類並評 Strong / Medium / Weak，每個 claim 要標出論文出處，不確定的標 to verify。」\n\n這條對寫 proposal、開題前掃描特別有用。關鍵是要求它橫向比較、證據落地、誠實標註不確定，而不是給你一堆樂觀的 bullet。\n\n\n工作流 C — 從想法到論文初稿\n\n串接： 訪談我 → 逼出 spec → 研究／寫作／審稿 pipeline → 自審\n觸發句：「先用問答把我這個想法逼成一份 SPEC.md，確認後再走完整的研究 → 寫作 → 審稿 → 修訂流程，英文用我的口吻。」\n\n「讓 AI 先訪談你」是官方很推薦的招：它會問你沒想到的取捨與 edge case，問完寫成 spec，再開新 session 執行——新 session context 乾淨、又有 spec 可循 (Anthropic, 2026a)。\n\n\n工作流 D — 數據分析到出表／圖\n\n觸發句：「跑這個 panel 的 FD-DML 與 OLS 對照，出 publication-ready 的 bias / RMSE 表和一張比較圖；data/raw/ 不要動，清理後存 data/processed/，跑完做 code review。」\n\n要求它給可重現的腳本＋證據，而不是只丟一個數字。\n\n\n共通原則：給它一個能跑的「驗收檢查」\n不管哪條工作流，最有效的一招是：給 AI 一個能自己跑、會回傳 pass / fail 的檢查（測試、編譯、跑回歸對照、screenshot 比對）。有了它，AI 會自己跑到通過，你不用當「人肉驗證迴圈」(Anthropic, 2026a)。並且要求它給證據（測試輸出、指令回傳），而不是一句「我做好了」。"
-  },
-  {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#三高效使用-ai-agent-的核心context-是最稀缺的資源",
-    "href": "posts/ai-tools/ai-agent-handbook.html#三高效使用-ai-agent-的核心context-是最稀缺的資源",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "三、高效使用 AI agent 的核心：context 是最稀缺的資源",
-    "text": "三、高效使用 AI agent 的核心：context 是最稀缺的資源\n這是整本手冊最重要的一節。\n\n為什麼 AI 用久了會「變笨」：context rot\nAI 的 context window（脈絡視窗）裝著整段對話——每則訊息、每個被讀的檔、每次指令輸出。它會很快填滿，而且越滿、表現越差：模型開始「忘記」前面的指令、變多錯 (Anthropic, 2026a)。\nAnthropic 把這現象叫 context rot：transformer 要處理 \\(n^2\\) 的 token 兩兩關係，context 越長、注意力被攤越薄；模型在超長序列上的訓練資料也較少。結果是準確率隨 context 變長而漸降（是斜坡、不是斷崖）(Anthropic, 2025)。\n\n核心心法一句話：用「最小的高訊號 token 集合」達成任務，不是塞越多越好。\n\n\n\n省 token 的具體做法\n依重要性排序：\n\n任務之間 /clear。換到不相關的工作就清空 context。最常見的浪費就是「kitchen sink session」（一個 session 裡東問西問）。\n同一問題被你糾正超過兩次 → /clear 重開，用更好的 prompt。乾淨 session ＋ 好 prompt，幾乎總是贏過拖很長、塞滿失敗嘗試的 session。\n階段做完就 /compact（不是等到變笨才壓）。可加指示：/compact 著重在 R 程式與回歸設定。\n用 /context 看現在誰在吃 context。\n要 AI「去讀檔」而不是「貼長文進來」。用 @檔名 引用、或叫它自己讀檔／抓網址。貼一大段論文進對話 = 永久佔 context；讓它讀檔 = 可控。\n大量讀檔的探索 → 丟給 subagent。subagent 在獨立的 context 探索，只回報約 1,000–2,000 token 的摘要，不污染你的主對話 (Anthropic, 2025)。\n小問題用 side question（/btw），答案不進對話歷史。\nCLAUDE.md 保持精簡（見下）——它每次都載入、整段常駐。\n\n\n\nCLAUDE.md 是什麼、怎麼寫\n定義： 每次對話開場 AI 都會自動讀的「專案說明書」。放它從程式碼推不出來、但每次都需要的東西：常用指令、程式風格、工作流規則、專案慣例 (Anthropic, 2026b)。\n放的位置會自動合併：\n\n\n\n位置\n作用\n\n\n\n\n~/.claude/CLAUDE.md\n全域，套用到所有 session\n\n\n./CLAUDE.md（專案根）\n專案層，commit 進 git 與人共享\n\n\n./CLAUDE.local.md\n個人專案筆記，記得加進 .gitignore\n\n\n父／子目錄\nmonorepo 會自動往上拉、讀子目錄檔時才拉子目錄的\n\n\n\n官方的寫法守則很值得抄：\n\n保持短、人類可讀。每一行問自己：「拿掉這行會讓 AI 犯錯嗎？」不會就刪。\n臃腫的 CLAUDE.md 會讓 AI 忽略你真正的指令——重要規則淹沒在雜訊裡 (Anthropic, 2026a)。\n該放：猜不到的指令、與預設不同的風格、測試方式、repo 禮儀、專案特有的架構決定、環境怪癖、常見地雷。\n不該放：讀程式就知道的事、標準慣例、會頻繁變動的資訊、長篇教學。\n加 IMPORTANT / YOU MUST 可提高遵從度；在對話裡按 # 可把一句話直接寫進 CLAUDE.md；/init 可產生起始版本。\n\n我自己的做法是：把專案根的 CLAUDE.md 當成路由表，只寫「哪個任務先讀哪個 STATUS.md」，把會變動的進度交給各專案的 STATUS.md。這樣常駐檔永遠不會塞會過期的內容——正好對應官方「會頻繁變動的資訊不要放 CLAUDE.md」這條。\n\n\n先探索 → 再計畫 → 才動手\n官方建議四階段：Explore（plan mode 只讀不改）→ Plan（產出計畫）→ Implement（寫並驗證）→ Commit。但 plan mode 有 overhead：小事（改錯字、加一行 log）直接做；只在「不確定做法、會動多個檔、對該段不熟」時才用 (Anthropic, 2026a)。一句話能描述改動，就跳過計畫。"
-  },
-  {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#四不同-ai-的優勢與選用",
-    "href": "posts/ai-tools/ai-agent-handbook.html#四不同-ai-的優勢與選用",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "四、不同 AI 的優勢與選用",
-    "text": "四、不同 AI 的優勢與選用\n模型版本與 benchmark 變很快，下面是 2026 年中的「相對強項」歸納，確切數字請臨用前再查 (Playcode Blog, 2026; Towards AI, 2026)：\n\n\n\n\n\n\n\n\n模型家族\n相對強項\n什麼情況開它\n\n\n\n\nClaude（Anthropic）\n程式／agentic 任務、複雜邏輯與除錯、長流程、最不「AI 腔」的英文寫作\nagentic 工作流、寫改 R／LaTeX、用自己口吻寫英文論文\n\n\nGPT（OpenAI）\n通用、知識面廣、結構化／商務型推理、外掛生態\n快速廣博的解法、brainstorming、大量工具整合\n\n\nGemini（Google）\n速度快、context window 超大、原生 Google 搜尋、多模態\n一次塞超大量文字、需要即時網路資訊、處理圖片影片\n\n\n\n對「計量 × 機器學習」這種研究工作流的實務建議：\n\nagentic 流程 ＋ 寫 code ＋ 英文論文寫作（主力）→ Claude / Claude Code。\n超長一次性閱讀（一次丟十幾篇 PDF 做粗略 landscape）→ 可考慮 Gemini 的大 context；但要嚴謹 synthesis 仍建議走結構化的研究流程。\n快速查證／即時資訊 → 帶 Google 搜尋的 Gemini，或讓 Claude 用內建 web search。\n不要迷信單一 benchmark 冠軍：挑模型看「你的任務類型」，不是看排行榜。\n\n至於 Claude 家族內部：Opus 做最難的推理與長流程、Sonnet 是又快又強的日常主力、Haiku 處理量大重複的小事；趕時間又想要 Opus 品質可開 fast mode。簡單任務用小模型、難任務才上 Opus，是最直接的省錢心法。"
-  },
-  {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#小結",
-    "href": "posts/ai-tools/ai-agent-handbook.html#小結",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "小結",
-    "text": "小結\n把這套方法濃縮成一張表：\n\n\n\n\n\n\n\n主題\n一句話心法\n\n\n\n\n心智模型\n描述目標與驗收標準，讓 agent 自己跑，別當它的手腳\n\n\n工作流\n把常見任務固定成串接，附「觸發句」，每次複製即用\n\n\n驗收\n給一個能自己跑、回傳 pass/fail 的檢查；要證據不要「我做好了」\n\n\ncontext\n它是最稀缺資源；越滿越笨（context rot）\n\n\n省 token\n任務間 /clear、階段後 /compact、讀檔別貼長文、探索丟 subagent\n\n\nCLAUDE.md\n短、只放猜不到又每次要的；會變動的進度交給 STATUS.md\n\n\n選 AI\n看任務類型選家族；Claude 做 agentic／寫作、Gemini 大 context、GPT 廣博\n\n\n\n工具會一直變多，但「先理解、再規劃、才動手；管好 context；給它能驗證的檢查」這幾條原則不太會過期。這份手冊我會持續更新——用一陣子後，把真正好用的工作流沉澱下來，比追新工具更重要。"
-  },
-  {
-    "objectID": "posts/ai-tools/ai-agent-handbook.html#參考來源",
-    "href": "posts/ai-tools/ai-agent-handbook.html#參考來源",
-    "title": "我的 AI Agent 使用手冊：把工具清單變成工作流",
-    "section": "參考來源",
-    "text": "參考來源\n\n\n\n\n\n\n本文關於 Claude Code 的事實均來自 Anthropic 官方文件；模型比較為第三方 2026 年資料，數字會過期，僅供方向參考。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html",
-    "href": "posts/causalml/policy-targeting-uplift.html",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "",
-    "text": "完整程式碼與圖表：github.com/Mullerchen910912/causal-ml-policy-targeting"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
-    "href": "posts/causalml/policy-targeting-uplift.html#前言預測-vs-因果",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "前言：預測 vs 因果",
-    "text": "前言：預測 vs 因果\n一般的預測模型回答的是「誰會購買」。但真正值錢的商業問題往往是因果的：「誰是因為我們介入（寄 e-mail、發優惠）才購買」。\n差別很關鍵：\n\n一個本來就會買的顧客，你寄不寄 e-mail 他都會買 —— 對他行銷是浪費預算。\n更糟的是，有些顧客被 e-mail 惹惱反而流失 —— 這是負效果。\n\n所以我們要估的，不是購買機率，而是個體處理效果（uplift）。這篇短文用一個公開的隨機行銷實驗，示範怎麼估 uplift、怎麼把它變成「該投給誰」的政策，並且用金錢衡量這個政策值多少。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
-    "href": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "一、要估的是 CATE（uplift）",
-    "text": "一、要估的是 CATE（uplift）\n用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：\n\\[\\tau(x) = \\mathbb{E}\\left[\\,Y(1) - Y(0) \\mid X = x\\,\\right],\\]\n其中 \\(Y(1), Y(0)\\) 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自隨機實驗，分派機率（propensity）\\(e = \\Pr(T=1)\\) 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。\n估 \\(\\tau(x)\\) 的工具箱（都在 EconML 裡）：\n\nMeta-learners：S/T/X-learner (Künzel et al., 2019)，把問題拆成標準回歸。\nDouble Machine Learning（LinearDML）(Chernozhukov et al., 2018)，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。\nCausal Forest (Wager & Athey, 2018)，以無母數方式估 \\(\\tau(x)\\)。\n\nfrom econml.dml import LinearDML\nfrom sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier\n\nest = LinearDML(\n    model_y=GradientBoostingRegressor(),      # E[Y | X]\n    model_t=GradientBoostingClassifier(),     # E[T | X]，二元處理\n    discrete_treatment=True, cv=5,\n)\nest.fit(Y, T, X=X)             # Y=是否造訪, T=是否寄信, X=顧客特徵\ntau_hat = est.effect(X)        # 每位顧客的 uplift τ̂(x)\nprint(est.ate(X), est.ate_interval(X))\nmodel_y、model_t 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
-    "href": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "二、怎麼評估「目標鎖定」好不好？",
-    "text": "二、怎麼評估「目標鎖定」好不好？\n重點不是預測準度，而是決策價值：\n\nQini coefficient / uplift@k —— 衡量「把顧客依 uplift 排序」排得好不好。\nPolicy value —— 這才是老闆在意的。給定一個 targeting rule \\(\\pi(x)\\in\\{0,1\\}\\)（要不要對這位顧客介入），在隨機資料上可用逆傾向加權（IPW）無偏估計其價值：\n\n\\[V(\\pi) = \\mathbb{E}\\!\\left[\\,Y \\cdot \\left( \\frac{\\pi(X)\\,T}{e} + \\frac{(1-\\pi(X))(1-T)}{1-e} \\right)\\right].\\]\n若每次介入有成本 \\(c\\)，最優規則就是「當 \\(\\hat\\tau(x) &gt; c\\) 才介入」(Athey & Wager, 2021)。把「介入比例」從 0 掃到 100%，就能畫出政策價值曲線，找到那個內部最優點。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
-    "href": "posts/causalml/policy-targeting-uplift.html#三在-hillstrom-實驗上的結果",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "三、在 Hillstrom 實驗上的結果",
-    "text": "三、在 Hillstrom 實驗上的結果\n資料是 Hillstrom 的 e-mail 行銷實驗 (Hillstrom, 2008)：6.4 萬名顧客被隨機分派到「收到女裝 e-mail」或「不收到」。三個發現：\n\n平均效果被準確識別。 DML 估出的 ATE 為 \\(+0.049\\)（95% 信賴區間排除 0），與實驗的 diff-in-means 幾乎一致 —— 這是對整條 pipeline 的乾淨驗證。\n效果高度異質。 個體效果從 \\(-0.50\\) 到 \\(+0.61\\)，而且 12% 的顧客效果為負 —— e-mail 反而把他們趕跑。一刀切的行銷完全看不到這件事。\n鎖定目標真的省錢。 一旦把每封 e-mail 的成本算進去，只寄給模型預測 uplift 前 49% 的顧客，淨值比「全部都寄」高約 12%，而且只寄一半的量。\n\n換句話說：與其問「這波行銷平均有沒有效」，不如問「該寄給誰」—— 錢就藏在後面這個問題裡。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#小結",
-    "href": "posts/causalml/policy-targeting-uplift.html#小結",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "小結",
-    "text": "小結\n\n\n\n面向\n預測模型\n因果 targeting\n\n\n\n\n問「誰會買」\n✓\n\n\n\n問「誰因介入才買」\n\n✓（uplift）\n\n\n對「本來就買 / 被惹惱」的人\n誤投\n避開\n\n\n衡量標準\nAUC / 準度\nQini / policy value\n\n\n\n因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 (Chernozhukov et al., 2024)。\n完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：causal-ml-policy-targeting。"
-  },
-  {
-    "objectID": "posts/causalml/policy-targeting-uplift.html#參考文獻",
-    "href": "posts/causalml/policy-targeting-uplift.html#參考文獻",
-    "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
-    "section": "參考文獻",
-    "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData e-mail analytics and data mining challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html",
-    "href": "posts/causalml/ife-vs-cce-panel.html",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "",
-    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/panel-factor-model-comparison"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
-    "href": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "前言：當「固定效果」不夠用",
-    "text": "前言：當「固定效果」不夠用\npanel data 最常見的招式是固定效果（fixed effects）：把每個個體、每個時間的加成性差異吸收掉。但很多時候，資料背後有共同因子（common factors）——例如一個總體衝擊，對不同公司的影響程度不一樣。這時模型長這樣：\n\\[y_{it} = \\beta\\, x_{it} + \\underbrace{\\lambda_i' f_t}_{\\text{interactive fixed effects}} + \\varepsilon_{it},\\]\n其中 \\(f_t\\) 是沒觀察到的共同因子、\\(\\lambda_i\\) 是個體對它的敏感度。麻煩在於：如果 \\(x_{it}\\) 也受 \\(f_t\\) 影響（例如同一個總體衝擊同時驅動了 regressor 和結果），那麼 \\(x_{it}\\) 就與誤差相關 —— 普通的雙向固定效果（two-way FE）會偏誤，因為它只能吸收「加成性」的效果，吸不掉 \\(\\lambda_i' f_t\\) 這種「交乘」結構。\n兩個經典解法：\n\nCCE（Common Correlated Effects）(Pesaran, 2006)：用截面平均當作因子的代理，投影掉它。直覺是「大 N 時，\\(\\bar y_t, \\bar x_t\\) 帶著 \\(f_t\\) 的資訊」。\nIFE（Interactive Fixed Effects）(Bai, 2009)：直接用主成分把因子空間估出來，再反覆更新 \\(\\beta\\)。\n\n這篇用 Python 把兩個估計量手刻出來，再用 Monte Carlo 比較。"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
-    "href": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "一、CCE：用截面平均代理因子",
-    "text": "一、CCE：用截面平均代理因子\nCCE 的核心是一個投影矩陣。令 \\(\\bar y_t, \\bar x_t\\) 為每期的截面平均，\\(H = [\\mathbf{1}, \\bar y, \\bar x]\\)，投影矩陣 \\(M = I - H(H'H)^{-1}H'\\)，然後對每個個體做 \\(M\\)-投影後的迴歸：\nimport numpy as np\n\ndef cce(Y, X):                       # Y, X 都是 T×N\n    T, N = Y.shape\n    ybar, xbar = Y.mean(1), X.mean(1)          # 截面平均\n    H = np.column_stack([np.ones(T), ybar, xbar])\n    M = np.eye(T) - H @ np.linalg.solve(H.T @ H, H.T)   # 投影矩陣\n    b = np.array([(X[:, i] @ M @ Y[:, i]) / (X[:, i] @ M @ X[:, i])\n                  for i in range(N)])\n    return b.mean()                  # CCE mean-group"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
-    "href": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "二、IFE：用主成分估因子",
-    "text": "二、IFE：用主成分估因子\nIFE 是個交替迭代：先用 OLS 起步，殘差取主成分當因子 \\(\\hat F\\)，估載荷 \\(\\hat\\Lambda\\)，再用去掉因子的資料更新 \\(\\beta\\)，反覆到收斂。\ndef ife(Y, X, r, max_iter=1000, tol=1e-10):\n    T, N = Y.shape\n    XtX = (X * X).sum()\n    beta = (X * Y).sum() / XtX               # OLS 起步（忽略因子）\n    for _ in range(max_iter):\n        W = Y - beta * X                     # 殘差\n        vals, vecs = np.linalg.eigh(W @ W.T / N)\n        F = np.sqrt(T) * vecs[:, -r:]        # 前 r 個特徵向量 = 因子\n        Lam = (W.T @ F) / T                  # 載荷\n        beta_new = (X * (Y - F @ Lam.T)).sum() / XtX\n        if abs(beta_new - beta) &lt; tol:\n            break\n        beta = beta_new\n    return beta"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
-    "href": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "三、Monte Carlo：誰勝出？",
-    "text": "三、Monte Carlo：誰勝出？\n用一個 \\(x\\) 透過共同因子而內生的 DGP（真值 \\(\\beta = 1\\)），跑 300 次、四種 \\((N,T)\\) 設計，比較 TWFE / CCE / IFE 的 RMSE：\n\n\n\n設計\nTWFE\nCCE\nIFE\n\n\n\n\nN=50, T=10\n0.613\n0.069\n0.007\n\n\nN=100, T=10\n0.611\n0.040\n0.001\n\n\nN=50, T=50\n0.622\n0.071\n0.002\n\n\nN=20, T=100\n0.621\n0.143\n0.003\n\n\n\n\n\n\nMonte Carlo：TWFE 在交互固定效果下失效，CCE 與 IFE 修正之\n\n\n三個觀察：\n\nTWFE 直接爆掉。 偏誤約 \\(+0.61\\)（真值才 1！），在所有設計都一樣糟 —— 交互固定效果不是普通 FE 能處理的。\nCCE 有效，但吃大 N。 因為它用截面平均代理因子，N 越大越準；在 \\(N=20\\) 時明顯變差（RMSE 0.143）。\nIFE 最準。 只要因子數 \\(r\\) 設對，它幾乎無偏。代價是要事先決定 \\(r\\)。\n\n\n注意：CCE 與 IFE 誰勝出很吃 DGP。這裡的 Python 版用了一個內生性很強的設計；repo 裡的 R 期末論文跑了更多設計（含 \\(I(1)\\) 因子、大 N 大 T），結論是「小 T 相對大 N 時 CCE 佔優，兩維都大時兩者相當」。"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#小結",
-    "href": "posts/causalml/ife-vs-cce-panel.html#小結",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "小結",
-    "text": "小結\n\n\n\n\n普通 TWFE\nCCE\nIFE\n\n\n\n\n處理交互固定效果\n✗（偏誤）\n✓\n✓\n\n\n需要知道因子數 \\(r\\)\n—\n不用\n要\n\n\n主要靠\n—\n大 N\n大 N 且大 T\n\n\n直覺\n只吸加成效果\n截面平均代理因子\n主成分估因子\n\n\n\n這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：panel-factor-model-comparison；整體 Causal ML 框架見 (Chernozhukov et al., 2024)。"
-  },
-  {
-    "objectID": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
-    "href": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
-    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
-    "section": "參考文獻",
-    "text": "參考文獻\n\n\nBai, J. (2009). Panel data models with interactive fixed effects. Econometrica, 77(4), 1229–1279.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nPesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. Econometrica, 74(4), 967–1012."
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html",
-    "href": "posts/causalml/factor-models-pca.html",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "",
-    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/factor-models-in-r"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
-    "href": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "前言：少數幾股力量，驅動一大票序列",
-    "text": "前言：少數幾股力量，驅動一大票序列\nFactor model 的核心想法是：很多觀察到的序列，其實是被少數幾個看不到的共同因子驅動的。89 檔股票的報酬每天一起漲跌，背後可能只是「大盤」「產業輪動」幾股力量。這篇用 Python 對 S&P 500 的日報酬動手做一次，讓資料自己告訴我們：要幾個因子？這些因子又是什麼？"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
-    "href": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "一、資料整理：從價格到報酬矩陣",
-    "text": "一、資料整理：從價格到報酬矩陣\n資料是 89 檔 S&P 500 成分股、2013–2022 的日調整價。先算日報酬，再攤成 date × stock 的寬矩陣：\nimport pandas as pd\n\ndf = pd.read_csv(\"sp500_prices.csv\", usecols=[\"symbol\", \"date\", \"adjusted\"])\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf = df.sort_values([\"symbol\", \"date\"])\ndf[\"ret\"] = df.groupby(\"symbol\")[\"adjusted\"].pct_change()      # 每檔的日報酬\nwide = df.pivot(index=\"date\", columns=\"symbol\", values=\"ret\").dropna()\n# 結果：2,384 天 × 89 檔"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
-    "href": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "二、要幾個因子？用 PCA 看",
-    "text": "二、要幾個因子？用 PCA 看\n對標準化後的報酬做 PCA，看前幾個主成分能解釋多少變異：\nfrom sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\n\nX = StandardScaler().fit_transform(wide.values)\npca = PCA().fit(X)\nevr = pca.explained_variance_ratio_\nprint(evr[0], evr[:3].sum(), evr[:5].sum())\n結果：PC1 就解釋了 40.8% 的變異（這就是「大盤」共同因子），前 3 個解釋 50.8%、前 5 個 55.2%。89 檔股票的共同起伏，用少數幾個因子就抓住一大半 —— 這正是 factor model 的精神。\n\n\n\nScree plot：少數幾個共同因子驅動了大部分的共同起伏"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
-    "href": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "三、這些因子是什麼？用 varimax + 產業標籤",
-    "text": "三、這些因子是什麼？用 varimax + 產業標籤\nPCA 告訴我們「幾個」，但因子的意義要靠因子分析 + 旋轉來讀。用 3 因子 varimax，再把每個因子載荷最高的股票貼上它的產業別——讓資料自己命名：\nfrom sklearn.decomposition import FactorAnalysis\n\nfa = FactorAnalysis(n_components=3, rotation=\"varimax\").fit(X)\nloadings = pd.DataFrame(fa.components_.T, index=wide.columns,\n                        columns=[\"Factor1\", \"Factor2\", \"Factor3\"])\n# 對每個因子，取載荷最大的股票，並對照它們的 sector\n跑出來的三個因子乾淨得驚人：\n\n\n\n\n\n\n\n\n因子\n載荷最高的股票\n資料標出的產業\n\n\n\n\nFactor 1\nADBE, SNPS, MSFT, NVDA, GOOGL\nInformation Technology\n\n\nFactor 2\nCOP, CVX, XOM, EOG, PXD\nEnergy\n\n\nFactor 3\nDUK, D, PEP, NEE, PG, KO\nUtilities／Consumer Staples（防禦股）\n\n\n\n我們沒有告訴模型任何產業資訊，它卻自己把「科技、能源、防禦」這三股力量抽了出來。這就是統計因子模型的威力。"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
-    "href": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "四、往因果推論走一步",
-    "text": "四、往因果推論走一步\n同樣的因子結構，也是現代因果推論的基礎。Bai & Wang (2024) 的因果因子模型 (Bai & Wang, 2024) 就是把這套「用因子吸收共同衝擊」的想法，用來估計處理效果——這和我另一篇談的 IFE / CCE panel 估計、以及 policy targeting 是同一條線上的方法。repo 裡也附了 Bai-Wang 的 R 實作與 walkthrough。"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#小結",
-    "href": "posts/causalml/factor-models-pca.html#小結",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "小結",
-    "text": "小結\n\n\n\n步驟\n工具\n回答的問題\n\n\n\n\n資料整理\npandas\n價格 → 報酬寬矩陣\n\n\n要幾個因子\nPCA（sklearn）\n共同變異的維度\n\n\n因子是什麼\nFactorAnalysis + varimax\n因子的經濟意義\n\n\n往因果走\nBai-Wang 因果因子模型\n用因子估處理效果\n\n\n\n統計因子模型是「無母數地找出共同結構」的基本功；理論可參考 Tsay (2010) 第 9 章 (Tsay, 2010)。完整程式碼在 GitHub：factor-models-in-r。"
-  },
-  {
-    "objectID": "posts/causalml/factor-models-pca.html#參考文獻",
-    "href": "posts/causalml/factor-models-pca.html#參考文獻",
-    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
-    "section": "參考文獻",
-    "text": "參考文獻\n\n\nBai, J., & Wang, P. (2024). Causal inference with factor models. Working Paper.\n\n\nTsay, R. S. (2010). Analysis of financial time series (3rd ed.). Wiley."
+    "objectID": "about.html#主要工具",
+    "href": "about.html#主要工具",
+    "title": "關於我",
+    "section": "主要工具",
+    "text": "主要工具\nR、Python、LaTeX/Beamer、Git"
   }
 ]

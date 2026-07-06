@@ -13,6 +13,8 @@ website:
         href: posts/ai-tools/index.qmd
       - text: "Causal Inference and Econometrics"
         href: posts/causalml/index.qmd
+      - text: "論文筆記"
+        href: posts/paper-notes/index.qmd
       - text: "關於我"
         href: about.qmd
     right:

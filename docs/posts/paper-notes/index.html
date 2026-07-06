@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Causal Inference and Econometrics – Muller Chen Blog</title>
+<title>論文筆記 – Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -86,9 +86,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-date','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-title','listing-date','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+      searchColumns: ["listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -327,11 +327,11 @@ window.Quarto = {
 <span class="menu-text">AI 工具</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../posts/causalml/index.html" aria-current="page"> 
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
 <span class="menu-text">Causal Inference and Econometrics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../posts/paper-notes/index.html"> 
+    <a class="nav-link active" href="../../posts/paper-notes/index.html" aria-current="page"> 
 <span class="menu-text">論文筆記</span></a>
   </li>  
   <li class="nav-item">
@@ -357,19 +357,20 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Causal Inference and Econometrics</h1>
+<h1 class="title">論文筆記</h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta column-page-left">
 
     
   
@@ -381,121 +382,37 @@ window.Quarto = {
 </header>
 
 
-<p>因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。</p>
+<p>讀論文的筆記與總結 —— 每篇一頁，記錄問題、方法、貢獻、與我的評論。主題以因果推論、計量經濟學、機器學習為主。</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>每篇筆記的固定結構
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><strong>一句話</strong>：這篇在做什麼、為什麼重要</li>
+<li><strong>問題 / 動機</strong>：想解決什麼、既有方法的缺口</li>
+<li><strong>方法</strong>：核心假設、識別策略、估計方式（含關鍵數學）</li>
+<li><strong>主要結果</strong>：實證或理論的重點發現</li>
+<li><strong>我的評論</strong>：貢獻、限制、可延伸之處、對我研究的啟發</li>
+<li><strong>一句話帶走</strong>：TL;DR</li>
+</ol>
+</div>
+</div>
+</div>
 
 
 
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="Y2F1c2FsbWwlMkNmYWN0b3ItbW9kZWxzJTJDcGNhJTJDcHl0aG9u" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320932984" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="242">
-<a href="../../posts/causalml/factor-models-pca.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-動手玩 Factor Models：從 PCA 到 S&amp;P 500 的潛在因子
-</h5>
-<div class="card-text listing-description delink">
-<p>用 Python 對 89 檔 S&amp;P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Jul 6, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="Y2F1c2FsbWwlMkNwYW5lbC1kYXRhJTJDZmFjdG9yLW1vZGVscyUyQ3B5dGhvbg==" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320818815" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="629">
-<a href="../../posts/causalml/ife-vs-cce-panel.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-小 T 大 N 該用誰？IFE vs CCE 的實戰比較
-</h5>
-<div class="card-text listing-description delink">
-<p>panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Jul 6, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="Y2F1c2FsbWwlMkN1cGxpZnQlMkNwb2xpY3ktbGVhcm5pbmclMkNkb3VibGUtbWw=" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783319609927" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="259">
-<a href="../../posts/causalml/policy-targeting-uplift.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-該把資源投給誰？用 Causal ML 做 Policy Targeting
-</h5>
-<div class="card-text listing-description delink">
-<p>從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Jul 6, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="Y2F1c2FsbWwlMkNzeW50aGV0aWMtY29udHJvbCUyQ3BhbmVsLWRhdGE=" data-listing-date-sort="1776355200000" data-listing-file-modified-sort="1776387940663" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2734">
-<a href="../../posts/causalml/deep-diving-synthetic-control.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Deep Diving into Synthetic Control Method
-</h5>
-<div class="card-text listing-description delink">
-<p>從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Apr 17, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-categories="Y2F1c2FsbWwlMkNsaW5lYXItYWxnZWJyYQ==" data-listing-date-sort="1775491200000" data-listing-file-modified-sort="1775563541816" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="219">
-<a href="../../posts/causalml/matrix-calculus-cheat-sheet.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-矩陣微分 Cheat Sheet
-</h5>
-<div class="card-text listing-description delink">
-<p>整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Apr 7, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="5" data-listing-date-sort="1775404800000" data-listing-file-modified-sort="1775447256646" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="160">
-<a href="../../posts/causalml/ch8-neural-networks.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Ch.8 Deep Neural Networks and Multitask Learning
-</h5>
-<div class="card-text listing-description delink">
-<p>Causal ML 第 8 章：深度神經網路架構、多任務學習、學習保證</p>
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-Apr 6, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
 </div>
 <div class="listing-no-matching d-none">No matching items</div>
 </div></main> <!-- /main -->

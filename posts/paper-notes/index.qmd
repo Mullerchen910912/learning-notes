@@ -1,0 +1,24 @@
+---
+title: "論文筆記"
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: default
+  categories: true
+  fields: [title, date, description, categories]
+page-layout: full
+toc: false
+---
+
+讀論文的筆記與總結 —— 每篇一頁，記錄問題、方法、貢獻、與我的評論。主題以因果推論、計量經濟學、機器學習為主。
+
+::: {.callout-note collapse="true"}
+## 每篇筆記的固定結構
+
+1. **一句話**：這篇在做什麼、為什麼重要
+2. **問題 / 動機**：想解決什麼、既有方法的缺口
+3. **方法**：核心假設、識別策略、估計方式（含關鍵數學）
+4. **主要結果**：實證或理論的重點發現
+5. **我的評論**：貢獻、限制、可延伸之處、對我研究的啟發
+6. **一句話帶走**：TL;DR
+:::

@@ -15,15 +15,6 @@
     ]
   },
   {
-    "listing": "/posts/ai-tools/index.html",
-    "items": [
-      "/posts/ai-tools/ai-agent-handbook.html",
-      "/posts/ai-tools/claude-code-workflow-system.html",
-      "/posts/ai-tools/claude-code-economics-research.html",
-      "/posts/ai-tools/claude-code-setup.html"
-    ]
-  },
-  {
     "listing": "/posts/causalml/index.html",
     "items": [
       "/posts/causalml/factor-models-pca.html",
@@ -32,6 +23,19 @@
       "/posts/causalml/deep-diving-synthetic-control.html",
       "/posts/causalml/matrix-calculus-cheat-sheet.html",
       "/posts/causalml/ch8-neural-networks.html"
+    ]
+  },
+  {
+    "listing": "/posts/paper-notes/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/ai-tools/index.html",
+    "items": [
+      "/posts/ai-tools/ai-agent-handbook.html",
+      "/posts/ai-tools/claude-code-workflow-system.html",
+      "/posts/ai-tools/claude-code-economics-research.html",
+      "/posts/ai-tools/claude-code-setup.html"
     ]
   }
 ]

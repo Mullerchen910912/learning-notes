@@ -71,6 +71,7 @@
     <span class="brand">✍️ 筆記編輯器</span>
     <a class="home" href="index.html">← 回網站</a>
     <span class="spacer"></span>
+    <button class="btn" id="btnCheat">Σ 巨集</button>
     <button class="btn" id="btnFm">Frontmatter</button>
     <button class="btn" id="btnImport">匯入 .md</button>
     <button class="btn" id="btnMd">下載 .md</button>
@@ -115,6 +116,8 @@
     <label>tags（逗號分隔）<input type="text" id="fmTags" placeholder="did, panel-data"></label>
     <label class="chk"><input type="checkbox" id="fmDraft" checked> draft</label>
   </div>
+
+  <div class="fm" id="cheat"></div>
 
   <div class="main">
     <div class="side" id="side">
@@ -194,8 +197,11 @@ function syncFields(){
 }
 
 /* ---------- events ---------- */
-let saveTimer=null;
+let saveTimer=null, composing=false;
+src.addEventListener("compositionstart",()=>composing=true);
+src.addEventListener("compositionend",()=>composing=false);
 src.addEventListener("input",()=>{
+  if(!composing) expandSnippets();
   cur().content=src.value; cur().updated=Date.now();
   updatePreview();
   $("#status").textContent="編輯中…";
@@ -284,6 +290,67 @@ src.addEventListener("keydown",e=>{ if(e.key==="Tab"){ e.preventDefault(); surro
 document.addEventListener("keydown",e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==="s"){ e.preventDefault(); persist(); $("#status").textContent="已儲存 ✓"; }
 });
+
+/* ---------- LaTeX-Suite-style snippets (expand inside $…$ only) ---------- */
+const SNIPPETS=[
+  // symbolic / operators — fire anywhere in math
+  {t:"|->",r:"\\mapsto "},{t:"->",r:"\\to "},{t:"=>",r:"\\Rightarrow "},
+  {t:"!=",r:"\\neq "},{t:">=",r:"\\geq "},{t:"<=",r:"\\leq "},{t:"~=",r:"\\approx "},
+  {t:"+-",r:"\\pm "},{t:"xx",r:"\\times "},{t:"...",r:"\\dots "},
+  {t:"//",r:"\\frac{#0}{}"},{t:"sr",r:"^{2}"},{t:"cb",r:"^{3}"},{t:"ooo",r:"\\infty "},
+  // words — only when preceded by a non-letter
+  {t:"sq",r:"\\sqrt{#0}",w:1},{t:"te",r:"\\text{#0}",w:1},
+  {t:"sum",r:"\\sum_{#0}^{}",w:1},{t:"int",r:"\\int_{#0}^{}",w:1},
+  {t:"prod",r:"\\prod_{#0}^{}",w:1},{t:"lim",r:"\\lim_{#0} ",w:1},
+  {t:"hat",r:"\\hat{#0}",w:1},{t:"bar",r:"\\bar{#0}",w:1},
+  {t:"td",r:"\\tilde{#0}",w:1},{t:"vec",r:"\\vec{#0}",w:1},
+  {t:"EE",r:"\\mathbb{E}",w:1},{t:"PP",r:"\\mathbb{P}",w:1},
+  {t:"RR",r:"\\mathbb{R}",w:1},{t:"NN",r:"\\mathbb{N}",w:1},
+  {t:"argmax",r:"\\operatorname*{arg\\,max}_{#0} ",w:1},
+  {t:"argmin",r:"\\operatorname*{arg\\,min}_{#0} ",w:1},
+  // greek: @ + letter (2 chars, no prefix collisions)
+  {t:"@a",r:"\\alpha "},{t:"@b",r:"\\beta "},{t:"@g",r:"\\gamma "},{t:"@d",r:"\\delta "},
+  {t:"@e",r:"\\epsilon "},{t:"@ve",r:"\\varepsilon "},{t:"@z",r:"\\zeta "},{t:"@h",r:"\\eta "},
+  {t:"@q",r:"\\theta "},{t:"@k",r:"\\kappa "},{t:"@l",r:"\\lambda "},{t:"@m",r:"\\mu "},
+  {t:"@n",r:"\\nu "},{t:"@x",r:"\\xi "},{t:"@p",r:"\\pi "},{t:"@r",r:"\\rho "},
+  {t:"@s",r:"\\sigma "},{t:"@t",r:"\\tau "},{t:"@f",r:"\\phi "},{t:"@c",r:"\\chi "},
+  {t:"@y",r:"\\psi "},{t:"@w",r:"\\omega "},
+  {t:"@G",r:"\\Gamma "},{t:"@D",r:"\\Delta "},{t:"@Q",r:"\\Theta "},{t:"@L",r:"\\Lambda "},
+  {t:"@P",r:"\\Pi "},{t:"@S",r:"\\Sigma "},{t:"@F",r:"\\Phi "},{t:"@Y",r:"\\Psi "},{t:"@W",r:"\\Omega "},
+].sort((a,b)=>b.t.length-a.t.length);
+
+function inMath(t,pos){
+  const b=t.slice(0,pos);
+  if(((b.match(/\$\$/g)||[]).length)%2===1) return true;      // inside a $$…$$ block
+  const masked=b.replace(/\$\$/g,"");                          // drop $$ then count single $
+  let singles=0; for(let i=0;i<masked.length;i++){ if(masked[i]==="$"&&masked[i-1]!=="\\") singles++; }
+  return singles%2===1;
+}
+function expandSnippets(){
+  if(src.selectionStart!==src.selectionEnd) return;           // only on a caret
+  const pos=src.selectionStart, t=src.value;
+  if(!inMath(t,pos)) return;
+  const before=t.slice(0,pos);
+  for(const s of SNIPPETS){
+    if(!before.endsWith(s.t)) continue;
+    const bch=before[before.length-s.t.length-1];
+    if(s.w && bch && /[A-Za-z]/.test(bch)) continue;          // word snippet: need non-letter before
+    const start=pos-s.t.length;
+    const k=s.r.indexOf("#0"), rep=s.r.replace("#0","");
+    src.value=t.slice(0,start)+rep+t.slice(pos);
+    const caret=start+(k>=0?k:rep.length);
+    src.selectionStart=src.selectionEnd=caret;
+    return;
+  }
+}
+$("#btnCheat").onclick=()=>$("#cheat").classList.toggle("show");
+(function(){
+  const fmt=a=>a.map(s=>'<code>'+s.t+'</code>→'+s.r.replace('#0','').trim()).join('　');
+  $("#cheat").innerHTML='<div style="font-size:.8rem;line-height:2.1">'+
+    '<b>在 $…$ 內打縮寫即自動展開　</b><br>'+
+    '<b>希臘：</b>'+fmt(SNIPPETS.filter(s=>s.t[0]==='@'))+'<br>'+
+    '<b>數學：</b>'+fmt(SNIPPETS.filter(s=>s.t[0]!=='@'))+'</div>';
+})();
 
 /* ---------- boot ---------- */
 marked.setOptions({headerIds:true, mangle:false});

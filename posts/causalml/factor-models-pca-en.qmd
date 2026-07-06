@@ -1,0 +1,107 @@
+---
+title: "Hands-on Factor Models: from PCA to Latent Factors in the S&P 500"
+date: "2026-07-06"
+description: "PCA and factor analysis on 89 S&P 500 stocks' daily returns in Python — letting the data name its own common factors: tech, energy, defensives."
+categories: [causalml, factor-models, pca, python]
+draft: true
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+*Code (original R + Python rewrite): [github.com/Mullerchen910912/factor-models-in-r](https://github.com/Mullerchen910912/factor-models-in-r)*
+
+---
+
+## A few forces drive many series
+
+A factor model says that many observed series are really driven by a **few
+unobserved common factors**. Eighty-nine stocks move together every day because
+of a handful of forces — "the market," "sector rotation." This post does it by
+hand on S&P 500 returns and lets the data answer two questions: **how many
+factors, and what are they?**
+
+## 1. Prices to a returns matrix
+
+89 constituents, 2013–2022 daily adjusted prices. Compute returns, pivot to a
+`date × stock` matrix:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sp500_prices.csv", usecols=["symbol", "date", "adjusted"])
+df["date"] = pd.to_datetime(df["date"])
+df = df.sort_values(["symbol", "date"])
+df["ret"] = df.groupby("symbol")["adjusted"].pct_change()
+wide = df.pivot(index="date", columns="symbol", values="ret").dropna()
+# 2,384 days × 89 stocks
+```
+
+## 2. How many factors? PCA
+
+```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+X = StandardScaler().fit_transform(wide.values)
+pca = PCA().fit(X)
+evr = pca.explained_variance_ratio_
+print(evr[0], evr[:3].sum(), evr[:5].sum())
+```
+
+**PC1 alone explains 40.8%** of the variance (the "market" factor); the top 3
+explain 50.8% and the top 5 explain 55.2%. A handful of factors capture most of
+89 stocks' co-movement — the whole point of a factor model.
+
+![Scree plot](https://raw.githubusercontent.com/Mullerchen910912/factor-models-in-r/main/python/figures/scree.png)
+
+## 3. What are the factors? Varimax + sector labels
+
+PCA gives the *number*; to read *meaning* we rotate. Fit a 3-factor varimax model,
+then tag each factor's top-loading stocks with their **sector** — let the data
+name itself:
+
+```python
+from sklearn.decomposition import FactorAnalysis
+
+fa = FactorAnalysis(n_components=3, rotation="varimax").fit(X)
+loadings = pd.DataFrame(fa.components_.T, index=wide.columns,
+                        columns=["Factor1", "Factor2", "Factor3"])
+```
+
+The three factors come out remarkably clean:
+
+| Factor | Top-loading stocks | Sector (from data) |
+|---|---|---|
+| **Factor 1** | ADBE, SNPS, MSFT, NVDA, GOOGL | Information Technology |
+| **Factor 2** | COP, CVX, XOM, EOG, PXD | Energy |
+| **Factor 3** | DUK, D, PEP, NEE, PG, KO | Utilities / Consumer Staples (defensives) |
+
+We gave the model no sector information, yet it recovered "tech, energy,
+defensives" on its own.
+
+## 4. One step toward causal inference
+
+The same factor structure underpins modern causal inference. Bai & Wang's (2024)
+**causal factor model** [@baiwang2024] uses "absorb common shocks with factors" to
+estimate treatment effects — the same thread as my posts on
+[IFE / CCE panel estimation](ife-vs-cce-panel.qmd) and
+[policy targeting](policy-targeting-uplift.qmd). The repo includes the Bai-Wang R
+walkthrough too.
+
+## Takeaways
+
+| Step | Tool | Question |
+|---|---|---|
+| Wrangling | pandas | prices → returns matrix |
+| How many factors | PCA (sklearn) | dimension of co-movement |
+| What are they | FactorAnalysis + varimax | economic meaning |
+| Toward causal | Bai-Wang causal factor model | effects under factors |
+
+Statistical factor models are the basic skill of "finding common structure
+nonparametrically"; see Tsay (2010) ch. 9 [@tsay2010]. Full code:
+[**factor-models-in-r**](https://github.com/Mullerchen910912/factor-models-in-r).
+
+## References
+
+::: {#refs}
+:::

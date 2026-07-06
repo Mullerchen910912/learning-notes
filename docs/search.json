@@ -60,7 +60,7 @@
     "href": "index.html#最新文章",
     "title": "Muller Chen Blog",
     "section": "最新文章",
-    "text": "最新文章\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026-06-11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026-04-14\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n\n\n2026-04-07\n\n\n\n\n\nNo matching items"
+    "text": "最新文章\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026-06-11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026-04-14\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -228,7 +228,7 @@
     "href": "posts/causalml/index.html",
     "title": "Causal Inference and Econometrics",
     "section": "",
-    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -586,5 +586,110 @@
     "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
     "section": "參考文獻",
     "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData e-mail analytics and data mining challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html",
+    "href": "posts/causalml/ife-vs-cce-panel.html",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "",
+    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/panel-factor-model-comparison"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
+    "href": "posts/causalml/ife-vs-cce-panel.html#前言當固定效果不夠用",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "前言：當「固定效果」不夠用",
+    "text": "前言：當「固定效果」不夠用\npanel data 最常見的招式是固定效果（fixed effects）：把每個個體、每個時間的加成性差異吸收掉。但很多時候，資料背後有共同因子（common factors）——例如一個總體衝擊，對不同公司的影響程度不一樣。這時模型長這樣：\n\\[y_{it} = \\beta\\, x_{it} + \\underbrace{\\lambda_i' f_t}_{\\text{interactive fixed effects}} + \\varepsilon_{it},\\]\n其中 \\(f_t\\) 是沒觀察到的共同因子、\\(\\lambda_i\\) 是個體對它的敏感度。麻煩在於：如果 \\(x_{it}\\) 也受 \\(f_t\\) 影響（例如同一個總體衝擊同時驅動了 regressor 和結果），那麼 \\(x_{it}\\) 就與誤差相關 —— 普通的雙向固定效果（two-way FE）會偏誤，因為它只能吸收「加成性」的效果，吸不掉 \\(\\lambda_i' f_t\\) 這種「交乘」結構。\n兩個經典解法：\n\nCCE（Common Correlated Effects）(Pesaran, 2006)：用截面平均當作因子的代理，投影掉它。直覺是「大 N 時，\\(\\bar y_t, \\bar x_t\\) 帶著 \\(f_t\\) 的資訊」。\nIFE（Interactive Fixed Effects）(Bai, 2009)：直接用主成分把因子空間估出來，再反覆更新 \\(\\beta\\)。\n\n這篇用 Python 把兩個估計量手刻出來，再用 Monte Carlo 比較。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
+    "href": "posts/causalml/ife-vs-cce-panel.html#一cce用截面平均代理因子",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "一、CCE：用截面平均代理因子",
+    "text": "一、CCE：用截面平均代理因子\nCCE 的核心是一個投影矩陣。令 \\(\\bar y_t, \\bar x_t\\) 為每期的截面平均，\\(H = [\\mathbf{1}, \\bar y, \\bar x]\\)，投影矩陣 \\(M = I - H(H'H)^{-1}H'\\)，然後對每個個體做 \\(M\\)-投影後的迴歸：\nimport numpy as np\n\ndef cce(Y, X):                       # Y, X 都是 T×N\n    T, N = Y.shape\n    ybar, xbar = Y.mean(1), X.mean(1)          # 截面平均\n    H = np.column_stack([np.ones(T), ybar, xbar])\n    M = np.eye(T) - H @ np.linalg.solve(H.T @ H, H.T)   # 投影矩陣\n    b = np.array([(X[:, i] @ M @ Y[:, i]) / (X[:, i] @ M @ X[:, i])\n                  for i in range(N)])\n    return b.mean()                  # CCE mean-group"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
+    "href": "posts/causalml/ife-vs-cce-panel.html#二ife用主成分估因子",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "二、IFE：用主成分估因子",
+    "text": "二、IFE：用主成分估因子\nIFE 是個交替迭代：先用 OLS 起步，殘差取主成分當因子 \\(\\hat F\\)，估載荷 \\(\\hat\\Lambda\\)，再用去掉因子的資料更新 \\(\\beta\\)，反覆到收斂。\ndef ife(Y, X, r, max_iter=1000, tol=1e-10):\n    T, N = Y.shape\n    XtX = (X * X).sum()\n    beta = (X * Y).sum() / XtX               # OLS 起步（忽略因子）\n    for _ in range(max_iter):\n        W = Y - beta * X                     # 殘差\n        vals, vecs = np.linalg.eigh(W @ W.T / N)\n        F = np.sqrt(T) * vecs[:, -r:]        # 前 r 個特徵向量 = 因子\n        Lam = (W.T @ F) / T                  # 載荷\n        beta_new = (X * (Y - F @ Lam.T)).sum() / XtX\n        if abs(beta_new - beta) &lt; tol:\n            break\n        beta = beta_new\n    return beta"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
+    "href": "posts/causalml/ife-vs-cce-panel.html#三monte-carlo誰勝出",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "三、Monte Carlo：誰勝出？",
+    "text": "三、Monte Carlo：誰勝出？\n用一個 \\(x\\) 透過共同因子而內生的 DGP（真值 \\(\\beta = 1\\)），跑 300 次、四種 \\((N,T)\\) 設計，比較 TWFE / CCE / IFE 的 RMSE：\n\n\n\n設計\nTWFE\nCCE\nIFE\n\n\n\n\nN=50, T=10\n0.613\n0.069\n0.007\n\n\nN=100, T=10\n0.611\n0.040\n0.001\n\n\nN=50, T=50\n0.622\n0.071\n0.002\n\n\nN=20, T=100\n0.621\n0.143\n0.003\n\n\n\n\n\n\nMonte Carlo：TWFE 在交互固定效果下失效，CCE 與 IFE 修正之\n\n\n三個觀察：\n\nTWFE 直接爆掉。 偏誤約 \\(+0.61\\)（真值才 1！），在所有設計都一樣糟 —— 交互固定效果不是普通 FE 能處理的。\nCCE 有效，但吃大 N。 因為它用截面平均代理因子，N 越大越準；在 \\(N=20\\) 時明顯變差（RMSE 0.143）。\nIFE 最準。 只要因子數 \\(r\\) 設對，它幾乎無偏。代價是要事先決定 \\(r\\)。\n\n\n注意：CCE 與 IFE 誰勝出很吃 DGP。這裡的 Python 版用了一個內生性很強的設計；repo 裡的 R 期末論文跑了更多設計（含 \\(I(1)\\) 因子、大 N 大 T），結論是「小 T 相對大 N 時 CCE 佔優，兩維都大時兩者相當」。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#小結",
+    "href": "posts/causalml/ife-vs-cce-panel.html#小結",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "小結",
+    "text": "小結\n\n\n\n\n普通 TWFE\nCCE\nIFE\n\n\n\n\n處理交互固定效果\n✗（偏誤）\n✓\n✓\n\n\n需要知道因子數 \\(r\\)\n—\n不用\n要\n\n\n主要靠\n—\n大 N\n大 N 且大 T\n\n\n直覺\n只吸加成效果\n截面平均代理因子\n主成分估因子\n\n\n\n這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：panel-factor-model-comparison；整體 Causal ML 框架見 (Chernozhukov et al., 2024)。"
+  },
+  {
+    "objectID": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
+    "href": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
+    "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nBai, J. (2009). Panel data models with interactive fixed effects. Econometrica, 77(4), 1229–1279.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nPesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. Econometrica, 74(4), 967–1012."
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html",
+    "href": "posts/causalml/factor-models-pca.html",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "",
+    "text": "完整程式碼（R 原版 + Python 重寫）：github.com/Mullerchen910912/factor-models-in-r"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
+    "href": "posts/causalml/factor-models-pca.html#前言少數幾股力量驅動一大票序列",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "前言：少數幾股力量，驅動一大票序列",
+    "text": "前言：少數幾股力量，驅動一大票序列\nFactor model 的核心想法是：很多觀察到的序列，其實是被少數幾個看不到的共同因子驅動的。89 檔股票的報酬每天一起漲跌，背後可能只是「大盤」「產業輪動」幾股力量。這篇用 Python 對 S&P 500 的日報酬動手做一次，讓資料自己告訴我們：要幾個因子？這些因子又是什麼？"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
+    "href": "posts/causalml/factor-models-pca.html#一資料整理從價格到報酬矩陣",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "一、資料整理：從價格到報酬矩陣",
+    "text": "一、資料整理：從價格到報酬矩陣\n資料是 89 檔 S&P 500 成分股、2013–2022 的日調整價。先算日報酬，再攤成 date × stock 的寬矩陣：\nimport pandas as pd\n\ndf = pd.read_csv(\"sp500_prices.csv\", usecols=[\"symbol\", \"date\", \"adjusted\"])\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf = df.sort_values([\"symbol\", \"date\"])\ndf[\"ret\"] = df.groupby(\"symbol\")[\"adjusted\"].pct_change()      # 每檔的日報酬\nwide = df.pivot(index=\"date\", columns=\"symbol\", values=\"ret\").dropna()\n# 結果：2,384 天 × 89 檔"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
+    "href": "posts/causalml/factor-models-pca.html#二要幾個因子用-pca-看",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "二、要幾個因子？用 PCA 看",
+    "text": "二、要幾個因子？用 PCA 看\n對標準化後的報酬做 PCA，看前幾個主成分能解釋多少變異：\nfrom sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\n\nX = StandardScaler().fit_transform(wide.values)\npca = PCA().fit(X)\nevr = pca.explained_variance_ratio_\nprint(evr[0], evr[:3].sum(), evr[:5].sum())\n結果：PC1 就解釋了 40.8% 的變異（這就是「大盤」共同因子），前 3 個解釋 50.8%、前 5 個 55.2%。89 檔股票的共同起伏，用少數幾個因子就抓住一大半 —— 這正是 factor model 的精神。\n\n\n\nScree plot：少數幾個共同因子驅動了大部分的共同起伏"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
+    "href": "posts/causalml/factor-models-pca.html#三這些因子是什麼用-varimax-產業標籤",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "三、這些因子是什麼？用 varimax + 產業標籤",
+    "text": "三、這些因子是什麼？用 varimax + 產業標籤\nPCA 告訴我們「幾個」，但因子的意義要靠因子分析 + 旋轉來讀。用 3 因子 varimax，再把每個因子載荷最高的股票貼上它的產業別——讓資料自己命名：\nfrom sklearn.decomposition import FactorAnalysis\n\nfa = FactorAnalysis(n_components=3, rotation=\"varimax\").fit(X)\nloadings = pd.DataFrame(fa.components_.T, index=wide.columns,\n                        columns=[\"Factor1\", \"Factor2\", \"Factor3\"])\n# 對每個因子，取載荷最大的股票，並對照它們的 sector\n跑出來的三個因子乾淨得驚人：\n\n\n\n\n\n\n\n\n因子\n載荷最高的股票\n資料標出的產業\n\n\n\n\nFactor 1\nADBE, SNPS, MSFT, NVDA, GOOGL\nInformation Technology\n\n\nFactor 2\nCOP, CVX, XOM, EOG, PXD\nEnergy\n\n\nFactor 3\nDUK, D, PEP, NEE, PG, KO\nUtilities／Consumer Staples（防禦股）\n\n\n\n我們沒有告訴模型任何產業資訊，它卻自己把「科技、能源、防禦」這三股力量抽了出來。這就是統計因子模型的威力。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
+    "href": "posts/causalml/factor-models-pca.html#四往因果推論走一步",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "四、往因果推論走一步",
+    "text": "四、往因果推論走一步\n同樣的因子結構，也是現代因果推論的基礎。Bai & Wang (2024) 的因果因子模型 (Bai & Wang, 2024) 就是把這套「用因子吸收共同衝擊」的想法，用來估計處理效果——這和我另一篇談的 IFE / CCE panel 估計、以及 policy targeting 是同一條線上的方法。repo 裡也附了 Bai-Wang 的 R 實作與 walkthrough。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#小結",
+    "href": "posts/causalml/factor-models-pca.html#小結",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "小結",
+    "text": "小結\n\n\n\n步驟\n工具\n回答的問題\n\n\n\n\n資料整理\npandas\n價格 → 報酬寬矩陣\n\n\n要幾個因子\nPCA（sklearn）\n共同變異的維度\n\n\n因子是什麼\nFactorAnalysis + varimax\n因子的經濟意義\n\n\n往因果走\nBai-Wang 因果因子模型\n用因子估處理效果\n\n\n\n統計因子模型是「無母數地找出共同結構」的基本功；理論可參考 Tsay (2010) 第 9 章 (Tsay, 2010)。完整程式碼在 GitHub：factor-models-in-r。"
+  },
+  {
+    "objectID": "posts/causalml/factor-models-pca.html#參考文獻",
+    "href": "posts/causalml/factor-models-pca.html#參考文獻",
+    "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
+    "section": "參考文獻",
+    "text": "參考文獻\n\n\nBai, J., & Wang, P. (2024). Causal inference with factor models. Working Paper.\n\n\nTsay, R. S. (2010). Analysis of financial time series (3rd ed.). Wiley."
   }
 ]

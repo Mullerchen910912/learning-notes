@@ -1,0 +1,107 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xeCJK}
+\setCJKmainfont{cwTeX Q Ming}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
+
+\title{小 T 大 N 該用誰？IFE vs CCE 的實戰比較}
+\author{Sheng-Yuan Chen}
+\date{2026-07-06}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+完整程式碼（R 原版 + Python 重寫）：\url{https://github.com/Mullerchen910912/panel-factor-model-comparison}
+\end{center}
+
+\section{前言：當「固定效果」不夠用}
+
+panel data 常用固定效果吸收加成性差異。但若資料背後有\textbf{共同因子}（common factors），模型為
+$$y_{it} = \beta\, x_{it} + \lambda_i' f_t + \varepsilon_{it},$$
+其中 $f_t$ 未觀察、$\lambda_i$ 為個體敏感度。若 $x_{it}$ 也受 $f_t$ 影響，則 $x$ 與誤差相關，普通雙向固定效果會\textbf{偏誤}，因為它吸不掉 $\lambda_i' f_t$ 這種交乘結構。兩個解法：CCE \citep{pesaran2006} 用截面平均代理因子；IFE \citep{bai2009} 用主成分估因子。
+
+\section{一、CCE：用截面平均代理因子}
+
+令 $\bar y_t, \bar x_t$ 為截面平均，$H = [\mathbf{1}, \bar y, \bar x]$，投影矩陣 $M = I - H(H'H)^{-1}H'$，再對每個個體做投影後迴歸。
+
+\begin{lstlisting}[language=Python]
+def cce(Y, X):                       # Y, X are T×N
+    T, N = Y.shape
+    ybar, xbar = Y.mean(1), X.mean(1)
+    H = np.column_stack([np.ones(T), ybar, xbar])
+    M = np.eye(T) - H @ np.linalg.solve(H.T @ H, H.T)
+    b = np.array([(X[:, i] @ M @ Y[:, i]) / (X[:, i] @ M @ X[:, i])
+                  for i in range(N)])
+    return b.mean()                  # CCE mean-group
+\end{lstlisting}
+
+\section{二、IFE：用主成分估因子}
+
+交替迭代：OLS 起步，殘差取主成分當因子，估載荷，更新 $\beta$，反覆到收斂。
+
+\begin{lstlisting}[language=Python]
+def ife(Y, X, r, max_iter=1000, tol=1e-10):
+    T, N = Y.shape
+    XtX = (X * X).sum()
+    beta = (X * Y).sum() / XtX
+    for _ in range(max_iter):
+        W = Y - beta * X
+        vals, vecs = np.linalg.eigh(W @ W.T / N)
+        F = np.sqrt(T) * vecs[:, -r:]
+        Lam = (W.T @ F) / T
+        beta_new = (X * (Y - F @ Lam.T)).sum() / XtX
+        if abs(beta_new - beta) < tol:
+            break
+        beta = beta_new
+    return beta
+\end{lstlisting}
+
+\section{三、Monte Carlo：誰勝出？}
+
+$x$ 透過共同因子而內生的 DGP（真值 $\beta = 1$），跑 300 次、四種設計，RMSE：
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+設計 & TWFE & CCE & IFE \\
+\midrule
+$N=50, T=10$ & 0.613 & 0.069 & \textbf{0.007} \\
+$N=100, T=10$ & 0.611 & 0.040 & \textbf{0.001} \\
+$N=50, T=50$ & 0.622 & 0.071 & \textbf{0.002} \\
+$N=20, T=100$ & 0.621 & 0.143 & \textbf{0.003} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+  \item \textbf{TWFE 直接爆掉}：偏誤約 $+0.61$，所有設計都一樣糟。
+  \item \textbf{CCE 有效但吃大 N}：$N=20$ 時明顯變差。
+  \item \textbf{IFE 最準}：因子數 $r$ 設對時幾乎無偏，代價是要事先決定 $r$。
+\end{enumerate}
+
+\section{小結}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & 普通 TWFE & CCE & IFE \\
+\midrule
+處理交互固定效果 & 偏誤 & $\checkmark$ & $\checkmark$ \\
+需要知道因子數 $r$ & --- & 不用 & 要 \\
+主要靠 & --- & 大 N & 大 N 且大 T \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+這正是我碩論的方法核心——把 panel double machine learning 擴展到 interactive fixed effects。完整實作：\url{https://github.com/Mullerchen910912/panel-factor-model-comparison}。
+
+\end{document}

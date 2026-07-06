@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/causalml/factor-models-pca.html",
+      "/posts/causalml/ife-vs-cce-panel.html",
       "/posts/causalml/policy-targeting-uplift.html",
       "/posts/ai-tools/ai-agent-handbook.html",
       "/posts/causalml/deep-diving-synthetic-control.html",
@@ -24,6 +26,8 @@
   {
     "listing": "/posts/causalml/index.html",
     "items": [
+      "/posts/causalml/factor-models-pca.html",
+      "/posts/causalml/ife-vs-cce-panel.html",
       "/posts/causalml/policy-targeting-uplift.html",
       "/posts/causalml/deep-diving-synthetic-control.html",
       "/posts/causalml/matrix-calculus-cheat-sheet.html",

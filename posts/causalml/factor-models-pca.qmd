@@ -1,0 +1,93 @@
+---
+title: "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子"
+date: "2026-07-06"
+description: "用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。"
+categories: [causalml, factor-models, pca, python]
+draft: false
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+*完整程式碼（R 原版 + Python 重寫）：[github.com/Mullerchen910912/factor-models-in-r](https://github.com/Mullerchen910912/factor-models-in-r)*
+
+---
+
+## 前言：少數幾股力量，驅動一大票序列
+
+Factor model 的核心想法是：很多觀察到的序列，其實是被**少數幾個看不到的共同因子**驅動的。89 檔股票的報酬每天一起漲跌，背後可能只是「大盤」「產業輪動」幾股力量。這篇用 Python 對 S&P 500 的日報酬動手做一次，讓資料自己告訴我們：**要幾個因子？這些因子又是什麼？**
+
+## 一、資料整理：從價格到報酬矩陣
+
+資料是 89 檔 S&P 500 成分股、2013–2022 的日調整價。先算日報酬，再攤成 `date × stock` 的寬矩陣：
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sp500_prices.csv", usecols=["symbol", "date", "adjusted"])
+df["date"] = pd.to_datetime(df["date"])
+df = df.sort_values(["symbol", "date"])
+df["ret"] = df.groupby("symbol")["adjusted"].pct_change()      # 每檔的日報酬
+wide = df.pivot(index="date", columns="symbol", values="ret").dropna()
+# 結果：2,384 天 × 89 檔
+```
+
+## 二、要幾個因子？用 PCA 看
+
+對標準化後的報酬做 PCA，看前幾個主成分能解釋多少變異：
+
+```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+X = StandardScaler().fit_transform(wide.values)
+pca = PCA().fit(X)
+evr = pca.explained_variance_ratio_
+print(evr[0], evr[:3].sum(), evr[:5].sum())
+```
+
+結果：**PC1 就解釋了 40.8% 的變異**（這就是「大盤」共同因子），前 3 個解釋 50.8%、前 5 個 55.2%。89 檔股票的共同起伏，用少數幾個因子就抓住一大半 —— 這正是 factor model 的精神。
+
+![Scree plot：少數幾個共同因子驅動了大部分的共同起伏](https://raw.githubusercontent.com/Mullerchen910912/factor-models-in-r/main/python/figures/scree.png)
+
+## 三、這些因子是什麼？用 varimax + 產業標籤
+
+PCA 告訴我們「幾個」，但因子的意義要靠**因子分析 + 旋轉**來讀。用 3 因子 varimax，再把每個因子載荷最高的股票**貼上它的產業別**——讓資料自己命名：
+
+```python
+from sklearn.decomposition import FactorAnalysis
+
+fa = FactorAnalysis(n_components=3, rotation="varimax").fit(X)
+loadings = pd.DataFrame(fa.components_.T, index=wide.columns,
+                        columns=["Factor1", "Factor2", "Factor3"])
+# 對每個因子，取載荷最大的股票，並對照它們的 sector
+```
+
+跑出來的三個因子乾淨得驚人：
+
+| 因子 | 載荷最高的股票 | 資料標出的產業 |
+|---|---|---|
+| **Factor 1** | ADBE, SNPS, MSFT, NVDA, GOOGL | Information Technology |
+| **Factor 2** | COP, CVX, XOM, EOG, PXD | Energy |
+| **Factor 3** | DUK, D, PEP, NEE, PG, KO | Utilities／Consumer Staples（防禦股）|
+
+我們沒有告訴模型任何產業資訊，它卻自己把「科技、能源、防禦」這三股力量抽了出來。這就是統計因子模型的威力。
+
+## 四、往因果推論走一步
+
+同樣的因子結構，也是現代因果推論的基礎。Bai & Wang (2024) 的**因果因子模型** [@baiwang2024] 就是把這套「用因子吸收共同衝擊」的想法，用來估計處理效果——這和我另一篇談的 [IFE / CCE panel 估計](ife-vs-cce-panel.qmd)、以及 [policy targeting](policy-targeting-uplift.qmd) 是同一條線上的方法。repo 裡也附了 Bai-Wang 的 R 實作與 walkthrough。
+
+## 小結
+
+| 步驟 | 工具 | 回答的問題 |
+|---|---|---|
+| 資料整理 | pandas | 價格 → 報酬寬矩陣 |
+| 要幾個因子 | PCA（sklearn）| 共同變異的維度 |
+| 因子是什麼 | FactorAnalysis + varimax | 因子的經濟意義 |
+| 往因果走 | Bai-Wang 因果因子模型 | 用因子估處理效果 |
+
+統計因子模型是「無母數地找出共同結構」的基本功；理論可參考 Tsay (2010) 第 9 章 [@tsay2010]。完整程式碼在 GitHub：[**factor-models-in-r**](https://github.com/Mullerchen910912/factor-models-in-r)。
+
+## 參考文獻
+
+::: {#refs}
+:::

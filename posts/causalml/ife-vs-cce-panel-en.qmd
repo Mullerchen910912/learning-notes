@@ -1,0 +1,115 @@
+---
+title: "Small T, Large N — Who Wins? IFE vs. CCE in Practice"
+date: "2026-07-06"
+description: "With common factors in panel data, ordinary fixed effects is biased. Hand-coding IFE and CCE in Python and racing them in a Monte Carlo."
+categories: [causalml, panel-data, factor-models, python]
+draft: true
+bibliography: ../../references.bib
+csl: ../../apa.csl
+---
+
+*Code (original R + Python rewrite): [github.com/Mullerchen910912/panel-factor-model-comparison](https://github.com/Mullerchen910912/panel-factor-model-comparison)*
+
+---
+
+## When "fixed effects" isn't enough
+
+The workhorse for panel data is fixed effects — soak up additive individual and
+time differences. But often the data has **unobserved common factors**: a
+macro shock that hits different firms by different amounts. Then the model is
+
+$$y_{it} = \beta\, x_{it} + \underbrace{\lambda_i' f_t}_{\text{interactive fixed effects}} + \varepsilon_{it},$$
+
+where $f_t$ is unobserved and $\lambda_i$ is the unit's exposure. If $x_{it}$ is
+also driven by $f_t$, then $x$ is correlated with the error and ordinary two-way
+fixed effects is **biased** — it removes *additive* effects but not the
+*interactive* term $\lambda_i' f_t$.
+
+Two classic fixes:
+
+- **CCE** [@pesaran2006]: proxy the factors with **cross-sectional averages** and
+  project them out (works as $N \to \infty$).
+- **IFE** [@bai2009]: estimate the factor space by **principal components**, then
+  iterate on $\beta$.
+
+## 1. CCE: cross-sectional averages as factor proxies
+
+With averages $\bar y_t, \bar x_t$, let $H = [\mathbf{1}, \bar y, \bar x]$ and the
+projector $M = I - H(H'H)^{-1}H'$, then run unit-by-unit projected regressions:
+
+```python
+import numpy as np
+
+def cce(Y, X):                       # Y, X are T×N
+    T, N = Y.shape
+    ybar, xbar = Y.mean(1), X.mean(1)
+    H = np.column_stack([np.ones(T), ybar, xbar])
+    M = np.eye(T) - H @ np.linalg.solve(H.T @ H, H.T)
+    b = np.array([(X[:, i] @ M @ Y[:, i]) / (X[:, i] @ M @ X[:, i])
+                  for i in range(N)])
+    return b.mean()                  # CCE mean-group
+```
+
+## 2. IFE: principal components for the factors
+
+Alternate: OLS start, take PCs of the residuals as $\hat F$, get loadings
+$\hat\Lambda$, update $\beta$ on the de-factored data, repeat.
+
+```python
+def ife(Y, X, r, max_iter=1000, tol=1e-10):
+    T, N = Y.shape
+    XtX = (X * X).sum()
+    beta = (X * Y).sum() / XtX
+    for _ in range(max_iter):
+        W = Y - beta * X
+        vals, vecs = np.linalg.eigh(W @ W.T / N)
+        F = np.sqrt(T) * vecs[:, -r:]        # top-r eigenvectors
+        Lam = (W.T @ F) / T
+        beta_new = (X * (Y - F @ Lam.T)).sum() / XtX
+        if abs(beta_new - beta) < tol:
+            break
+        beta = beta_new
+    return beta
+```
+
+## 3. Monte Carlo: who wins?
+
+With a DGP where $x$ is **endogenous** through the factors (true $\beta=1$), 300
+reps, four $(N,T)$ designs, RMSE of $\hat\beta$:
+
+| Design | TWFE | CCE | IFE |
+|---|---:|---:|---:|
+| N=50, T=10 | 0.613 | 0.069 | **0.007** |
+| N=100, T=10 | 0.611 | 0.040 | **0.001** |
+| N=50, T=50 | 0.622 | 0.071 | **0.002** |
+| N=20, T=100 | 0.621 | 0.143 | **0.003** |
+
+![Monte Carlo](https://raw.githubusercontent.com/Mullerchen910912/panel-factor-model-comparison/main/python/figures/mc_rmse.png)
+
+1. **TWFE blows up** — bias about $+0.61$ (the truth is 1!) in every design.
+2. **CCE works but needs large N** — it proxies factors with cross-sectional
+   averages, so it degrades at $N=20$ (RMSE 0.143).
+3. **IFE is most accurate** — nearly unbiased once the number of factors $r$ is
+   set correctly (the cost: you must choose $r$).
+
+> The CCE-vs-IFE ranking is DGP-dependent. The R term paper in the repo runs more
+> designs (I(1) factors, large N and T) and finds CCE ahead when T is small
+> relative to N, with the two comparable when both are large.
+
+## Takeaways
+
+| | TWFE | CCE | IFE |
+|---|:---:|:---:|:---:|
+| Handles interactive FE | ✗ (biased) | ✓ | ✓ |
+| Needs to know $r$ | — | no | yes |
+| Relies on | — | large N | large N and T |
+
+This is the methodological core of my thesis — extending panel double machine
+learning to interactive fixed effects. Full code:
+[**panel-factor-model-comparison**](https://github.com/Mullerchen910912/panel-factor-model-comparison);
+for the broader framework see [@chernozhukov2024].
+
+## References
+
+::: {#refs}
+:::

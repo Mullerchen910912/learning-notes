@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2026-07-06">
+<meta name="description" content="panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。">
 
-<title>Muller Chen Blog</title>
+<title>小 T 大 N 該用誰？IFE vs CCE 的實戰比較 – Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,32 +25,85 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -76,35 +131,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-recent-posts .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-recent-posts'] = new List('listing-recent-posts', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -136,7 +162,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -308,7 +334,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
@@ -319,19 +345,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">首頁</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/ai-tools/index.html"> 
+    <a class="nav-link" href="../../posts/ai-tools/index.html"> 
 <span class="menu-text">AI 工具</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/causalml/index.html"> 
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
 <span class="menu-text">Causal Inference and Econometrics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">關於我</span></a>
   </li>  
 </ul>
@@ -350,25 +376,54 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#前言當固定效果不夠用" id="toc-前言當固定效果不夠用" class="nav-link active" data-scroll-target="#前言當固定效果不夠用">前言：當「固定效果」不夠用</a></li>
+  <li><a href="#一cce用截面平均代理因子" id="toc-一cce用截面平均代理因子" class="nav-link" data-scroll-target="#一cce用截面平均代理因子">一、CCE：用截面平均代理因子</a></li>
+  <li><a href="#二ife用主成分估因子" id="toc-二ife用主成分估因子" class="nav-link" data-scroll-target="#二ife用主成分估因子">二、IFE：用主成分估因子</a></li>
+  <li><a href="#三monte-carlo誰勝出" id="toc-三monte-carlo誰勝出" class="nav-link" data-scroll-target="#三monte-carlo誰勝出">三、Monte Carlo：誰勝出？</a></li>
+  <li><a href="#小結" id="toc-小結" class="nav-link" data-scroll-target="#小結">小結</a></li>
+  <li><a href="#參考文獻" id="toc-參考文獻" class="nav-link" data-scroll-target="#參考文獻">參考文獻</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Muller Chen Blog</h1>
-<p class="subtitle lead">台大經濟所 · 因果推論 · AI 工具 · Causal ML</p>
+<h1 class="title">小 T 大 N 該用誰？IFE vs CCE 的實戰比較</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">causalml</div>
+    <div class="quarto-category">panel-data</div>
+    <div class="quarto-category">factor-models</div>
+    <div class="quarto-category">python</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。
+  </div>
 </div>
 
 
-
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 6, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -378,121 +433,160 @@ window.Quarto = {
 </header>
 
 
-<section id="muller-chen-blog" class="level1 hero">
-<h1>Muller Chen Blog</h1>
-<p>記錄 AI 工具探索與 Causal ML 的閱讀筆記。</p>
-</section>
+<p><em>完整程式碼（R 原版 + Python 重寫）：<a href="https://github.com/Mullerchen910912/panel-factor-model-comparison">github.com/Mullerchen910912/panel-factor-model-comparison</a></em></p>
 <hr>
-<section id="最新文章" class="level2">
-<h2 class="anchored" data-anchor-id="最新文章">最新文章</h2>
-<div id="listing-recent-posts" class="quarto-listing quarto-listing-container-default">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Y2F1c2FsbWwlMkNmYWN0b3ItbW9kZWxzJTJDcGNhJTJDcHl0aG9u" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320932984" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="242">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/factor-models-pca.html" class="no-external">動手玩 Factor Models：從 PCA 到 S&amp;P 500 的潛在因子</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/factor-models-pca.html" class="no-external">
-<p>用 Python 對 89 檔 S&amp;P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。</p>
-</a></div>
+<section id="前言當固定效果不夠用" class="level2">
+<h2 class="anchored" data-anchor-id="前言當固定效果不夠用">前言：當「固定效果」不夠用</h2>
+<p>panel data 最常見的招式是固定效果（fixed effects）：把每個個體、每個時間的加成性差異吸收掉。但很多時候，資料背後有<strong>共同因子（common factors）</strong>——例如一個總體衝擊，對不同公司的影響程度不一樣。這時模型長這樣：</p>
+<p><span class="math display">\[y_{it} = \beta\, x_{it} + \underbrace{\lambda_i' f_t}_{\text{interactive fixed effects}} + \varepsilon_{it},\]</span></p>
+<p>其中 <span class="math inline">\(f_t\)</span> 是<strong>沒觀察到</strong>的共同因子、<span class="math inline">\(\lambda_i\)</span> 是個體對它的敏感度。麻煩在於：如果 <span class="math inline">\(x_{it}\)</span> 也受 <span class="math inline">\(f_t\)</span> 影響（例如同一個總體衝擊同時驅動了 regressor 和結果），那麼 <span class="math inline">\(x_{it}\)</span> 就與誤差相關 —— 普通的雙向固定效果（two-way FE）會<strong>偏誤</strong>，因為它只能吸收「加成性」的效果，吸不掉 <span class="math inline">\(\lambda_i' f_t\)</span> 這種「交乘」結構。</p>
+<p>兩個經典解法：</p>
+<ul>
+<li><strong>CCE（Common Correlated Effects）</strong><span class="citation" data-cites="pesaran2006">(<a href="#ref-pesaran2006" role="doc-biblioref">Pesaran, 2006</a>)</span>：用<strong>截面平均</strong>當作因子的代理，投影掉它。直覺是「大 N 時，<span class="math inline">\(\bar y_t, \bar x_t\)</span> 帶著 <span class="math inline">\(f_t\)</span> 的資訊」。</li>
+<li><strong>IFE（Interactive Fixed Effects）</strong><span class="citation" data-cites="bai2009">(<a href="#ref-bai2009" role="doc-biblioref">Bai, 2009</a>)</span>：直接用<strong>主成分</strong>把因子空間估出來，再反覆更新 <span class="math inline">\(\beta\)</span>。</li>
+</ul>
+<p>這篇用 Python 把兩個估計量手刻出來，再用 Monte Carlo 比較。</p>
+</section>
+<section id="一cce用截面平均代理因子" class="level2">
+<h2 class="anchored" data-anchor-id="一cce用截面平均代理因子">一、CCE：用截面平均代理因子</h2>
+<p>CCE 的核心是一個投影矩陣。令 <span class="math inline">\(\bar y_t, \bar x_t\)</span> 為每期的截面平均，<span class="math inline">\(H = [\mathbf{1}, \bar y, \bar x]\)</span>，投影矩陣 <span class="math inline">\(M = I - H(H'H)^{-1}H'\)</span>，然後對每個個體做 <span class="math inline">\(M\)</span>-投影後的迴歸：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cce(Y, X):                       <span class="co"># Y, X 都是 T×N</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    T, N <span class="op">=</span> Y.shape</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ybar, xbar <span class="op">=</span> Y.mean(<span class="dv">1</span>), X.mean(<span class="dv">1</span>)          <span class="co"># 截面平均</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> np.column_stack([np.ones(T), ybar, xbar])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    M <span class="op">=</span> np.eye(T) <span class="op">-</span> H <span class="op">@</span> np.linalg.solve(H.T <span class="op">@</span> H, H.T)   <span class="co"># 投影矩陣</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.array([(X[:, i] <span class="op">@</span> M <span class="op">@</span> Y[:, i]) <span class="op">/</span> (X[:, i] <span class="op">@</span> M <span class="op">@</span> X[:, i])</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                  <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N)])</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> b.mean()                  <span class="co"># CCE mean-group</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="二ife用主成分估因子" class="level2">
+<h2 class="anchored" data-anchor-id="二ife用主成分估因子">二、IFE：用主成分估因子</h2>
+<p>IFE 是個交替迭代：先用 OLS 起步，殘差取主成分當因子 <span class="math inline">\(\hat F\)</span>，估載荷 <span class="math inline">\(\hat\Lambda\)</span>，再用去掉因子的資料更新 <span class="math inline">\(\beta\)</span>，反覆到收斂。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ife(Y, X, r, max_iter<span class="op">=</span><span class="dv">1000</span>, tol<span class="op">=</span><span class="fl">1e-10</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    T, N <span class="op">=</span> Y.shape</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    XtX <span class="op">=</span> (X <span class="op">*</span> X).<span class="bu">sum</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> (X <span class="op">*</span> Y).<span class="bu">sum</span>() <span class="op">/</span> XtX               <span class="co"># OLS 起步（忽略因子）</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        W <span class="op">=</span> Y <span class="op">-</span> beta <span class="op">*</span> X                     <span class="co"># 殘差</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        vals, vecs <span class="op">=</span> np.linalg.eigh(W <span class="op">@</span> W.T <span class="op">/</span> N)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> np.sqrt(T) <span class="op">*</span> vecs[:, <span class="op">-</span>r:]        <span class="co"># 前 r 個特徵向量 = 因子</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        Lam <span class="op">=</span> (W.T <span class="op">@</span> F) <span class="op">/</span> T                  <span class="co"># 載荷</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        beta_new <span class="op">=</span> (X <span class="op">*</span> (Y <span class="op">-</span> F <span class="op">@</span> Lam.T)).<span class="bu">sum</span>() <span class="op">/</span> XtX</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">abs</span>(beta_new <span class="op">-</span> beta) <span class="op">&lt;</span> tol:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> beta_new</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="三monte-carlo誰勝出" class="level2">
+<h2 class="anchored" data-anchor-id="三monte-carlo誰勝出">三、Monte Carlo：誰勝出？</h2>
+<p>用一個 <span class="math inline">\(x\)</span> 透過共同因子而<strong>內生</strong>的 DGP（真值 <span class="math inline">\(\beta = 1\)</span>），跑 300 次、四種 <span class="math inline">\((N,T)\)</span> 設計，比較 TWFE / CCE / IFE 的 RMSE：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>設計</th>
+<th style="text-align: right;">TWFE</th>
+<th style="text-align: right;">CCE</th>
+<th style="text-align: right;">IFE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N=50, T=10</td>
+<td style="text-align: right;">0.613</td>
+<td style="text-align: right;">0.069</td>
+<td style="text-align: right;"><strong>0.007</strong></td>
+</tr>
+<tr class="even">
+<td>N=100, T=10</td>
+<td style="text-align: right;">0.611</td>
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;"><strong>0.001</strong></td>
+</tr>
+<tr class="odd">
+<td>N=50, T=50</td>
+<td style="text-align: right;">0.622</td>
+<td style="text-align: right;">0.071</td>
+<td style="text-align: right;"><strong>0.002</strong></td>
+</tr>
+<tr class="even">
+<td>N=20, T=100</td>
+<td style="text-align: right;">0.621</td>
+<td style="text-align: right;">0.143</td>
+<td style="text-align: right;"><strong>0.003</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/Mullerchen910912/panel-factor-model-comparison/main/python/figures/mc_rmse.png" class="img-fluid figure-img"></p>
+<figcaption>Monte Carlo：TWFE 在交互固定效果下失效，CCE 與 IFE 修正之</figcaption>
+</figure>
 </div>
-<div class="metadata">
-<a href="./posts/causalml/factor-models-pca.html" class="no-external">
-<div class="listing-date">
-2026-07-06
+<p>三個觀察：</p>
+<ol type="1">
+<li><strong>TWFE 直接爆掉。</strong> 偏誤約 <span class="math inline">\(+0.61\)</span>（真值才 1！），在所有設計都一樣糟 —— 交互固定效果不是普通 FE 能處理的。</li>
+<li><strong>CCE 有效，但吃大 N。</strong> 因為它用截面平均代理因子，N 越大越準；在 <span class="math inline">\(N=20\)</span> 時明顯變差（RMSE 0.143）。</li>
+<li><strong>IFE 最準。</strong> 只要因子數 <span class="math inline">\(r\)</span> 設對，它幾乎無偏。代價是要事先決定 <span class="math inline">\(r\)</span>。</li>
+</ol>
+<blockquote class="blockquote">
+<p>注意：CCE 與 IFE 誰勝出很吃 DGP。這裡的 Python 版用了一個內生性很強的設計；<a href="https://github.com/Mullerchen910912/panel-factor-model-comparison">repo 裡的 R 期末論文</a>跑了更多設計（含 <span class="math inline">\(I(1)\)</span> 因子、大 N 大 T），結論是「小 T 相對大 N 時 CCE 佔優，兩維都大時兩者相當」。</p>
+</blockquote>
+</section>
+<section id="小結" class="level2">
+<h2 class="anchored" data-anchor-id="小結">小結</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">普通 TWFE</th>
+<th style="text-align: center;">CCE</th>
+<th style="text-align: center;">IFE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>處理交互固定效果</td>
+<td style="text-align: center;">✗（偏誤）</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td>需要知道因子數 <span class="math inline">\(r\)</span></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">不用</td>
+<td style="text-align: center;">要</td>
+</tr>
+<tr class="odd">
+<td>主要靠</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">大 N</td>
+<td style="text-align: center;">大 N 且大 T</td>
+</tr>
+<tr class="even">
+<td>直覺</td>
+<td style="text-align: center;">只吸加成效果</td>
+<td style="text-align: center;">截面平均代理因子</td>
+<td style="text-align: center;">主成分估因子</td>
+</tr>
+</tbody>
+</table>
+<p>這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：<a href="https://github.com/Mullerchen910912/panel-factor-model-comparison"><strong>panel-factor-model-comparison</strong></a>；整體 Causal ML 框架見 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov et al., 2024</a>)</span>。</p>
+</section>
+<section id="參考文獻" class="level2">
+<h2 class="anchored" data-anchor-id="參考文獻">參考文獻</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-bai2009" class="csl-entry" role="listitem">
+Bai, J. (2009). Panel data models with interactive fixed effects. <em>Econometrica</em>, <em>77</em>(4), 1229–1279.
 </div>
-</a>
+<div id="ref-chernozhukov2024" class="csl-entry" role="listitem">
+Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal machine learning</em>. MIT Press.
 </div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="Y2F1c2FsbWwlMkNwYW5lbC1kYXRhJTJDZmFjdG9yLW1vZGVscyUyQ3B5dGhvbg==" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320818815" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="629">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">小 T 大 N 該用誰？IFE vs CCE 的實戰比較</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">
-<p>panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">
-<div class="listing-date">
-2026-07-06
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="Y2F1c2FsbWwlMkN1cGxpZnQlMkNwb2xpY3ktbGVhcm5pbmclMkNkb3VibGUtbWw=" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783319609927" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="259">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">該把資源投給誰？用 Causal ML 做 Policy Targeting</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<p>從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<div class="listing-date">
-2026-07-06
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2FnZW50JTJDd29ya2Zsb3clMkNwcm9kdWN0aXZpdHk=" data-listing-date-sort="1781107200000" data-listing-file-modified-sort="1781144450795" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="516">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">我的 AI Agent 使用手冊：把工具清單變成工作流</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<p>從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<div class="listing-date">
-2026-06-11
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="Y2F1c2FsbWwlMkNzeW50aGV0aWMtY29udHJvbCUyQ3BhbmVsLWRhdGE=" data-listing-date-sort="1776355200000" data-listing-file-modified-sort="1776387940663" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2734">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">Deep Diving into Synthetic Control Method</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<p>從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<div class="listing-date">
-2026-04-17
-</div>
-</a>
+<div id="ref-pesaran2006" class="csl-entry" role="listitem">
+Pesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. <em>Econometrica</em>, <em>74</em>(4), 967–1012.
 </div>
 </div>
-<div class="quarto-post image-right" data-index="5" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2F1dG9tYXRpb24lMkN3b3JrZmxvdw==" data-listing-date-sort="1776096000000" data-listing-file-modified-sort="1776130075592" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="845">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">用 Claude Code 建立研究生的自動化生活管理系統</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<p>從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<div class="listing-date">
-2026-04-14
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-
 
 
 </section>

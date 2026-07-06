@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2026-07-06">
+<meta name="description" content="用 Python 對 89 檔 S&amp;P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。">
 
-<title>Muller Chen Blog</title>
+<title>動手玩 Factor Models：從 PCA 到 S&amp;P 500 的潛在因子 – Muller Chen Blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,32 +25,85 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dbc92dda8186f57fa2e333fbb71d6a9d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-a06763021a52c43c40a351ac8b799b8f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-6af018c2549e95d072b334631246b534.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-31c5604c64c1e23219736aa5fcde2e7c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -76,67 +131,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-recent-posts .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-recent-posts'] = new List('listing-recent-posts', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -308,7 +305,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
@@ -319,19 +316,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">首頁</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/ai-tools/index.html"> 
+    <a class="nav-link" href="../../posts/ai-tools/index.html"> 
 <span class="menu-text">AI 工具</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts/causalml/index.html"> 
+    <a class="nav-link" href="../../posts/causalml/index.html"> 
 <span class="menu-text">Causal Inference and Econometrics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">關於我</span></a>
   </li>  
 </ul>
@@ -350,25 +347,55 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#前言少數幾股力量驅動一大票序列" id="toc-前言少數幾股力量驅動一大票序列" class="nav-link active" data-scroll-target="#前言少數幾股力量驅動一大票序列">前言：少數幾股力量，驅動一大票序列</a></li>
+  <li><a href="#一資料整理從價格到報酬矩陣" id="toc-一資料整理從價格到報酬矩陣" class="nav-link" data-scroll-target="#一資料整理從價格到報酬矩陣">一、資料整理：從價格到報酬矩陣</a></li>
+  <li><a href="#二要幾個因子用-pca-看" id="toc-二要幾個因子用-pca-看" class="nav-link" data-scroll-target="#二要幾個因子用-pca-看">二、要幾個因子？用 PCA 看</a></li>
+  <li><a href="#三這些因子是什麼用-varimax-產業標籤" id="toc-三這些因子是什麼用-varimax-產業標籤" class="nav-link" data-scroll-target="#三這些因子是什麼用-varimax-產業標籤">三、這些因子是什麼？用 varimax + 產業標籤</a></li>
+  <li><a href="#四往因果推論走一步" id="toc-四往因果推論走一步" class="nav-link" data-scroll-target="#四往因果推論走一步">四、往因果推論走一步</a></li>
+  <li><a href="#小結" id="toc-小結" class="nav-link" data-scroll-target="#小結">小結</a></li>
+  <li><a href="#參考文獻" id="toc-參考文獻" class="nav-link" data-scroll-target="#參考文獻">參考文獻</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Muller Chen Blog</h1>
-<p class="subtitle lead">台大經濟所 · 因果推論 · AI 工具 · Causal ML</p>
+<h1 class="title">動手玩 Factor Models：從 PCA 到 S&amp;P 500 的潛在因子</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">causalml</div>
+    <div class="quarto-category">factor-models</div>
+    <div class="quarto-category">pca</div>
+    <div class="quarto-category">python</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    用 Python 對 89 檔 S&amp;P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。
+  </div>
 </div>
 
 
-
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 6, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -378,121 +405,134 @@ window.Quarto = {
 </header>
 
 
-<section id="muller-chen-blog" class="level1 hero">
-<h1>Muller Chen Blog</h1>
-<p>記錄 AI 工具探索與 Causal ML 的閱讀筆記。</p>
-</section>
+<p><em>完整程式碼（R 原版 + Python 重寫）：<a href="https://github.com/Mullerchen910912/factor-models-in-r">github.com/Mullerchen910912/factor-models-in-r</a></em></p>
 <hr>
-<section id="最新文章" class="level2">
-<h2 class="anchored" data-anchor-id="最新文章">最新文章</h2>
-<div id="listing-recent-posts" class="quarto-listing quarto-listing-container-default">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Y2F1c2FsbWwlMkNmYWN0b3ItbW9kZWxzJTJDcGNhJTJDcHl0aG9u" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320932984" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="242">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/factor-models-pca.html" class="no-external">動手玩 Factor Models：從 PCA 到 S&amp;P 500 的潛在因子</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/factor-models-pca.html" class="no-external">
-<p>用 Python 對 89 檔 S&amp;P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。</p>
-</a></div>
+<section id="前言少數幾股力量驅動一大票序列" class="level2">
+<h2 class="anchored" data-anchor-id="前言少數幾股力量驅動一大票序列">前言：少數幾股力量，驅動一大票序列</h2>
+<p>Factor model 的核心想法是：很多觀察到的序列，其實是被<strong>少數幾個看不到的共同因子</strong>驅動的。89 檔股票的報酬每天一起漲跌，背後可能只是「大盤」「產業輪動」幾股力量。這篇用 Python 對 S&amp;P 500 的日報酬動手做一次，讓資料自己告訴我們：<strong>要幾個因子？這些因子又是什麼？</strong></p>
+</section>
+<section id="一資料整理從價格到報酬矩陣" class="level2">
+<h2 class="anchored" data-anchor-id="一資料整理從價格到報酬矩陣">一、資料整理：從價格到報酬矩陣</h2>
+<p>資料是 89 檔 S&amp;P 500 成分股、2013–2022 的日調整價。先算日報酬，再攤成 <code>date × stock</code> 的寬矩陣：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"sp500_prices.csv"</span>, usecols<span class="op">=</span>[<span class="st">"symbol"</span>, <span class="st">"date"</span>, <span class="st">"adjusted"</span>])</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"date"</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">"date"</span>])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.sort_values([<span class="st">"symbol"</span>, <span class="st">"date"</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"ret"</span>] <span class="op">=</span> df.groupby(<span class="st">"symbol"</span>)[<span class="st">"adjusted"</span>].pct_change()      <span class="co"># 每檔的日報酬</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>wide <span class="op">=</span> df.pivot(index<span class="op">=</span><span class="st">"date"</span>, columns<span class="op">=</span><span class="st">"symbol"</span>, values<span class="op">=</span><span class="st">"ret"</span>).dropna()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 結果：2,384 天 × 89 檔</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="二要幾個因子用-pca-看" class="level2">
+<h2 class="anchored" data-anchor-id="二要幾個因子用-pca-看">二、要幾個因子？用 PCA 看</h2>
+<p>對標準化後的報酬做 PCA，看前幾個主成分能解釋多少變異：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> StandardScaler().fit_transform(wide.values)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA().fit(X)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>evr <span class="op">=</span> pca.explained_variance_ratio_</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(evr[<span class="dv">0</span>], evr[:<span class="dv">3</span>].<span class="bu">sum</span>(), evr[:<span class="dv">5</span>].<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>結果：<strong>PC1 就解釋了 40.8% 的變異</strong>（這就是「大盤」共同因子），前 3 個解釋 50.8%、前 5 個 55.2%。89 檔股票的共同起伏，用少數幾個因子就抓住一大半 —— 這正是 factor model 的精神。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/Mullerchen910912/factor-models-in-r/main/python/figures/scree.png" class="img-fluid figure-img"></p>
+<figcaption>Scree plot：少數幾個共同因子驅動了大部分的共同起伏</figcaption>
+</figure>
 </div>
-<div class="metadata">
-<a href="./posts/causalml/factor-models-pca.html" class="no-external">
-<div class="listing-date">
-2026-07-06
+</section>
+<section id="三這些因子是什麼用-varimax-產業標籤" class="level2">
+<h2 class="anchored" data-anchor-id="三這些因子是什麼用-varimax-產業標籤">三、這些因子是什麼？用 varimax + 產業標籤</h2>
+<p>PCA 告訴我們「幾個」，但因子的意義要靠<strong>因子分析 + 旋轉</strong>來讀。用 3 因子 varimax，再把每個因子載荷最高的股票<strong>貼上它的產業別</strong>——讓資料自己命名：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> FactorAnalysis</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fa <span class="op">=</span> FactorAnalysis(n_components<span class="op">=</span><span class="dv">3</span>, rotation<span class="op">=</span><span class="st">"varimax"</span>).fit(X)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>loadings <span class="op">=</span> pd.DataFrame(fa.components_.T, index<span class="op">=</span>wide.columns,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                        columns<span class="op">=</span>[<span class="st">"Factor1"</span>, <span class="st">"Factor2"</span>, <span class="st">"Factor3"</span>])</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 對每個因子，取載荷最大的股票，並對照它們的 sector</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>跑出來的三個因子乾淨得驚人：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>因子</th>
+<th>載荷最高的股票</th>
+<th>資料標出的產業</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Factor 1</strong></td>
+<td>ADBE, SNPS, MSFT, NVDA, GOOGL</td>
+<td>Information Technology</td>
+</tr>
+<tr class="even">
+<td><strong>Factor 2</strong></td>
+<td>COP, CVX, XOM, EOG, PXD</td>
+<td>Energy</td>
+</tr>
+<tr class="odd">
+<td><strong>Factor 3</strong></td>
+<td>DUK, D, PEP, NEE, PG, KO</td>
+<td>Utilities／Consumer Staples（防禦股）</td>
+</tr>
+</tbody>
+</table>
+<p>我們沒有告訴模型任何產業資訊，它卻自己把「科技、能源、防禦」這三股力量抽了出來。這就是統計因子模型的威力。</p>
+</section>
+<section id="四往因果推論走一步" class="level2">
+<h2 class="anchored" data-anchor-id="四往因果推論走一步">四、往因果推論走一步</h2>
+<p>同樣的因子結構，也是現代因果推論的基礎。Bai &amp; Wang (2024) 的<strong>因果因子模型</strong> <span class="citation" data-cites="baiwang2024">(<a href="#ref-baiwang2024" role="doc-biblioref">Bai &amp; Wang, 2024</a>)</span> 就是把這套「用因子吸收共同衝擊」的想法，用來估計處理效果——這和我另一篇談的 <a href="../../posts/causalml/ife-vs-cce-panel.html">IFE / CCE panel 估計</a>、以及 <a href="../../posts/causalml/policy-targeting-uplift.html">policy targeting</a> 是同一條線上的方法。repo 裡也附了 Bai-Wang 的 R 實作與 walkthrough。</p>
+</section>
+<section id="小結" class="level2">
+<h2 class="anchored" data-anchor-id="小結">小結</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>步驟</th>
+<th>工具</th>
+<th>回答的問題</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>資料整理</td>
+<td>pandas</td>
+<td>價格 → 報酬寬矩陣</td>
+</tr>
+<tr class="even">
+<td>要幾個因子</td>
+<td>PCA（sklearn）</td>
+<td>共同變異的維度</td>
+</tr>
+<tr class="odd">
+<td>因子是什麼</td>
+<td>FactorAnalysis + varimax</td>
+<td>因子的經濟意義</td>
+</tr>
+<tr class="even">
+<td>往因果走</td>
+<td>Bai-Wang 因果因子模型</td>
+<td>用因子估處理效果</td>
+</tr>
+</tbody>
+</table>
+<p>統計因子模型是「無母數地找出共同結構」的基本功；理論可參考 Tsay (2010) 第 9 章 <span class="citation" data-cites="tsay2010">(<a href="#ref-tsay2010" role="doc-biblioref">Tsay, 2010</a>)</span>。完整程式碼在 GitHub：<a href="https://github.com/Mullerchen910912/factor-models-in-r"><strong>factor-models-in-r</strong></a>。</p>
+</section>
+<section id="參考文獻" class="level2">
+<h2 class="anchored" data-anchor-id="參考文獻">參考文獻</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-baiwang2024" class="csl-entry" role="listitem">
+Bai, J., &amp; Wang, P. (2024). Causal inference with factor models. <em>Working Paper</em>.
 </div>
-</a>
+<div id="ref-tsay2010" class="csl-entry" role="listitem">
+Tsay, R. S. (2010). <em>Analysis of financial time series</em> (3rd ed.). Wiley.
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="Y2F1c2FsbWwlMkNwYW5lbC1kYXRhJTJDZmFjdG9yLW1vZGVscyUyQ3B5dGhvbg==" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783320818815" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="629">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">小 T 大 N 該用誰？IFE vs CCE 的實戰比較</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">
-<p>panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/ife-vs-cce-panel.html" class="no-external">
-<div class="listing-date">
-2026-07-06
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="Y2F1c2FsbWwlMkN1cGxpZnQlMkNwb2xpY3ktbGVhcm5pbmclMkNkb3VibGUtbWw=" data-listing-date-sort="1783267200000" data-listing-file-modified-sort="1783319609927" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="259">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">該把資源投給誰？用 Causal ML 做 Policy Targeting</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<p>從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/policy-targeting-uplift.html" class="no-external">
-<div class="listing-date">
-2026-07-06
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2FnZW50JTJDd29ya2Zsb3clMkNwcm9kdWN0aXZpdHk=" data-listing-date-sort="1781107200000" data-listing-file-modified-sort="1781144450795" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="516">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">我的 AI Agent 使用手冊：把工具清單變成工作流</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<p>從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/ai-agent-handbook.html" class="no-external">
-<div class="listing-date">
-2026-06-11
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="Y2F1c2FsbWwlMkNzeW50aGV0aWMtY29udHJvbCUyQ3BhbmVsLWRhdGE=" data-listing-date-sort="1776355200000" data-listing-file-modified-sort="1776387940663" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2734">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">Deep Diving into Synthetic Control Method</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<p>從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/causalml/deep-diving-synthetic-control.html" class="no-external">
-<div class="listing-date">
-2026-04-17
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="YWktdG9vbHMlMkNjbGF1ZGUtY29kZSUyQ2F1dG9tYXRpb24lMkN3b3JrZmxvdw==" data-listing-date-sort="1776096000000" data-listing-file-modified-sort="1776130075592" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="845">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">用 Claude Code 建立研究生的自動化生活管理系統</a>
-</h3>
-<div class="delink listing-description"><a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<p>從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ai-tools/claude-code-workflow-system.html" class="no-external">
-<div class="listing-date">
-2026-04-14
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-
 
 
 </section>

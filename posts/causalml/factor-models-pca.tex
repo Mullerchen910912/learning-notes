@@ -1,0 +1,91 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xeCJK}
+\setCJKmainfont{cwTeX Q Ming}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
+
+\title{動手玩 Factor Models：從 PCA 到 S\&P 500 的潛在因子}
+\author{Sheng-Yuan Chen}
+\date{2026-07-06}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+完整程式碼（R 原版 + Python 重寫）：\url{https://github.com/Mullerchen910912/factor-models-in-r}
+\end{center}
+
+\section{前言：少數幾股力量，驅動一大票序列}
+
+Factor model 的核心：很多觀察到的序列，其實被\textbf{少數幾個看不到的共同因子}驅動。這篇用 Python 對 S\&P 500 的日報酬動手做一次，讓資料自己回答：要幾個因子？因子又是什麼？
+
+\section{一、資料整理：從價格到報酬矩陣}
+
+\begin{lstlisting}[language=Python]
+df = pd.read_csv("sp500_prices.csv", usecols=["symbol", "date", "adjusted"])
+df["date"] = pd.to_datetime(df["date"])
+df = df.sort_values(["symbol", "date"])
+df["ret"] = df.groupby("symbol")["adjusted"].pct_change()
+wide = df.pivot(index="date", columns="symbol", values="ret").dropna()
+# 2,384 天 × 89 檔
+\end{lstlisting}
+
+\section{二、要幾個因子？用 PCA 看}
+
+\begin{lstlisting}[language=Python]
+X = StandardScaler().fit_transform(wide.values)
+pca = PCA().fit(X)
+evr = pca.explained_variance_ratio_
+print(evr[0], evr[:3].sum(), evr[:5].sum())
+\end{lstlisting}
+
+\textbf{PC1 就解釋了 40.8\% 的變異}（大盤因子），前 3 個 50.8\%、前 5 個 55.2\%。少數幾個因子就抓住 89 檔股票共同起伏的一大半。
+
+\section{三、這些因子是什麼？用 varimax + 產業標籤}
+
+3 因子 varimax，再把載荷最高的股票貼上產業別：
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+因子 & 載荷最高的股票 & 資料標出的產業 \\
+\midrule
+Factor 1 & ADBE, SNPS, MSFT, NVDA & Information Technology \\
+Factor 2 & COP, CVX, XOM, EOG & Energy \\
+Factor 3 & DUK, D, PEP, NEE, PG & Utilities／Consumer Staples \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+我們沒告訴模型任何產業資訊，它卻自己抽出「科技、能源、防禦」三股力量。
+
+\section{四、往因果推論走一步}
+
+同樣的因子結構也是現代因果推論的基礎。Bai \& Wang (2024) 的因果因子模型，就是把「用因子吸收共同衝擊」用來估處理效果 —— 和 IFE／CCE panel 估計、policy targeting 是同一條線。
+
+\section{小結}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+步驟 & 工具 & 回答的問題 \\
+\midrule
+資料整理 & pandas & 價格 → 報酬寬矩陣 \\
+要幾個因子 & PCA & 共同變異的維度 \\
+因子是什麼 & FactorAnalysis + varimax & 因子的經濟意義 \\
+往因果走 & Bai-Wang 因果因子模型 & 用因子估處理效果 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+完整程式碼在 GitHub：\url{https://github.com/Mullerchen910912/factor-models-in-r}。
+
+\end{document}

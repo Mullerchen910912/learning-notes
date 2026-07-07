@@ -1,0 +1,298 @@
+// ===========================================================================
+//  COMPONENTS — BASE  (Agent A)  Shared primitives for the whole site.
+//  Consumes tokens from theme-{light,dark}.scss scss:defaults.
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+//  Motion keyframes (guarded)
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Body + selection
+// ---------------------------------------------------------------------------
+body {
+  line-height: $line-height-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: $selection-bg;
+}
+
+// ---------------------------------------------------------------------------
+//  Heading rhythm — serif, tight tracking on h1
+// ---------------------------------------------------------------------------
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: $headings-font-family;
+  color: $headings-color;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1, .h1 {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-bottom: 1rem;
+}
+
+h2, .h2 {
+  font-size: 1.75rem;
+  margin-top: 2.75rem;
+  margin-bottom: 0.9rem;
+}
+
+h3, .h3 {
+  font-size: 1.35rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+h4, .h4 {
+  font-size: 1.12rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+// ---------------------------------------------------------------------------
+//  Prose links — animated accent underline on hover
+// ---------------------------------------------------------------------------
+main.content a,
+#quarto-document-content a,
+.quarto-title-block a {
+  color: $link-color;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    color: $accent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.15em;
+    }
+  }
+}
+
+// Reduced-motion fallback: plain underline still appears on hover.
+@media (prefers-reduced-motion: reduce) {
+  main.content a:hover,
+  #quarto-document-content a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Navbar — flat, paper-toned, serif brand + animated nav underlines
+// ---------------------------------------------------------------------------
+.navbar {
+  background-color: $body-bg !important;
+  border-bottom: 1px solid $border-color;
+  box-shadow: none;
+
+  .navbar-brand {
+    font-family: $headings-font-family;
+    font-weight: 600;
+    color: $headings-color !important;
+  }
+
+  .navbar-nav .nav-link {
+    position: relative;
+    font-family: $font-family-sans-serif;
+    font-size: 0.95rem;
+    color: $body-color !important;
+    transition: color 0.2s ease;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.35rem;
+      height: 2px;
+      background: $accent;
+      width: 0;
+      transition: width 0.25s ease;
+    }
+
+    &:hover,
+    &:focus,
+    &.active {
+      color: $accent !important;
+    }
+
+    &:hover::after,
+    &:focus::after,
+    &.active::after {
+      width: calc(100% - 1rem);
+    }
+  }
+
+  // GitHub / social icons
+  .navbar-nav .nav-item a.nav-link .bi,
+  a.nav-link .bi {
+    color: $muted;
+    transition: color 0.2s ease;
+  }
+  .navbar-nav .nav-item a.nav-link:hover .bi,
+  a.nav-link:hover .bi {
+    color: $accent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-nav .nav-link::after { transition: none; }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Footer
+// ---------------------------------------------------------------------------
+.nav-footer,
+.page-footer,
+footer.footer {
+  border-top: 1px solid $border-color;
+  background-color: $body-bg;
+  color: $muted;
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 2rem 0;
+
+  a {
+    color: $muted;
+    &:hover { color: $accent; }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Post reading — constrain the article content column for readability.
+//  On article pages Quarto renders <main class="content" id="quarto-document-
+//  content">, so scoping to `.page-layout-article #quarto-document-content`
+//  narrows the whole body column to a comfortable ~68ch measure. The TOC
+//  lives in the right margin (`#quarto-margin-sidebar`) and is unaffected.
+//  `page-layout: full` index/listing pages give <main> id `quarto-content`
+//  (not `quarto-document-content`) and the `.page-layout-full` container, so
+//  they are never matched here and stay full width.
+// ---------------------------------------------------------------------------
+.page-layout-article #quarto-document-content {
+  max-width: 68ch;
+}
+
+// ---------------------------------------------------------------------------
+//  Blockquote
+// ---------------------------------------------------------------------------
+blockquote,
+.blockquote {
+  border-left: 3px solid $accent;
+  background: $surface-alt;
+  color: $muted;
+  font-family: $headings-font-family;
+  font-style: italic;
+  padding: 0.75rem 1.25rem;
+  margin: 1.25rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+// ---------------------------------------------------------------------------
+//  Tables
+// ---------------------------------------------------------------------------
+main.content table,
+.table {
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  width: auto;
+
+  thead th {
+    background: $surface-alt;
+    border-bottom: 2px solid $border-strong;
+    color: $headings-color;
+    font-weight: 600;
+  }
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid $border-color;
+  }
+
+  tbody tr:nth-child(even) {
+    background: $surface-alt;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Code — block + inline
+// ---------------------------------------------------------------------------
+pre,
+div.sourceCode,
+pre.sourceCode {
+  background: $code-bg;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+// Avoid double-boxing: inner <pre> inside a sourceCode wrapper stays bare.
+div.sourceCode pre {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+code:not(pre code):not(.sourceCode) {
+  background: $code-bg;
+  color: $code-color;
+  border: none;
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.9em;
+}
+
+// ---------------------------------------------------------------------------
+//  Callouts — softened background, colored left rail, bold header
+// ---------------------------------------------------------------------------
+.callout {
+  background: $surface-alt;
+  border: none;
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-radius: 4px;
+
+  .callout-title,
+  .callout-header {
+    font-weight: 600;
+    background: transparent;
+  }
+}
+
+.callout.callout-style-default .callout-title {
+  font-weight: 600;
+}
+
+.callout-note      { border-left-color: $callout-color-note; }
+.callout-tip       { border-left-color: $callout-color-tip; }
+.callout-important { border-left-color: $callout-color-important; }
+.callout-warning   { border-left-color: $callout-color-warning; }
+.callout-caution   { border-left-color: $callout-color-warning; }
+
+// ---------------------------------------------------------------------------
+//  Display math — allow horizontal scroll on wide equations
+// ---------------------------------------------------------------------------
+.math {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}

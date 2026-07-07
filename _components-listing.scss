@@ -1,0 +1,325 @@
+// ===========================================================================
+//  COMPONENTS — LISTING  (Agent C)
+//  Owns: Quarto listing pages (grid cards + default rows), category / tag
+//  chips, and post-page figures & captions.
+//  Consumes tokens from theme-{light,dark}.scss scss:defaults.
+//  Does NOT restyle Agent A's base (tables, blockquotes, code, callouts,
+//  navbar, footer, links, heading scale, reading width).
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+//  Grid listing — layout container
+//  Quarto emits `.list.grid` (Bootstrap CSS grid via `.g-col-*` children).
+//  We only tune the gap here; card visuals live on `.quarto-grid-item`.
+// ---------------------------------------------------------------------------
+.quarto-listing-container-grid {
+  .list.grid {
+    --bs-gap: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  // The card link fills its grid cell; strip default link chrome.
+  .quarto-grid-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Grid listing — the card itself
+//  A soft-edged paper card. The single flourish on hover is a 2px clay bar
+//  along the top edge, drawn with a `::before` so it never nudges layout.
+// ---------------------------------------------------------------------------
+.quarto-grid-item.card {
+  position: relative;
+  background: $surface;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  height: 100%;
+
+  // Clay top-bar flourish — hidden until hover (scaleX from center).
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: $accent;
+    transform: scaleX(0);
+    transform-origin: center;
+    z-index: 1;
+  }
+
+  .card-body {
+    padding: 1.25rem 1.35rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &::before {
+      transition: transform 0.25s ease;
+    }
+  }
+
+  &:hover,
+  &:focus-within {
+    border-color: $border-strong;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transform: translateY(-3px);
+    }
+
+    &::before {
+      transform: scaleX(1);
+    }
+  }
+
+  // --- Card title -----------------------------------------------------------
+  .card-title,
+  .listing-title {
+    font-family: $headings-font-family;
+    color: $headings-color;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+
+    // Clamp to 2 lines.
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // --- Card date / meta -----------------------------------------------------
+  .listing-date,
+  .card-attribution {
+    color: $muted;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+  }
+
+  .card-attribution {
+    margin-top: 0.75rem;
+  }
+
+  // --- Card description ------------------------------------------------------
+  .card-text,
+  .listing-description {
+    color: $body-color;
+    font-size: 0.95rem;
+    line-height: 1.55;
+
+    // Clamp to 3 lines.
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Grid listing — staggered fade-in on load (guarded)
+//  fadeInUp is defined in components-base; reuse it here.
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  .quarto-listing-container-grid .g-col-1 {
+    animation: fadeInUp 0.5s ease both;
+
+    @for $i from 1 through 8 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{($i - 1) * 0.06s};
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Default listing — article-style rows (paper-notes)
+//  Quarto emits `.quarto-listing-default .list-item` rows. Hairline dividers,
+//  serif title link, right-aligned muted date, subtle row hover tint.
+// ---------------------------------------------------------------------------
+.quarto-listing-container-default {
+  .list.quarto-listing-default {
+    // Empty-state: an empty default list renders as a bare container. Keep it
+    // from looking like a broken empty box by leaving no border/background of
+    // its own — dividers live on the rows, so zero rows == clean whitespace.
+    min-height: 0;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid $border-color;
+    border-radius: 6px;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color 0.2s ease;
+    }
+
+    &:hover,
+    &:focus-within {
+      background: $surface-alt;
+    }
+
+    // Title — serif link.
+    .listing-title,
+    .listing-title a {
+      font-family: $headings-font-family;
+      color: $headings-color;
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.35;
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover,
+      &:focus {
+        color: $accent;
+      }
+    }
+
+    // Date — muted, right-aligned, does not shrink.
+    .listing-date {
+      flex: 0 0 auto;
+      color: $muted;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    // Description under the title.
+    .listing-description {
+      color: $body-color;
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+  }
+
+  // "No matching items" — keep it quiet and centered, not a boxed error.
+  .listing-no-matching {
+    color: $muted;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Category / tag chips — muted pills
+//  Covers listing-sidebar categories (`.quarto-listing-category .category`),
+//  in-row listing categories (`.listing-category .category`), and post-page
+//  header tags (`.quarto-categories .quarto-category`).
+// ---------------------------------------------------------------------------
+.quarto-categories .quarto-category,
+.quarto-listing-category .category,
+.listing-category .category,
+.listing-item .category {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid $border-color;
+  color: $muted;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-family: $font-family-sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
+// Post-page category strip — comfortable spacing between pills.
+.quarto-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+// Sidebar category list — pills stacked/wrapped with a little breathing room.
+.quarto-listing-category.category-default {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  .category {
+    justify-content: space-between;
+  }
+}
+
+.quarto-listing-category-title {
+  font-family: $headings-font-family;
+  color: $headings-color;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+// The "(n)" count that trails a category label.
+.quarto-category-count {
+  color: $muted;
+  font-weight: 400;
+  font-size: 0.72rem;
+}
+
+// ---------------------------------------------------------------------------
+//  Figures & captions (post pages)
+//  Center figures; quiet, centered captions. Base image/table styling is
+//  Agent A's — we only handle alignment + caption typography here.
+// ---------------------------------------------------------------------------
+.quarto-figure {
+  text-align: center;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+figure.figure,
+main.content figure {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+figcaption,
+.figure-caption,
+.quarto-figure figcaption {
+  color: $muted;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 0.5rem;
+}

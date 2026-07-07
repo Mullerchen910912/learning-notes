@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="MC avatar">
+  <circle cx="100" cy="100" r="98" fill="#faf8f4"/>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#1f4e5f" stroke-width="4"/>
+  <text x="100" y="104" fill="#14303f"
+        font-family="'Source Serif 4', 'Georgia', 'Times New Roman', serif"
+        font-size="86" font-weight="600" letter-spacing="-3"
+        text-anchor="middle" dominant-baseline="central">MC</text>
+</svg>

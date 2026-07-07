@@ -1,0 +1,43 @@
+/*-- scss:defaults --*/
+
+// ===========================================================================
+//  THEME — DARK  (warm-paper academic palette, dark variant)
+//  Minimalist academic design system. Layered on bootswatch `darkly`.
+// ===========================================================================
+
+// --- Fonts (shared across light/dark) ------------------------------------
+$headings-font-family:   "Source Serif 4", "Noto Serif TC", "Songti TC", "PingFang TC", serif !default;
+$font-family-sans-serif: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif !default;
+$font-family-monospace:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace !default;
+$font-size-root:  17px !default;
+$line-height-base: 1.75 !default;
+
+// --- Bootstrap-native color variables ------------------------------------
+$body-bg:        #14181c !default;   // page background (ink)
+$body-color:     #e6e2d9 !default;   // default body text (warm off-white)
+$headings-color: #cfe3e6 !default;   // heading text (pale teal)
+$primary:        #7fb0bd !default;   // primary brand (soft teal)
+$secondary:      #8fb59f !default;   // secondary brand (soft sage)
+$link-color:     #7fb0bd !default;   // prose link default
+$border-color:   #2c353d !default;   // hairline borders
+$code-color:     #c9d6d3 !default;   // inline code text
+
+// --- Custom design tokens -------------------------------------------------
+$surface:        #1b2127 !default;   // raised surfaces (cards, table header alt)
+$surface-alt:    #232a31 !default;   // subtle tinted surface (zebra, blockquote, callout)
+$muted:          #9aa4ad !default;   // muted / secondary text
+$border-strong:  #3a454e !default;   // stronger divider (table header bottom)
+$accent:         #e08a5f !default;   // warm accent (link hover, underlines, blockquote bar)
+$link-hover:     #e08a5f !default;   // prose link hover color
+$code-bg:        #1e252b !default;   // code background (inline + block)
+$selection-bg:   #2c3d3a !default;   // ::selection background
+
+// --- Callout accent colors (Quarto / Bootstrap) --------------------------
+$callout-color-note:      #7fb0bd !default;
+$callout-color-tip:       #8fb59f !default;
+$callout-color-important: #e08a5f !default;
+$callout-color-warning:   #e0b25e !default;
+
+/*-- scss:rules --*/
+
+@import "components";

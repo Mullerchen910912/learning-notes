@@ -7,6 +7,7 @@ project:
 website:
   title: "Muller Chen Blog"
   description: "AI 工具・Causal ML 閱讀筆記"
+  favicon: assets/favicon.svg
   navbar:
     left:
       - text: "首頁"
@@ -30,15 +31,14 @@ website:
 format:
   html:
     theme:
-      light: flatly
-      dark: darkly
+      light: [flatly, theme-light.scss]
+      dark: [darkly, theme-dark.scss]
     highlight-style: github
     code-fold: true
     toc: true
     toc-depth: 3
     number-sections: false
-    mainfont: "Noto Sans TC, sans-serif"
-    css: styles.css
+    include-in-header: [assets/fonts.html]
 
 execute:
   freeze: auto

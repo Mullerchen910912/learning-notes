@@ -1,0 +1,9 @@
+// ===========================================================================
+//  COMPONENTS MANIFEST  (cross-agent contract)
+//  Imported by theme-light.scss and theme-dark.scss (in scss:rules).
+//  Each partial consumes the SCSS tokens defined in the theme defaults.
+// ===========================================================================
+
+@import "components-base";     // Agent A — shared primitives
+@import "components-home";      // Agent B — home / landing
+@import "components-listing";   // Agent C — listing / category pages

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW" xml:lang="zh-TW"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-07-06">
 <meta name="description" content="從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。">
 
 <title>該把資源投給誰？用 Causal ML 做 Policy Targeting – Muller Chen Blog</title>
@@ -102,9 +101,9 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-33ad27842e5d2d16fc80fdb21c00285f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8203ebb3f0de13ac03b13d08d7649e3f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-6e328290f6f817a9e235bfa246908e90.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-8203ebb3f0de13ac03b13d08d7649e3f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b947e76761b414be9df667758c53b8a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-de88047eb551e1970a19c828585654e5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b947e76761b414be9df667758c53b8a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -119,22 +118,26 @@ div.csl-indent {
   ],
   "show-item-context": false,
   "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
+    "search-no-results-text": "沒有結果",
+    "search-matching-documents-text": "符合的文件",
+    "search-copy-link-title": "複製搜尋連結",
+    "search-hide-matches-text": "隱藏其他符合的結果",
+    "search-more-match-text": "更多符合結果",
+    "search-more-matches-text": "更多符合結果",
+    "search-clear-button-title": "清除",
     "search-text-placeholder": "",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "送出",
+    "search-label": "搜尋"
   }
 }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,wght@0,400;0,600;1,400&amp;family=Noto+Sans+TC:wght@400;500;700&amp;family=Noto+Serif+TC:wght@500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<!-- Serif is the body voice: Source Serif 4 (Latin) + Noto Serif TC (CJK) need
+     regular(400)+semibold(600) for body/headings, 700 for strong. Sans is
+     demoted to interface chrome, so Inter/Noto Sans TC keep only 400;500.
+     CJK weight budget stays flat (5 CJK weights, as before). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&amp;family=Noto+Sans+TC:wght@400;500&amp;family=Noto+Serif+TC:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -341,8 +344,8 @@ window.Quarto = {
     <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="搜尋"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="切換導航列" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -350,6 +353,10 @@ window.Quarto = {
   <li class="nav-item">
     <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">首頁</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/essays/index.html"> 
+<span class="menu-text">隨筆</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../posts/ai-tools/index.html"> 
@@ -381,7 +388,7 @@ window.Quarto = {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="切換深色模式"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -392,7 +399,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+    <h2 id="toc-title">本頁目錄</h2>
    
   <ul>
   <li><a href="#前言預測-vs-因果" id="toc-前言預測-vs-因果" class="nav-link active" data-scroll-target="#前言預測-vs-因果">前言：預測 vs 因果</a></li>
@@ -430,9 +437,9 @@ window.Quarto = {
 
     
     <div>
-    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-heading">發佈於</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 6, 2026</p>
+      <p class="date">2026年7月6日</p>
     </div>
   </div>
   
@@ -463,8 +470,8 @@ window.Quarto = {
 <p>其中 <span class="math inline">\(Y(1), Y(0)\)</span> 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自<strong>隨機實驗</strong>，分派機率（propensity）<span class="math inline">\(e = \Pr(T=1)\)</span> 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。</p>
 <p>估 <span class="math inline">\(\tau(x)\)</span> 的工具箱（都在 <a href="https://github.com/py-why/EconML">EconML</a> 裡）：</p>
 <ul>
-<li><strong>Meta-learners</strong>：S/T/X-learner <span class="citation" data-cites="kunzel2019">(<a href="#ref-kunzel2019" role="doc-biblioref">Künzel et al., 2019</a>)</span>，把問題拆成標準回歸。</li>
-<li><strong>Double Machine Learning</strong>（LinearDML）<span class="citation" data-cites="chernozhukov2018">(<a href="#ref-chernozhukov2018" role="doc-biblioref">Chernozhukov et al., 2018</a>)</span>，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。</li>
+<li><strong>Meta-learners</strong>：S/T/X-learner <span class="citation" data-cites="kunzel2019">(<a href="#ref-kunzel2019" role="doc-biblioref">Künzel 等, 2019</a>)</span>，把問題拆成標準回歸。</li>
+<li><strong>Double Machine Learning</strong>（LinearDML）<span class="citation" data-cites="chernozhukov2018">(<a href="#ref-chernozhukov2018" role="doc-biblioref">Chernozhukov 等, 2018</a>)</span>，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。</li>
 <li><strong>Causal Forest</strong> <span class="citation" data-cites="wager2018">(<a href="#ref-wager2018" role="doc-biblioref">Wager &amp; Athey, 2018</a>)</span>，以無母數方式估 <span class="math inline">\(\tau(x)\)</span>。</li>
 </ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> econml.dml <span class="im">import</span> LinearDML</span>
@@ -477,7 +484,7 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>est.fit(Y, T, X<span class="op">=</span>X)             <span class="co"># Y=是否造訪, T=是否寄信, X=顧客特徵</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tau_hat <span class="op">=</span> est.effect(X)        <span class="co"># 每位顧客的 uplift τ̂(x)</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(est.ate(X), est.ate_interval(X))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(est.ate(X), est.ate_interval(X))</span></code></pre></div><button title="複製到剪貼簿" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>model_y</code>、<code>model_t</code> 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。</p>
 </section>
 <section id="二怎麼評估目標鎖定好不好" class="level2">
@@ -533,7 +540,7 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov et al., 2024</a>)</span>。</p>
+<p>因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov 等, 2024</a>)</span>。</p>
 <p>完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：<a href="https://github.com/Mullerchen910912/causal-ml-policy-targeting"><strong>causal-ml-policy-targeting</strong></a>。</p>
 </section>
 <section id="參考文獻" class="level2">
@@ -546,10 +553,10 @@ Athey, S., &amp; Wager, S. (2021). Policy learning with observational data. <em>
 Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, <em>21</em>(1), C1–C68.
 </div>
 <div id="ref-chernozhukov2024" class="csl-entry" role="listitem">
-Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal machine learning</em>. MIT Press.
+Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal Machine Learning</em>. MIT Press.
 </div>
 <div id="ref-hillstrom2008" class="csl-entry" role="listitem">
-Hillstrom, K. (2008). <em>The MineThatData e-mail analytics and data mining challenge</em>. <a href="https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html">https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html</a>
+Hillstrom, K. (2008). <em>The MineThatData E-Mail Analytics and Data Mining Challenge</em>. <a href="https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html">https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html</a>
 </div>
 <div id="ref-kunzel2019" class="csl-entry" role="listitem">
 Künzel, S. R., Sekhon, J. S., Bickel, P. J., &amp; Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. <em>Proceedings of the National Academy of Sciences</em>, <em>116</em>(10), 4156–4165.
@@ -601,12 +608,12 @@ Wager, S., &amp; Athey, S. (2018). Estimation and inference of heterogeneous tre
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
+      button.setAttribute("title", "已複製");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
+        button.setAttribute("data-bs-title", "已複製");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

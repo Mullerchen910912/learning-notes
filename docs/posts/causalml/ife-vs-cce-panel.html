@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW" xml:lang="zh-TW"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-07-06">
 <meta name="description" content="panel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。">
 
 <title>小 T 大 N 該用誰？IFE vs CCE 的實戰比較 – Muller Chen Blog</title>
@@ -102,9 +101,9 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-33ad27842e5d2d16fc80fdb21c00285f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8203ebb3f0de13ac03b13d08d7649e3f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-6e328290f6f817a9e235bfa246908e90.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-8203ebb3f0de13ac03b13d08d7649e3f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b947e76761b414be9df667758c53b8a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-de88047eb551e1970a19c828585654e5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b947e76761b414be9df667758c53b8a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -119,22 +118,26 @@ div.csl-indent {
   ],
   "show-item-context": false,
   "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
+    "search-no-results-text": "沒有結果",
+    "search-matching-documents-text": "符合的文件",
+    "search-copy-link-title": "複製搜尋連結",
+    "search-hide-matches-text": "隱藏其他符合的結果",
+    "search-more-match-text": "更多符合結果",
+    "search-more-matches-text": "更多符合結果",
+    "search-clear-button-title": "清除",
     "search-text-placeholder": "",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "送出",
+    "search-label": "搜尋"
   }
 }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,wght@0,400;0,600;1,400&amp;family=Noto+Sans+TC:wght@400;500;700&amp;family=Noto+Serif+TC:wght@500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<!-- Serif is the body voice: Source Serif 4 (Latin) + Noto Serif TC (CJK) need
+     regular(400)+semibold(600) for body/headings, 700 for strong. Sans is
+     demoted to interface chrome, so Inter/Noto Sans TC keep only 400;500.
+     CJK weight budget stays flat (5 CJK weights, as before). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&amp;family=Noto+Sans+TC:wght@400;500&amp;family=Noto+Serif+TC:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -341,8 +344,8 @@ window.Quarto = {
     <span class="navbar-title">Muller Chen Blog</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="搜尋"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="切換導航列" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -350,6 +353,10 @@ window.Quarto = {
   <li class="nav-item">
     <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">首頁</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts/essays/index.html"> 
+<span class="menu-text">隨筆</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../posts/ai-tools/index.html"> 
@@ -381,7 +388,7 @@ window.Quarto = {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="切換深色模式"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -392,7 +399,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+    <h2 id="toc-title">本頁目錄</h2>
    
   <ul>
   <li><a href="#前言當固定效果不夠用" id="toc-前言當固定效果不夠用" class="nav-link active" data-scroll-target="#前言當固定效果不夠用">前言：當「固定效果」不夠用</a></li>
@@ -430,9 +437,9 @@ window.Quarto = {
 
     
     <div>
-    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-heading">發佈於</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 6, 2026</p>
+      <p class="date">2026年7月6日</p>
     </div>
   </div>
   
@@ -470,7 +477,7 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    M <span class="op">=</span> np.eye(T) <span class="op">-</span> H <span class="op">@</span> np.linalg.solve(H.T <span class="op">@</span> H, H.T)   <span class="co"># 投影矩陣</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.array([(X[:, i] <span class="op">@</span> M <span class="op">@</span> Y[:, i]) <span class="op">/</span> (X[:, i] <span class="op">@</span> M <span class="op">@</span> X[:, i])</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                  <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N)])</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> b.mean()                  <span class="co"># CCE mean-group</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> b.mean()                  <span class="co"># CCE mean-group</span></span></code></pre></div><button title="複製到剪貼簿" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="二ife用主成分估因子" class="level2">
 <h2 class="anchored" data-anchor-id="二ife用主成分估因子">二、IFE：用主成分估因子</h2>
@@ -488,7 +495,7 @@ window.Quarto = {
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">abs</span>(beta_new <span class="op">-</span> beta) <span class="op">&lt;</span> tol:</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> beta_new</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta</span></code></pre></div><button title="複製到剪貼簿" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="三monte-carlo誰勝出" class="level2">
 <h2 class="anchored" data-anchor-id="三monte-carlo誰勝出">三、Monte Carlo：誰勝出？</h2>
@@ -583,7 +590,7 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：<a href="https://github.com/Mullerchen910912/panel-factor-model-comparison"><strong>panel-factor-model-comparison</strong></a>；整體 Causal ML 框架見 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov et al., 2024</a>)</span>。</p>
+<p>這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：<a href="https://github.com/Mullerchen910912/panel-factor-model-comparison"><strong>panel-factor-model-comparison</strong></a>；整體 Causal ML 框架見 <span class="citation" data-cites="chernozhukov2024">(<a href="#ref-chernozhukov2024" role="doc-biblioref">Chernozhukov 等, 2024</a>)</span>。</p>
 </section>
 <section id="參考文獻" class="level2">
 <h2 class="anchored" data-anchor-id="參考文獻">參考文獻</h2>
@@ -592,7 +599,7 @@ window.Quarto = {
 Bai, J. (2009). Panel data models with interactive fixed effects. <em>Econometrica</em>, <em>77</em>(4), 1229–1279.
 </div>
 <div id="ref-chernozhukov2024" class="csl-entry" role="listitem">
-Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal machine learning</em>. MIT Press.
+Chernozhukov, V., Hansen, C., Kallus, N., Spindler, M., &amp; Syrgkanis, V. (2024). <em>Causal Machine Learning</em>. MIT Press.
 </div>
 <div id="ref-pesaran2006" class="csl-entry" role="listitem">
 Pesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. <em>Econometrica</em>, <em>74</em>(4), 967–1012.
@@ -641,12 +648,12 @@ Pesaran, M. H. (2006). Estimation and inference in large heterogeneous panels wi
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
+      button.setAttribute("title", "已複製");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
+        button.setAttribute("data-bs-title", "已複製");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

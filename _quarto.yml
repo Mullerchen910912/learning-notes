@@ -4,6 +4,8 @@ project:
   resources:
     - editor.html
 
+lang: zh-TW
+
 website:
   title: "Muller Chen Blog"
   description: "AI 工具・Causal ML 閱讀筆記"
@@ -12,6 +14,8 @@ website:
     left:
       - text: "首頁"
         href: index.qmd
+      - text: "隨筆"
+        href: posts/essays/index.qmd
       - text: "AI 工具"
         href: posts/ai-tools/index.qmd
       - text: "Causal Inference and Econometrics"

@@ -51,16 +51,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Muller Chen Blog",
+    "title": "Muller Chen",
     "section": "",
-    "text": "在因果推論與機器學習的交界處寫筆記——記錄 Causal ML 的閱讀心得，以及 AI 工具如何重塑研究工作流。"
-  },
-  {
-    "objectID": "index.html#最新文章",
-    "href": "index.html#最新文章",
-    "title": "Muller Chen Blog",
-    "section": "最新文章",
-    "text": "最新文章\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n2026-07-06\n\n\n\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n2026-06-11\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n2026-04-17\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n2026-04-14\n\n\n\n\n\n\nNo matching items"
+    "text": "Muller Chen\n在因果推論與機器學習的交界處做筆記，偶爾寫點隨筆。\n\n\n\n\n\n\n開張\n\n\n\n隨筆\n\n\n\n新開一區放隨筆與生活紀錄，技術筆記照常在原本的分類。\n\n\n\n\n\n2026.07.09\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n\ncausalml\n\nfactor-models\n\npca\n\npython\n\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\n\n\n2026.07.06\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\n\ncausalml\n\npanel-data\n\nfactor-models\n\npython\n\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\n\n\n2026.07.06\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n\ncausalml\n\nuplift\n\npolicy-learning\n\ndouble-ml\n\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n\n\n2026.07.06\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n\nai-tools\n\nclaude-code\n\nagent\n\nworkflow\n\nproductivity\n\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n\n\n2026.06.11\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n\ncausalml\n\nsynthetic-control\n\npanel-data\n\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n\n\n2026.04.17\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n\nai-tools\n\nclaude-code\n\nautomation\n\nworkflow\n\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n\n\n2026.04.14\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n\nai-tools\n\nClaude Code\n\nR\n\n研究方法\n\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n\n\n2026.04.07\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n\ncausalml\n\nlinear-algebra\n\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n\n\n2026.04.07\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n\n\n2026.04.06\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n\n\n2026.04.06\n\n\n\n\n\n無符合的項目"
   },
   {
     "objectID": "posts/causalml/ife-vs-cce-panel.html",
@@ -102,21 +95,21 @@
     "href": "posts/causalml/ife-vs-cce-panel.html#小結",
     "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
     "section": "小結",
-    "text": "小結\n\n\n\n\n普通 TWFE\nCCE\nIFE\n\n\n\n\n處理交互固定效果\n✗（偏誤）\n✓\n✓\n\n\n需要知道因子數 \\(r\\)\n—\n不用\n要\n\n\n主要靠\n—\n大 N\n大 N 且大 T\n\n\n直覺\n只吸加成效果\n截面平均代理因子\n主成分估因子\n\n\n\n這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：panel-factor-model-comparison；整體 Causal ML 框架見 (Chernozhukov et al., 2024)。"
+    "text": "小結\n\n\n\n\n普通 TWFE\nCCE\nIFE\n\n\n\n\n處理交互固定效果\n✗（偏誤）\n✓\n✓\n\n\n需要知道因子數 \\(r\\)\n—\n不用\n要\n\n\n主要靠\n—\n大 N\n大 N 且大 T\n\n\n直覺\n只吸加成效果\n截面平均代理因子\n主成分估因子\n\n\n\n這正是我碩論的方法核心 —— 把 panel double machine learning 擴展到 interactive fixed effects 的環境。完整實作在 GitHub：panel-factor-model-comparison；整體 Causal ML 框架見 (Chernozhukov 等, 2024)。"
   },
   {
     "objectID": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
     "href": "posts/causalml/ife-vs-cce-panel.html#參考文獻",
     "title": "小 T 大 N 該用誰？IFE vs CCE 的實戰比較",
     "section": "參考文獻",
-    "text": "參考文獻\n\n\nBai, J. (2009). Panel data models with interactive fixed effects. Econometrica, 77(4), 1229–1279.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nPesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. Econometrica, 74(4), 967–1012."
+    "text": "參考文獻\n\n\nBai, J. (2009). Panel data models with interactive fixed effects. Econometrica, 77(4), 1229–1279.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal Machine Learning. MIT Press.\n\n\nPesaran, M. H. (2006). Estimation and inference in large heterogeneous panels with a multifactor error structure. Econometrica, 74(4), 967–1012."
   },
   {
     "objectID": "posts/causalml/index.html",
     "href": "posts/causalml/index.html",
     "title": "Causal Inference and Econometrics",
     "section": "",
-    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\nJul 6, 2026\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\nApr 17, 2026\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "因果推論與計量方法的學習筆記，包含 DiD、Causal ML、DML 等主題。\n\n\n\n\n\n\n\n\n\n\n\n動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子\n\n\n用 Python 對 89 檔 S&P 500 股票的日報酬做 PCA 與因子分析，讓資料自己說出「科技、能源、防禦」這些共同因子。\n\n\n\n2026年7月6日\n\n\n\n\n\n\n\n\n\n\n小 T 大 N 該用誰？IFE vs CCE 的實戰比較\n\n\npanel 資料有共同因子時，普通固定效果會偏誤。用 Python 手刻 IFE 與 CCE，並用 Monte Carlo 看誰在什麼情境勝出。\n\n\n\n2026年7月6日\n\n\n\n\n\n\n\n\n\n\n該把資源投給誰？用 Causal ML 做 Policy Targeting\n\n\n從『平均有沒有效』到『該投給誰』：用 uplift modeling 與 policy value 在 Hillstrom 實驗上做因果目標鎖定。\n\n\n\n2026年7月6日\n\n\n\n\n\n\n\n\n\n\nDeep Diving into Synthetic Control Method\n\n\n從 Abadie (2010) 到 Xu (2017)：系統整理合成控制法的機制、廣義化延伸、與實作注意事項。\n\n\n\n2026年4月17日\n\n\n\n\n\n\n\n\n\n\n矩陣微分 Cheat Sheet\n\n\n整理因子模型與主成分分析中常用的矩陣微分公式，採用分子佈局（Numerator Layout）。\n\n\n\n2026年4月7日\n\n\n\n\n\n\n\n\n\n\nCh.8 Deep Neural Networks and Multitask Learning\n\n\nCausal ML 第 8 章：深度神經網路架構、多任務學習、學習保證\n\n\n\n2026年4月6日\n\n\n\n\n\n\n無符合的項目"
   },
   {
     "objectID": "posts/causalml/factor-models-pca.html",
@@ -172,7 +165,7 @@
     "href": "posts/causalml/factor-models-pca.html#參考文獻",
     "title": "動手玩 Factor Models：從 PCA 到 S&P 500 的潛在因子",
     "section": "參考文獻",
-    "text": "參考文獻\n\n\nBai, J., & Wang, P. (2024). Causal inference with factor models. Working Paper.\n\n\nTsay, R. S. (2010). Analysis of financial time series (3rd ed.). Wiley."
+    "text": "參考文獻\n\n\nBai, J., & Wang, P. (2024). Causal inference with factor models. Working paper.\n\n\nTsay, R. S. (2010). Analysis of Financial Time Series (3rd 本). Wiley."
   },
   {
     "objectID": "posts/causalml/matrix-calculus-cheat-sheet.html",
@@ -385,18 +378,32 @@
     "text": "小結\n\n\n\n任務\n函數\n\n\n\n\n讀取 CSV\nread_csv()\n\n\n篩選列\nfilter()\n\n\n新增／修改欄位\nmutate()\n\n\n選取欄位\nselect()\n\n\n排序\narrange()\n\n\n分組摘要\ngroup_by() + summarise()\n\n\n縱向合併\nbind_rows()\n\n\n橫向合併\nleft_join()\n\n\n路徑管理\nhere::here()\n\n\n\n掌握這幾個函數，加上 pipe |&gt; 的寫法，就能處理大多數的資料整理工作。"
   },
   {
+    "objectID": "posts/essays/index.html",
+    "href": "posts/essays/index.html",
+    "title": "隨筆",
+    "section": "",
+    "text": "不算研究筆記、也還沒想好放哪一類的東西，都先丟在這裡。\n有些是隨手心得，有些純粹是生活紀錄，讀個開心就好。\n\n\n\n\n\n\n\n\n\n開張\n\n\n新開一區放隨筆與生活紀錄，技術筆記照常在原本的分類。\n\n\n\n\n\n2026年7月9日\n\n\n\n\n\n無符合的項目"
+  },
+  {
+    "objectID": "posts/essays/opening.html",
+    "href": "posts/essays/opening.html",
+    "title": "開張",
+    "section": "",
+    "text": "這個分類是新開的。以前這裡只放技術筆記，但腦子裡常有些跟研究、程式無關的念頭——看到什麼、想到什麼，零零星星，一直沒地方放，乾脆開一個「隨筆」分類專門裝這些。\n技術內容，像因果推論、AI 工具、論文筆記，還是照舊放在原本分類，不會混進來。這一區比較隨性，字數不定、主題不定，想到什麼寫什麼，算是比較放鬆的一角，歡迎路過翻翻。"
+  },
+  {
     "objectID": "posts/paper-notes/index.html",
     "href": "posts/paper-notes/index.html",
     "title": "論文筆記",
     "section": "",
-    "text": "讀論文的筆記與總結 —— 每篇一頁，記錄問題、方法、貢獻、與我的評論。主題以因果推論、計量經濟學、機器學習為主。\n\n\n\n\n\n\nNote每篇筆記的固定結構\n\n\n\n\n\n\n一句話：這篇在做什麼、為什麼重要\n問題 / 動機：想解決什麼、既有方法的缺口\n方法：核心假設、識別策略、估計方式（含關鍵數學）\n主要結果：實證或理論的重點發現\n我的評論：貢獻、限制、可延伸之處、對我研究的啟發\n一句話帶走：TL;DR\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "讀論文的筆記與總結 —— 每篇一頁，記錄問題、方法、貢獻、與我的評論。主題以因果推論、計量經濟學、機器學習為主。\n\n\n\n\n\n\n註釋每篇筆記的固定結構\n\n\n\n\n\n\n一句話：這篇在做什麼、為什麼重要\n問題 / 動機：想解決什麼、既有方法的缺口\n方法：核心假設、識別策略、估計方式（含關鍵數學）\n主要結果：實證或理論的重點發現\n我的評論：貢獻、限制、可延伸之處、對我研究的啟發\n一句話帶走：TL;DR\n\n\n\n\n\n\n\n\n\n\n\n\n無符合的項目"
   },
   {
     "objectID": "posts/ai-tools/index.html",
     "href": "posts/ai-tools/index.html",
     "title": "AI 工具",
     "section": "",
-    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\nJun 11, 2026\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\nApr 14, 2026\n\n\n\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\nApr 7, 2026\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "記錄使用 AI 工具輔助研究、寫作、程式設計的心得。\n包含 Claude Code 設定技巧、prompt engineering、自動化工作流程等。\n\n\n\n\n\n\n\n\n\n\n\n我的 AI Agent 使用手冊：把工具清單變成工作流\n\n\n從心智模型、省 token、CLAUDE.md 到各家 AI 的選用——一套研究生用 AI agent 的方法論\n\n\n\n2026年6月11日\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 建立研究生的自動化生活管理系統\n\n\n從每週回顧自動上傳 Notion、Zotero 文獻管理到 Obsidian 筆記，一套完整的 AI 輔助工作流\n\n\n\n2026年4月14日\n\n\n\n\n\n\n\n\n\n\n如何使用 Claude Code 進行經濟學研究\n\n\n介紹如何用 Claude Code 輔助資料整理、程式撰寫與研究分析，以合成控制法專案為實際案例。\n\n\n\n2026年4月7日\n\n\n\n\n\n\n\n\n\n\n用 Claude Code 打造學術研究工作流程\n\n\n如何根據 Pedro Sant’Anna 的工作流程模板，為計量經濟學研究建立高效的 AI 輔助環境\n\n\n\n2026年4月6日\n\n\n\n\n\n\n無符合的項目"
   },
   {
     "objectID": "posts/ai-tools/claude-code-economics-research.html",
@@ -536,7 +543,7 @@
     "href": "posts/causalml/policy-targeting-uplift.html#一要估的是-cateuplift",
     "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
     "section": "一、要估的是 CATE（uplift）",
-    "text": "一、要估的是 CATE（uplift）\n用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：\n\\[\\tau(x) = \\mathbb{E}\\left[\\,Y(1) - Y(0) \\mid X = x\\,\\right],\\]\n其中 \\(Y(1), Y(0)\\) 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自隨機實驗，分派機率（propensity）\\(e = \\Pr(T=1)\\) 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。\n估 \\(\\tau(x)\\) 的工具箱（都在 EconML 裡）：\n\nMeta-learners：S/T/X-learner (Künzel et al., 2019)，把問題拆成標準回歸。\nDouble Machine Learning（LinearDML）(Chernozhukov et al., 2018)，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。\nCausal Forest (Wager & Athey, 2018)，以無母數方式估 \\(\\tau(x)\\)。\n\nfrom econml.dml import LinearDML\nfrom sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier\n\nest = LinearDML(\n    model_y=GradientBoostingRegressor(),      # E[Y | X]\n    model_t=GradientBoostingClassifier(),     # E[T | X]，二元處理\n    discrete_treatment=True, cv=5,\n)\nest.fit(Y, T, X=X)             # Y=是否造訪, T=是否寄信, X=顧客特徵\ntau_hat = est.effect(X)        # 每位顧客的 uplift τ̂(x)\nprint(est.ate(X), est.ate_interval(X))\nmodel_y、model_t 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。"
+    "text": "一、要估的是 CATE（uplift）\n用 potential outcomes 的語言，我們想要的是條件平均處理效果（CATE）：\n\\[\\tau(x) = \\mathbb{E}\\left[\\,Y(1) - Y(0) \\mid X = x\\,\\right],\\]\n其中 \\(Y(1), Y(0)\\) 是同一位顧客在「有／沒有」被介入下的潛在結果。因為資料來自隨機實驗，分派機率（propensity）\\(e = \\Pr(T=1)\\) 已知且固定，處理效果無需額外的 unconfoundedness 假設即可識別 —— 這讓它成為檢驗各種估計法的乾淨測試場。\n估 \\(\\tau(x)\\) 的工具箱（都在 EconML 裡）：\n\nMeta-learners：S/T/X-learner (Künzel 等, 2019)，把問題拆成標準回歸。\nDouble Machine Learning（LinearDML）(Chernozhukov 等, 2018)，用 cross-fitting 對 outcome 與 treatment 殘差化，得到去偏（Neyman-orthogonal）的效果估計。\nCausal Forest (Wager & Athey, 2018)，以無母數方式估 \\(\\tau(x)\\)。\n\nfrom econml.dml import LinearDML\nfrom sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier\n\nest = LinearDML(\n    model_y=GradientBoostingRegressor(),      # E[Y | X]\n    model_t=GradientBoostingClassifier(),     # E[T | X]，二元處理\n    discrete_treatment=True, cv=5,\n)\nest.fit(Y, T, X=X)             # Y=是否造訪, T=是否寄信, X=顧客特徵\ntau_hat = est.effect(X)        # 每位顧客的 uplift τ̂(x)\nprint(est.ate(X), est.ate_interval(X))\nmodel_y、model_t 是 nuisance 模型；DML 先用它們把結果與處理殘差化，再在最後一個線性 stage 得到 CATE。cross-fitting 讓 nuisance 的估計誤差不會一階地污染效果估計。"
   },
   {
     "objectID": "posts/causalml/policy-targeting-uplift.html#二怎麼評估目標鎖定好不好",
@@ -557,14 +564,14 @@
     "href": "posts/causalml/policy-targeting-uplift.html#小結",
     "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
     "section": "小結",
-    "text": "小結\n\n\n\n面向\n預測模型\n因果 targeting\n\n\n\n\n問「誰會買」\n✓\n\n\n\n問「誰因介入才買」\n\n✓（uplift）\n\n\n對「本來就買 / 被惹惱」的人\n誤投\n避開\n\n\n衡量標準\nAUC / 準度\nQini / policy value\n\n\n\n因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 (Chernozhukov et al., 2024)。\n完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：causal-ml-policy-targeting。"
+    "text": "小結\n\n\n\n面向\n預測模型\n因果 targeting\n\n\n\n\n問「誰會買」\n✓\n\n\n\n問「誰因介入才買」\n\n✓（uplift）\n\n\n對「本來就買 / 被惹惱」的人\n誤投\n避開\n\n\n衡量標準\nAUC / 準度\nQini / policy value\n\n\n\n因果推論在這裡不是理論裝飾，而是直接對應到「把有限預算投到哪裡」的決策。方法與 Causal ML 的整體框架可參考 (Chernozhukov 等, 2024)。\n完整實作（S/T/X-learner、DML、Causal Forest、Qini 與 policy-value 圖）都在 GitHub：causal-ml-policy-targeting。"
   },
   {
     "objectID": "posts/causalml/policy-targeting-uplift.html#參考文獻",
     "href": "posts/causalml/policy-targeting-uplift.html#參考文獻",
     "title": "該把資源投給誰？用 Causal ML 做 Policy Targeting",
     "section": "參考文獻",
-    "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal machine learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData e-mail analytics and data mining challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
+    "text": "參考文獻\n\n\nAthey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133–161.\n\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68.\n\n\nChernozhukov, V., Hansen, C., Kallus, N., Spindler, M., & Syrgkanis, V. (2024). Causal Machine Learning. MIT Press.\n\n\nHillstrom, K. (2008). The MineThatData E-Mail Analytics and Data Mining Challenge. https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html\n\n\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the National Academy of Sciences, 116(10), 4156–4165.\n\n\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228–1242."
   },
   {
     "objectID": "posts/causalml/ch8-neural-networks.html",
@@ -690,7 +697,7 @@
     "href": "about.html#這個部落格",
     "title": "關於我",
     "section": "這個部落格",
-    "text": "這個部落格\n這裡記錄兩個主題：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal Inference and Econometrics\n因果推論與計量方法筆記"
+    "text": "這個部落格\n這裡主要記幾個主題，技術筆記為主，偶爾也會寫點不那麼正經的：\n\n\n\n分類\n內容\n\n\n\n\n🤖 AI 工具\nClaude Code、LLM 輔助研究工作流程\n\n\n📚 Causal Inference and Econometrics\n因果推論與計量方法筆記\n\n\n📝 隨筆\n生活雜記、心得，跟研究無關的東西"
   },
   {
     "objectID": "about.html#主要工具",

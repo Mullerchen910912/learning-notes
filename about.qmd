@@ -27,12 +27,13 @@ about:
 
 ## 這個部落格
 
-這裡記錄兩個主題：
+這裡主要記幾個主題，技術筆記為主，偶爾也會寫點不那麼正經的：
 
 | 分類 | 內容 |
 |------|------|
 | [🤖 AI 工具](posts/ai-tools/index.qmd) | Claude Code、LLM 輔助研究工作流程 |
 | [📚 Causal Inference and Econometrics](posts/causalml/index.qmd) | 因果推論與計量方法筆記 |
+| [📝 隨筆](posts/essays/index.qmd) | 生活雜記、心得，跟研究無關的東西 |
 
 ---
 

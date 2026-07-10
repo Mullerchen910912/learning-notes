@@ -1,85 +1,41 @@
 // ===========================================================================
-//  COMPONENTS — HOME  (Agent B)  Landing page: hero + category quick-links.
+//  COMPONENTS — HOME  (Agent B)  Landing page: the masthead.
 //  Consumes tokens from theme-{light,dark}.scss scss:defaults.
-//  Card styling is owned by Agent C — no `.card` rules here.
+//  Card / stream styling is owned by Agent C — no `.card` / listing rules here.
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-//  Hero — centered, serif, hairline rule below. Fades in on load (guarded).
+//  Masthead — a quiet site header, not a hero. Serif wordmark + one muted
+//  tagline that names the two-track content (technical notes + essays), then
+//  a big gap before the timeline stream. Rendered as
+//  <section class="... masthead"><h1/><p/></section>.
 // ---------------------------------------------------------------------------
-.hero {
-  border-bottom: 1px solid $border-color;
-  padding: 4.5rem 0 3rem;
-  text-align: center;
+.masthead {
+  margin: var(--space-5) 0 var(--space-6);
 
-  // Constrain inner measure and center it.
-  > * {
-    max-width: 60ch;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
+  // Wordmark — the site name, set like a book title.
   h1 {
     font-family: $headings-font-family;
     color: $headings-color;
-    font-size: 2.75rem;
+    font-size: clamp(1.75rem, 1.45rem + 1.1vw, 2.1rem);
     font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.15;
-    margin: 0 auto;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    margin: 0 0 var(--space-2);
   }
 
-  // Lede / subtitle paragraph.
+  // Tagline — one muted serif line. Upright (no italic): the copy is CJK.
   p {
     color: $muted;
-    font-family: $font-family-sans-serif;
-    font-size: 1.15rem;
+    font-family: $font-family-serif;
+    font-size: 1.05rem;
     font-weight: 400;
     line-height: 1.6;
     max-width: 46ch;
-    margin: 0.75rem auto 0;
+    margin: 0;
   }
 
   @media (prefers-reduced-motion: no-preference) {
     animation: fadeInUp 0.5s ease both;
-  }
-}
-
-// ---------------------------------------------------------------------------
-//  Category quick-links — centered row of small serif pill links.
-//  Sits between the hero and the recent-posts listing.
-// ---------------------------------------------------------------------------
-.home-categories {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem 1.25rem;
-  margin: 2.5rem auto 3rem;
-  padding: 0;
-  max-width: 60ch;
-
-  a {
-    font-family: $headings-font-family;
-    font-size: 1rem;
-    font-weight: 500;
-    color: $primary;
-    text-decoration: none;
-    padding: 0.4rem 1.1rem;
-    border: 1px solid $border-color;
-    border-radius: 999px;
-    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-
-    &:hover,
-    &:focus {
-      color: $accent;
-      border-color: $accent;
-      background-color: $surface-alt;
-      text-decoration: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    a { transition: none; }
   }
 }

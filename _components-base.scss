@@ -14,12 +14,30 @@
 }
 
 // ---------------------------------------------------------------------------
+//  Spacing scale (journal rhythm) — one step looser than the old defaults.
+//  Section-level gaps use --space-5 / --space-6; in-paragraph uses --space-3.
+// ---------------------------------------------------------------------------
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+}
+
+// ---------------------------------------------------------------------------
 //  Body + selection
 // ---------------------------------------------------------------------------
 body {
   line-height: $line-height-base;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  // Ease the measure on small screens (brief: body drops toward 1rem on phones).
+  @media (max-width: 576px) {
+    font-size: 0.95rem;
+  }
 }
 
 ::selection {
@@ -37,27 +55,30 @@ h1, h2, h3, h4, h5, h6,
   line-height: 1.2;
 }
 
+// Gentle, journal-weight scale — smaller than a docs theme so a page of
+// technical H2/H3 headings still reads like a notebook, not a manual.
 h1, .h1 {
-  font-size: clamp(2rem, 1.4rem + 2.2vw, 2.5rem);
+  font-size: clamp(1.9rem, 1.55rem + 1.6vw, 2.2rem);
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   margin-bottom: 1rem;
 }
 
 h2, .h2 {
-  font-size: 1.75rem;
-  margin-top: 2.75rem;
-  margin-bottom: 0.9rem;
+  font-size: 1.4rem;
+  margin-top: 2.6rem;
+  margin-bottom: 0.8rem;
 }
 
 h3, .h3 {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.7rem;
 }
 
 h4, .h4 {
-  font-size: 1.12rem;
+  font-size: 1.05rem;
   margin-top: 1.5rem;
   margin-bottom: 0.6rem;
 }
@@ -167,6 +188,7 @@ footer.footer {
   border-top: 1px solid $border-color;
   background-color: $body-bg;
   color: $muted;
+  font-family: $font-family-sans-serif;
   text-align: center;
   font-size: 0.85rem;
   padding: 2rem 0;
@@ -178,29 +200,45 @@ footer.footer {
 }
 
 // ---------------------------------------------------------------------------
-//  Post reading — constrain the article content column for readability.
-//  On article pages Quarto renders <main class="content" id="quarto-document-
-//  content">, so scoping to `.page-layout-article #quarto-document-content`
-//  narrows the whole body column to a comfortable ~68ch measure. The TOC
-//  lives in the right margin (`#quarto-margin-sidebar`) and is unaffected.
-//  `page-layout: full` index/listing pages give <main> id `quarto-content`
-//  (not `quarto-document-content`) and the `.page-layout-full` container, so
-//  they are never matched here and stay full width.
+//  TOC + margin sidebar — interface chrome, so sans (not the serif body voice).
 // ---------------------------------------------------------------------------
-.page-layout-article #quarto-document-content {
-  max-width: 68ch;
+#TOC,
+#quarto-margin-sidebar,
+.toc-actions,
+nav[role="doc-toc"] {
+  font-family: $font-family-sans-serif;
+  font-size: 0.85rem;
+}
+
+// ---------------------------------------------------------------------------
+//  Reading measure — constrain the prose column to ~660px (a journal width,
+//  not a docs width). Article pages render <main class="content"
+//  id="quarto-document-content"> WITHOUT `.column-page`; `page-layout: full`
+//  listing pages (essays, ai-tools, causalml) add `.column-page` to the same
+//  <main>, so `:not(.column-page)` keeps them wide while narrowing prose +
+//  the home masthead/stream. (The old `.page-layout-article` selector matched
+//  no element in the rendered DOM — this replaces it with a live one.)
+//  $grid-body-width above narrows the whole body column too; this caps prose
+//  a touch tighter and re-centres it.
+// ---------------------------------------------------------------------------
+main.content#quarto-document-content:not(.column-page) {
+  max-width: 660px;
+  margin-inline: auto;
 }
 
 // ---------------------------------------------------------------------------
 //  Blockquote
 // ---------------------------------------------------------------------------
+// Serif, quiet tint, thin clay rail. No italic: Noto Serif TC has no true
+// italic and the browser's faux-slant on CJK looks broken — the rail + tint
+// carry the hierarchy instead.
 blockquote,
 .blockquote {
   border-left: 3px solid $accent;
   background: $surface-alt;
   color: $muted;
   font-family: $headings-font-family;
-  font-style: italic;
+  font-style: normal;
   padding: 0.75rem 1.25rem;
   margin: 1.25rem 0;
   border-radius: 0 6px 6px 0;
@@ -213,6 +251,7 @@ main.content table,
 .table {
   border-collapse: collapse;
   font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
   width: auto;
 
   thead th {
@@ -295,4 +334,30 @@ code:not(pre code):not(.sourceCode) {
 .math {
   overflow-x: auto;
   margin: 1.25rem 0;
+}
+
+// ---------------------------------------------------------------------------
+//  Scene divider — replace the hard <hr> in prose with a centred "· · ·"
+//  (craigmod-style section break). Small, clay, generous space around it.
+// ---------------------------------------------------------------------------
+main.content hr,
+#quarto-document-content hr {
+  border: 0;
+  height: auto;
+  margin: var(--space-5) 0;
+  background: transparent;
+  opacity: 1;
+  text-align: center;
+  overflow: visible;
+
+  &::before {
+    content: "· · ·";
+    display: inline-block;
+    color: $accent;
+    font-family: $font-family-serif;
+    font-size: 1.1rem;
+    // wide tracking spreads the dots; the indent re-centres the trailing gap.
+    letter-spacing: 0.6em;
+    text-indent: 0.6em;
+  }
 }

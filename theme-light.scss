@@ -1,41 +1,53 @@
 /*-- scss:defaults --*/
 
 // ===========================================================================
-//  THEME — LIGHT  (warm-paper academic palette)
-//  Minimalist academic design system. Layered on bootswatch `flatly`.
+//  THEME — LIGHT  (warm-paper "文人手帳" / literary-notebook palette)
+//  Minimalist journal design system. Layered on bootswatch `flatly`.
+//  Keep tokens 1:1 parallel with theme-dark.scss — same variable names.
 // ===========================================================================
 
-// --- Fonts (shared across light/dark) ------------------------------------
-$headings-font-family:   "Source Serif 4", "Noto Serif TC", "Songti TC", "PingFang TC", serif !default;
+// --- Type families (shared across light/dark) ----------------------------
+//  Serif is now the *body* voice; sans is demoted to interface chrome
+//  (dates, nav, tags, footer, TOC). Mono only for code.
+$font-family-serif:      "Source Serif 4", "Noto Serif TC", "Songti TC", "PingFang TC", serif !default;
 $font-family-sans-serif: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif !default;
 $font-family-monospace:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace !default;
-$font-size-root:  17px !default;
-$line-height-base: 1.75 !default;
+$headings-font-family:   $font-family-serif !default;
+$font-family-base:       $font-family-serif !default;   // body copy is serif now
+$font-size-root:         18px !default;                 // long-form reading base
+$line-height-base:       1.8 !default;                  // loose, CJK-friendly leading
+$paragraph-margin-bottom: 1.3em !default;
+
+// --- Page measure ---------------------------------------------------------
+//  Quarto grid lever: narrows the central body column site-wide (was 850px),
+//  so article prose reads at a journal width instead of a docs width.
+$grid-body-width:        720px !default;
 
 // --- Bootstrap-native color variables ------------------------------------
 $body-bg:        #faf8f4 !default;   // page background (warm paper)
-$body-color:     #1f2933 !default;   // default body text
-$headings-color: #14303f !default;   // heading text (deep teal-ink)
+$body-color:     #33302a !default;   // body text (warm ink)
+$headings-color: #223a40 !default;   // heading text (deep warm teal-ink)
 $primary:        #1f4e5f !default;   // primary brand (muted teal)
 $secondary:      #3d5a4c !default;   // secondary brand (sage green)
 $link-color:     #1f4e5f !default;   // prose link default
-$border-color:   #e2ddd3 !default;   // hairline borders
-$code-color:     #2b3a3f !default;   // inline code text
+$border-color:   #e7e1d6 !default;   // warm hairline borders
+$code-color:     #4a4034 !default;   // inline code text (warm)
 
 // --- Custom design tokens -------------------------------------------------
 $surface:        #ffffff !default;   // raised surfaces (cards, table header alt)
-$surface-alt:    #f2efe9 !default;   // subtle tinted surface (zebra, blockquote, callout)
-$muted:          #6b7280 !default;   // muted / secondary text
-$border-strong:  #cfc8ba !default;   // stronger divider (table header bottom)
-$accent:         #b4552d !default;   // warm accent (link hover, underlines, blockquote bar)
-$link-hover:     #b4552d !default;   // prose link hover color
+$surface-alt:    #f2efe9 !default;   // subtle warm tint (zebra, blockquote, callout)
+$muted:          #6e6455 !default;   // muted / secondary text (warm; ≥4.5:1 on body-bg 與 surface-alt)
+$border-strong:  #d8cfbf !default;   // stronger divider (table header bottom)
+$accent:         #a84d26 !default;   // clay accent — small-area only (links, kickers; ≥4.5:1 on 兩種底)
+$link-hover:     #a84d26 !default;   // prose link hover color
 $code-bg:        #f4f1ea !default;   // code background (inline + block)
-$selection-bg:   #dfe7e3 !default;   // ::selection background
+$selection-bg:   #e4ded0 !default;   // ::selection background
+$hairline:       rgba(31, 78, 95, 0.14) !default;  // teal low-opacity rule (list dividers, hr)
 
 // --- Callout accent colors (Quarto / Bootstrap) --------------------------
 $callout-color-note:      #1f4e5f !default;
 $callout-color-tip:       #3d5a4c !default;
-$callout-color-important: #b4552d !default;
+$callout-color-important: #a84d26 !default;
 $callout-color-warning:   #c68a1e !default;
 
 /*-- scss:rules --*/

@@ -1,0 +1,16 @@
+---
+title: "隨筆"
+subtitle: "生活、心得，還有一些不知道放哪的廢文"
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: default
+  categories: false
+  fields: [title, date, description]
+page-layout: full
+toc: false
+---
+
+不算研究筆記、也還沒想好放哪一類的東西，都先丟在這裡。
+
+有些是隨手心得，有些純粹是生活紀錄，讀個開心就好。

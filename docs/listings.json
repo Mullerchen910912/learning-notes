@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/essays/opening.html",
       "/posts/causalml/factor-models-pca.html",
       "/posts/causalml/ife-vs-cce-panel.html",
       "/posts/causalml/policy-targeting-uplift.html",
@@ -23,6 +24,12 @@
       "/posts/causalml/deep-diving-synthetic-control.html",
       "/posts/causalml/matrix-calculus-cheat-sheet.html",
       "/posts/causalml/ch8-neural-networks.html"
+    ]
+  },
+  {
+    "listing": "/posts/essays/index.html",
+    "items": [
+      "/posts/essays/opening.html"
     ]
   },
   {
